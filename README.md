@@ -4,8 +4,7 @@ This repository contains solutions for the exercises from SoftUni courses that I
 
 The solutions for this course can be found under "Programming Basics/C++" or "Programming Basics/C#". There is a separate solution with multiple projects for every lecture.
 
-<img src="icons/cpp.svg" width="40px" height="40px" />
-<img src="icons/csharp.svg" width="40px" height="40px" />
+<img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" />
 
 ## License
 
