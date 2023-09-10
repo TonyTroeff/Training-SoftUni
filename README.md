@@ -1,4 +1,4 @@
-This repository contains solutions for the exercises from SoftUni courses that I have been training.
+This repository contains solutions for all exercises from the courses I have trained in SoftUni
 
 ## Programming basics
 
