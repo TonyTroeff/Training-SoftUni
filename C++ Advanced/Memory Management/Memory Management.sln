@@ -5,13 +5,15 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MinBy", "MinBy\MinBy.vcxproj", "{BD685932-8BFB-41A8-A9AE-F2EC4E62CF68}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PointersCastingDemo", "PointersCastingDemo\PointersCastingDemo.vcxproj", "{C78CB597-FC02-4580-91BD-5691B93C2A76}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PointersCastingDemo", "Demos\PointersCastingDemo\PointersCastingDemo.vcxproj", "{C78CB597-FC02-4580-91BD-5691B93C2A76}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryTypesDemo", "MemoryTypesDemo\MemoryTypesDemo.vcxproj", "{FE16C49A-8938-4292-9733-04EFC466EE22}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryTypesDemo", "Demos\MemoryTypesDemo\MemoryTypesDemo.vcxproj", "{FE16C49A-8938-4292-9733-04EFC466EE22}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartPointersDemo", "SmartPointersDemo\SmartPointersDemo.vcxproj", "{37A347EB-AF29-423D-84AB-8515CDEDB2DE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartPointersDemo", "Demos\SmartPointersDemo\SmartPointersDemo.vcxproj", "{37A347EB-AF29-423D-84AB-8515CDEDB2DE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoveInvalid", "RemoveInvalid\RemoveInvalid.vcxproj", "{F8B5FE09-7CC3-40C5-83DC-465EA9AA12DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{35E21B2C-8B44-422A-AAE7-C4D790668A4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C78CB597-FC02-4580-91BD-5691B93C2A76} = {35E21B2C-8B44-422A-AAE7-C4D790668A4E}
+		{FE16C49A-8938-4292-9733-04EFC466EE22} = {35E21B2C-8B44-422A-AAE7-C4D790668A4E}
+		{37A347EB-AF29-423D-84AB-8515CDEDB2DE} = {35E21B2C-8B44-422A-AAE7-C4D790668A4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5C1CEFE-712A-4786-9AF5-67060B76E294}

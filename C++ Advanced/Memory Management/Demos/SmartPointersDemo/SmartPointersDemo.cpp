@@ -79,7 +79,7 @@ void demo4() {
 
 int main()
 {
-	// demo1(); cout << endl;
+	demo1(); cout << endl;
 	demo2(); cout << endl;
 	demo3(); cout << endl;
 	demo4(); cout << endl;
