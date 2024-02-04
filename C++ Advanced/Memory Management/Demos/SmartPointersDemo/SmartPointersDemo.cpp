@@ -77,10 +77,54 @@ void demo4() {
 	cout << "End of demonstration" << endl;
 }
 
+void demo5() {
+	cout << "----- Demonstrate differences between unique_ptr and raw pointers when dealing with arrays -----" << endl;
+
+	const int n = 15;
+
+	const int* rawPtr = new int[15] {}; // If the braces are missing, the array will not be initialized.
+	const unique_ptr<int[]> smartPtr = make_unique<int[]>(n);
+
+	cout << "Raw pointer: ";
+	for (int i = 0; i < n; i++) cout << rawPtr[i] << ' ';
+	cout << endl;
+
+	cout << "Smart pointer: ";
+	for (int i = 0; i < n; i++) cout << smartPtr[i] << ' ';
+	cout << endl;
+
+	delete[] rawPtr;
+}
+
+void demo6() {
+	cout << "----- Demonstrate matrices with unique_ptr -----" << endl;
+
+	const int rows = 5, cols = 5;
+
+	unique_ptr<unique_ptr<unique_ptr<DestructionObserver>[]>[]> ptr = make_unique<unique_ptr<unique_ptr<DestructionObserver>[]>[]>(rows);
+
+	cout << "Before initialization: " << endl;
+	for (int i = 0; i < rows; i++) cout << "At index #" << i << ": " << ptr[i] << endl;
+
+	for (int i = 0; i < rows; i++) ptr[i] = make_unique<unique_ptr<DestructionObserver>[]>(cols);
+
+	cout << "After initialization: " << endl;
+	for (int i = 0; i < rows; i++) cout << "At index #" << i << ": " << ptr[i] << endl;
+
+
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			ptr[i][j] = make_unique<DestructionObserver>("Cell", i * cols + j + 1);
+		}
+	}
+}
+
 int main()
 {
 	demo1(); cout << endl;
 	demo2(); cout << endl;
 	demo3(); cout << endl;
 	demo4(); cout << endl;
+	demo5(); cout << endl;
+	demo6(); cout << endl;
 }
