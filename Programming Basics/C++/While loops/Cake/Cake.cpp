@@ -11,8 +11,7 @@ int main()
 	bool cakeIsEnough = true;
 
 	string input;
-	cin >> input;
-	while (input != "STOP") {
+	while (cin >> input && input != "STOP") {
 		int piecesToTake = stoi(input);
 		totalPieces -= piecesToTake;
 
@@ -20,8 +19,6 @@ int main()
 			cakeIsEnough = false;
 			break;
 		}
-
-		cin >> input;
 	}
 
 	if (cakeIsEnough) cout << totalPieces << " pieces are left." << endl;

@@ -11,9 +11,7 @@ int main()
     bool spaceIsEnough = true;
     
     string input;
-    cin >> ws;
-    getline(cin, input);
-    while (input != "Done") {
+    while (getline(cin >> ws, input) && input != "Done") {
         int spaceToTake = stoi(input);
         freeSpace -= spaceToTake;
 
@@ -21,8 +19,6 @@ int main()
             spaceIsEnough = false;
             break;
         }
-
-        getline(cin, input);
     }
 
     if (spaceIsEnough) cout << freeSpace << " Cubic meters left." << endl;

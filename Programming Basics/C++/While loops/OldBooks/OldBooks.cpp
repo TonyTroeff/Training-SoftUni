@@ -11,15 +11,13 @@ int main()
     bool isFound = false;
 
     string input;
-    getline(cin, input);
-    while (input != "No More Books") {
+    while (getline(cin, input) && input != "No More Books") {
         if (input == bookToLookFor) {
             isFound = true;
             break;
         }
 
         booksCount++;
-        getline(cin, input);
     }
 
     if (isFound) cout << "You checked " << booksCount << " books and found it." << endl;

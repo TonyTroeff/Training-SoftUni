@@ -11,10 +11,7 @@ int main()
 	bool isSuccessful = true;
 
 	string input, lastProblem;
-
-	cin >> ws;
-	getline(cin, input);
-	while (input != "Enough") {
+	while (getline(cin >> ws, input) && input != "Enough") {
 		int grade;
 		cin >> grade;
 
@@ -35,9 +32,6 @@ int main()
 		// 	  isSuccessful = false;
 		//	  break;
 		// }
-
-		cin >> ws;
-		getline(cin, input);
 	}
 
 	if (isSuccessful) {
