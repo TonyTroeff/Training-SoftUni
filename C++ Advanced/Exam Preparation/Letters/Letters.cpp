@@ -45,8 +45,8 @@ unordered_map<char, set<string>> categorizeWords(const vector<string>& words) {
 }
 
 void printWords(const set<string>& words) {
-    for (auto iter = words.begin(); iter != words.end(); iter++)
-        cout << *iter << ' ';
+    for (const string& w : words)
+        cout << w << ' ';
     cout << endl;
 }
 

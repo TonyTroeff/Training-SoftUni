@@ -9,7 +9,7 @@ void spread(char(&matrix)[rows][cols], queue<pair<int, int>>& rustCells) {
 	size_t generationSize = rustCells.size();
 
 	for (size_t i = 0; i < generationSize; i++) {
-		pair<int, int> current = rustCells.front();
+		pair<int, int> &current = rustCells.front();
 		rustCells.pop();
 
 		for (int t = 0; t < adjacentCellsCount; t++) {
