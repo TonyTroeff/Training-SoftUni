@@ -6,6 +6,12 @@ The solutions for this course can be found under "Programming Basics/C++" or "Pr
 
 <img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" />
 
+## C++ Advanced
+
+The solutions for this course can be found under "C++ Advanced". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, Demos).
+
+<img src="icons/cpp.svg" width="72px" height="72px" />
+
 ## License
 
 This repository is licensed under the [MIT License](LICENSE).
