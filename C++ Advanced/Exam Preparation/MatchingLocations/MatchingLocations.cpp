@@ -1,7 +1,7 @@
 #include <iostream>
-#include <map>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 using namespace std;
 
@@ -26,31 +26,31 @@ vector<string> split(const string& text, const char& delimiter) {
 
 int main()
 {
-	map<string, string> locationsByName;
-	map<pair<double, double>, vector<string>> locationsByCoordinates; // Using unordered_map with pairs is tricky.
+	unordered_map<string, string> locationsByName;
+	unordered_map<string, vector<string>> locationsByCoordinates;
 
 	string line;
 	while (getline(cin, line) && line != ".") {
 		vector<string> inputData = split(line, ',');
-		string name = inputData[0];
-		double latitude = stod(inputData[1]), longitude = stod(inputData[2]);
 
-		locationsByName[name] = line;
-		locationsByCoordinates[make_pair(latitude, longitude)].push_back(line);
+		locationsByName[inputData[0]] = line;
+
+		string coordinatesKey;
+		coordinatesKey.append(inputData[1]);
+		coordinatesKey.push_back(' ');
+		coordinatesKey.append(inputData[2]);
+
+		locationsByCoordinates[coordinatesKey].push_back(line);
 	}
 
 	while (getline(cin, line) && line != ".") {
-		vector<string> inputData = split(line, ' ');
-		if (inputData.size() == 1) {
-			auto match = locationsByName.find(inputData[0]);
-			if (match != locationsByName.end()) cout << match->second << endl;
-		}
-		else if (inputData.size() == 2) {
-			pair<double, double> query = make_pair(stod(inputData[0]), stod(inputData[1]));
-			auto match = locationsByCoordinates.find(query);
-			if (match != locationsByCoordinates.end()) {
-				for (const string& location : match->second) cout << location << endl;
-			}
+		auto matchByName = locationsByName.find(line);
+		if (matchByName != locationsByName.end()) cout << matchByName->second << endl;
+
+		auto matchByCoordinates = locationsByCoordinates.find(line);
+		if (matchByCoordinates != locationsByCoordinates.end()) {
+			for (const string& locationInfo : matchByCoordinates->second)
+				cout << locationInfo << endl;
 		}
 	}
 }
