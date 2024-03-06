@@ -6,6 +6,12 @@ The solutions for this course can be found under "Programming Basics/C++" or "Pr
 
 <img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" />
 
+## C# Fundamentals
+
+The solutions for this course can be found under "C# Fundamentals". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
+
+<img src="icons/csharp.svg" width="72px" height="72px" />
+
 ## C++ Fundamentals
 
 The solutions for this course can be found under "C++ Fundamentals". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, Demos).
