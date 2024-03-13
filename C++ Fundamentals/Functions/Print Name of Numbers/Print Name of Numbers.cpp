@@ -46,7 +46,7 @@ void printTens(const int& digit) {
 	printSeparator();
 }
 
-void printSpecial(const int& digit) {
+void printTeens(const int& digit) {
 	if (digit == 0) cout << "ten";
 	else if (digit == 1) cout << "eleven";
 	else if (digit == 2) cout << "twelve";
@@ -74,7 +74,7 @@ int main()
 
 		int tens = (number % 100) / 10;
 		int units = number % 10;
-		if (tens == 1) printSpecial(units);
+		if (tens == 1) printTeens(units);
 		else {
 			if (tens != 0) printTens(tens);
 			if (units != 0) printDigit(units);
