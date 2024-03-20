@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-void printArray(const int* arr, const int n) {
+void printArray(const int* arr, const int& n) {
 	for (int i = 0; i < n; i++) cout << arr[i] << ' ';
 	cout << endl;
 }

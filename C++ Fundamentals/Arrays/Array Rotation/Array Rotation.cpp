@@ -1,17 +1,17 @@
 #include <iostream>
 using namespace std;
 
-void readArray(int arr[], const int n) {
+void readArray(int arr[], const int& n) {
     for (int i = 0; i < n; i++) cin >> arr[i];
 }
 
-void printArray(int arr[], const int n) {
+void printArray(int arr[], const int& n) {
     for (int i = 0; i < n; i++) cout << arr[i] << ' ';
     cout << endl;
 }
 
 // Solution #1, Complexity: O(n^2), Simple
-void shiftArray(int arr[], const int n) {
+void shiftArray(int arr[], const int& n) {
     int first = arr[0];
     for (int i = 0; i < n - 1; i++) arr[i] = arr[i + 1];
 
@@ -41,7 +41,7 @@ int main()
 
 /*
 // Solution #2, Complexity: O(n), Advanced
-void rotateArray(int arr[], const int start, const int count) {
+void rotateArray(int arr[], const int& start, const int& count) {
     int iterations = count / 2, end = start + count - 1;
     for (int i = 0; i < iterations; i++) {
         int swap = arr[start + i];

@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-void readArray(int arr[], const int n) {
+void readArray(int arr[], const int& n) {
     for (int i = 0; i < n; i++) cin >> arr[i];
 }
 
