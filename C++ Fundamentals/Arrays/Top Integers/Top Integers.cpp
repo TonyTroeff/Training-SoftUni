@@ -4,7 +4,7 @@ using namespace std;
 
 constexpr int MAX_N = 100;
 
-void readArray(int arr[], const int n) {
+void readArray(int arr[], const int& n) {
     cout << "read array" << endl;
     cout << "&arr = " << &arr << endl;
     cout << "arr = " << (void*)arr << endl;
