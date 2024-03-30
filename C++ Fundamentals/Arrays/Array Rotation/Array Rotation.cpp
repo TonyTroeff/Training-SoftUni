@@ -40,7 +40,29 @@ int main()
 }
 
 /*
-// Solution #2, Complexity: O(n), Advanced
+// Solution #2, Complexity: O(n), Simple
+int main()
+{
+    constexpr int MAX_N = 100;
+    int arr[MAX_N];
+
+    int n;
+    cin >> n;
+
+    readArray(arr, n);
+
+    int shifts;
+    cin >> shifts;
+
+    for (int i = 0; i < n; i++)
+        cout << arr[(i + shifts) % n] << ' ';
+    
+    cout << endl;
+}
+*/
+
+/*
+// Solution #3, Complexity: O(n), Advanced
 void rotateArray(int arr[], const int& start, const int& count) {
     int iterations = count / 2, end = start + count - 1;
     for (int i = 0; i < iterations; i++) {
