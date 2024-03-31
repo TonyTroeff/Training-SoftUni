@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    ifstream ifs("./files/sample_text.txt");
+    ifstream ifs("./files/sample-text.txt");
     if (!ifs.is_open()) {
         cerr << "The requested file could not be opened. Please check if it exists." << endl;
         return 1;

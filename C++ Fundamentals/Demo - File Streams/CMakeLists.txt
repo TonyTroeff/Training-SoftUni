@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(read_binary_content read_binary_content.cpp)
 add_executable(read_content read_content.cpp)
+add_executable(split_file split_file.cpp)
 
 # Configure the OpenSSL package. I have installed version 3.1.1 using `chocolatey`.
 set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL-Win64")
