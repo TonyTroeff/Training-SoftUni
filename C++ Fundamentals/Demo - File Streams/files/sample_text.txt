@@ -1,0 +1,4 @@
+What a beautiful day!
+Let's write some code.
+
+C++ is cool, right?
