@@ -1,2 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿int number = int.Parse(Console.ReadLine());
+
+if (number != 0 && -100 <= number && number <= 100) Console.WriteLine("Yes");
+else Console.WriteLine("No");
