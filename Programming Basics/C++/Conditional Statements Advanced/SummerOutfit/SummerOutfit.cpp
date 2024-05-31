@@ -38,7 +38,7 @@ int main()
 			outfit = "Swim Suit";
 			shoes = "Barefoot";
 		}
-		if (partOfDay == "Evening") {
+		else if (partOfDay == "Evening") {
 			outfit = "Shirt";
 			shoes = "Moccasins";
 		}
