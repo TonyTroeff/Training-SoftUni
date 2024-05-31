@@ -2,9 +2,9 @@ This repository contains solutions for all exercises from the courses I have tra
 
 ## Programming basics
 
-The solutions for this course can be found under "Programming Basics/C++" or "Programming Basics/C#". There is a separate solution with multiple projects for every lecture.
+The solutions for this course can be found under "Programming Basics/C++", "Programming Basics/C#" or "Programming Basics/JS". There is a separate solution with multiple projects for every lecture.
 
-<img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" />
+<img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" /> <img src="icons/js.svg" width="72px" height="72px" />
 
 ## C# Fundamentals
 
