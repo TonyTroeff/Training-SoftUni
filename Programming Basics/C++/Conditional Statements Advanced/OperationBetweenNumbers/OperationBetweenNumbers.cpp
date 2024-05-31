@@ -34,7 +34,6 @@ int main()
 			cout << n1 << ' ' << operation << ' ' << n2 << " = " << result;
 
 			if (showParity) {
-
 				string parity = result % 2 == 0 ? "even" : "odd";
 				cout << " - " << parity;
 			}
