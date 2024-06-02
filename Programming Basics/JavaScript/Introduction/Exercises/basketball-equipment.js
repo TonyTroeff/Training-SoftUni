@@ -1,5 +1,5 @@
 function solve(input) {
-    const taxPerYear = new Number(input[0]);
+    const taxPerYear = Number(input[0]);
 
     const shoes = 0.6 * taxPerYear;
     const kit = 0.8 * shoes;
