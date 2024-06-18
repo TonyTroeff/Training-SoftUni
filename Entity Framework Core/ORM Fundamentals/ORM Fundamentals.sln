@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniORM", "MiniORM\MiniORM.csproj", "{3C21A1A3-4903-40FC-9E50-CABEDAC57033}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniORM.App", "MiniORM.App\MiniORM.App.csproj", "{08D31F45-6EC0-4CE9-A993-10DA08731B16}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C21A1A3-4903-40FC-9E50-CABEDAC57033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C21A1A3-4903-40FC-9E50-CABEDAC57033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C21A1A3-4903-40FC-9E50-CABEDAC57033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C21A1A3-4903-40FC-9E50-CABEDAC57033}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D31F45-6EC0-4CE9-A993-10DA08731B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D31F45-6EC0-4CE9-A993-10DA08731B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D31F45-6EC0-4CE9-A993-10DA08731B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D31F45-6EC0-4CE9-A993-10DA08731B16}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
