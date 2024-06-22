@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingSpree", "Exercises\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaCalories", "Exercises\PizzaCalories\PizzaCalories.csproj", "{94E706BA-C1B4-4B1C-9AB3-7C421E1A63CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FootballTeamGenerator", "Exercises\FootballTeamGenerator\FootballTeamGenerator.csproj", "{3D709AC4-26B7-4FC4-86D5-E350C1049C38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,7 @@ Global
 		{FF61583D-8509-4DCD-90F4-FD9D1DC0797D} = {D8A6CAEE-19BC-495D-96FC-309A7FB6769E}
 		{41055AB7-F64F-431E-85AC-B002D21B3AF4} = {D8A6CAEE-19BC-495D-96FC-309A7FB6769E}
 		{94E706BA-C1B4-4B1C-9AB3-7C421E1A63CF} = {D8A6CAEE-19BC-495D-96FC-309A7FB6769E}
+		{3D709AC4-26B7-4FC4-86D5-E350C1049C38} = {D8A6CAEE-19BC-495D-96FC-309A7FB6769E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C504DD02-76DA-4C7E-962E-F8CB8C6833C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -38,5 +41,9 @@ Global
 		{94E706BA-C1B4-4B1C-9AB3-7C421E1A63CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94E706BA-C1B4-4B1C-9AB3-7C421E1A63CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94E706BA-C1B4-4B1C-9AB3-7C421E1A63CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D709AC4-26B7-4FC4-86D5-E350C1049C38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D709AC4-26B7-4FC4-86D5-E350C1049C38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D709AC4-26B7-4FC4-86D5-E350C1049C38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D709AC4-26B7-4FC4-86D5-E350C1049C38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
