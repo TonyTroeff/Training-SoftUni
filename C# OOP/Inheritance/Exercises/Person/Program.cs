@@ -9,14 +9,16 @@ public static class Program
         string name = Console.ReadLine();
         int age = int.Parse(Console.ReadLine());
 
-        try
+        if(age < 0)
         {
-            Child child = new Child(name, age);
-            Console.WriteLine(child);
+            Console.WriteLine("Age must be positive!");
+            return;
         }
-        catch (ArgumentException e)
-        {
-            Console.WriteLine(e.Message);
-        }
+
+        Person person;
+        if (age > 15) person = new Person(name, age);
+        else person = new Child(name, age);
+
+        Console.WriteLine(person);
     }
 }
