@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using PizzaCalories.Enums;
+using PizzaCalories.Interfaces;
 
-public class Topping
+public class Topping : IIngredient
 {
-    private const double CaloriesPerGram = 2;
     private const int MinWeight = 1;
     private const int MaxWeight = 50;
     
@@ -19,10 +19,10 @@ public class Topping
 
         this.Weight = weight;
         this.Type = parsedToppingType;
-        this.Calories = CaloriesPerGram * this.Weight * ToppingTypeModifiers[this.Type];
     }
     
     public double Weight { get; }
     public ToppingType Type { get; }
-    public double Calories { get; }
+    
+    public double CalculateCalories() => IIngredient.BaseWeightModifier * this.Weight * ToppingTypeModifiers[this.Type];
 }

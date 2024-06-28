@@ -24,7 +24,7 @@ public class Pizza
     public Dough Dough { get; set; }
     public IReadOnlyCollection<Topping> Toppings { get; }
     public int ToppingsCount => this._toppings.Count;
-    public double TotalCalories => this.Dough.Calories + this._toppings.Sum(t => t.Calories);
+    public double TotalCalories => this.Dough.CalculateCalories() + this._toppings.Sum(t => t.CalculateCalories());
 
     public void AddTopping(Topping topping)
     {

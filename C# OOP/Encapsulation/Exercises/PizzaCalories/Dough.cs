@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using PizzaCalories.Enums;
+using PizzaCalories.Interfaces;
 
-public class Dough
+public class Dough : IIngredient
 {
-    private const double CaloriesPerGram = 2;
     private const int MinWeight = 1;
     private const int MaxWeight = 200;
     
@@ -21,11 +21,11 @@ public class Dough
         this.Weight = weight;
         this.FlourType = parsedFlourType;
         this.BakingTechnique = parsedBakingTechnique;
-        this.Calories = CaloriesPerGram * this.Weight * FlourTypeModifiers[this.FlourType] * BakingTechniqueModifiers[this.BakingTechnique];
     }
     
     public double Weight { get; }
     public FlourType FlourType { get; }
     public BakingTechnique BakingTechnique { get; }
-    public double Calories { get; }
+
+    public double CalculateCalories() => IIngredient.BaseWeightModifier * this.Weight * FlourTypeModifiers[this.FlourType] * BakingTechniqueModifiers[this.BakingTechnique];
 }
