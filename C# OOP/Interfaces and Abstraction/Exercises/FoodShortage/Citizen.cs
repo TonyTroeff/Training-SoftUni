@@ -1,6 +1,6 @@
-﻿namespace BirthdayCelebrations;
+﻿namespace FoodShortage;
 
-public class Citizen : IIdentifiable, IWithBirthdate, IWithName
+public class Citizen : IBuyer
 {
     public Citizen(string name, int age, string id, string birthdate)
     {
@@ -14,4 +14,7 @@ public class Citizen : IIdentifiable, IWithBirthdate, IWithName
     public int Age { get; }
     public string Id { get; }
     public string Birthdate { get; }
+    public int Food { get; private set; }
+
+    public void BuyFood() => this.Food += 10;
 }

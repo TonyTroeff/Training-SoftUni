@@ -1,6 +1,6 @@
 ﻿namespace BirthdayCelebrations;
 
-public class Pet : IBirthable
+public class Pet : IWithBirthdate, IWithName
 {
     public Pet(string name, string birthdate)
     {

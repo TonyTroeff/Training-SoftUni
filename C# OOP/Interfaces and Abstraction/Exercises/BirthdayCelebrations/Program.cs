@@ -9,7 +9,7 @@ public static class Program
     public static void Main()
     {
         var identifiableEntities = new List<IIdentifiable>();
-        var birthableEntities = new List<IBirthable>();
+        var entitiesWithBirthdate = new List<IWithBirthdate>();
         
         var input = Console.ReadLine();
         while (input != "End")
@@ -20,12 +20,12 @@ public static class Program
             {
                 var citizen = new Citizen(data[1], int.Parse(data[2]), data[3], data[4]);
                 identifiableEntities.Add(citizen);
-                birthableEntities.Add(citizen);
+                entitiesWithBirthdate.Add(citizen);
             }
             else if (data[0] == "Pet")
             {
                 var pet = new Pet(data[1], data[2]);
-                birthableEntities.Add(pet);
+                entitiesWithBirthdate.Add(pet);
             }
             else if (data[0] == "Robot")
             {
@@ -38,7 +38,7 @@ public static class Program
 
         var suffix = Console.ReadLine();
 
-        var result = birthableEntities.Where(e => e.Birthdate.EndsWith(suffix)).ToArray();
+        var result = entitiesWithBirthdate.Where(e => e.Birthdate.EndsWith(suffix)).ToArray();
         foreach (var entity in result)
             Console.WriteLine(entity.Birthdate);
     }
