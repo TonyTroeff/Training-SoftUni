@@ -2,6 +2,6 @@
 
 public enum MissionState
 {
-    inProgress,
+    InProgress,
     Finished
 }
