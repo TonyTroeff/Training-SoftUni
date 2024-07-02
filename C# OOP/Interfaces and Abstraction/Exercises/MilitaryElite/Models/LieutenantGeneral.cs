@@ -28,14 +28,13 @@ public class LieutenantGeneral : PrivateSoldier, ILieutenantGeneral
     {
         var sb = new StringBuilder();
         sb.AppendLine(base.ToString());
-        sb.AppendLine("Privates:");
+        sb.Append("Privates:");
 
-        for (var i = 0; i < this._privates.Count; i++)
+        foreach (var @private in this.Privates)
         {
-            if (i > 0) sb.AppendLine();
-
+            sb.AppendLine();
             sb.Append("  ");
-            sb.Append(this._privates[i]);
+            sb.Append(@private);
         }
         
         return sb.ToString();

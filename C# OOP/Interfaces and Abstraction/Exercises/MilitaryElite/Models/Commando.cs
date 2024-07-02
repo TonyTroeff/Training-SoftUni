@@ -29,14 +29,13 @@ public class Commando : SpecializedSoldier, ICommando
     {
         var sb = new StringBuilder();
         sb.AppendLine(base.ToString());
-        sb.AppendLine("Missions:");
+        sb.Append("Missions:");
 
-        for (var i = 0; i < this._missions.Count; i++)
+        foreach (var mission in this.Missions)
         {
-            if (i > 0) sb.AppendLine();
-
+            sb.AppendLine();
             sb.Append("  ");
-            sb.Append(this._missions[i]);
+            sb.Append(mission);
         }
         
         return sb.ToString();;

@@ -29,14 +29,13 @@ public class Engineer : SpecializedSoldier, IEngineer
     {
         var sb = new StringBuilder();
         sb.AppendLine(base.ToString());
-        sb.AppendLine("Repairs:");
+        sb.Append("Repairs:");
 
-        for (var i = 0; i < this._repairs.Count; i++)
+        foreach (var repair in this.Repairs)
         {
-            if (i > 0) sb.AppendLine();
-
+            sb.AppendLine();
             sb.Append("  ");
-            sb.Append(this._repairs[i]);
+            sb.Append(repair);
         }
         
         return sb.ToString();
