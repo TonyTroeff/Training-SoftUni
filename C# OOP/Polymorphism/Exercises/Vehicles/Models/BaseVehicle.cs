@@ -13,13 +13,13 @@ public abstract class BaseVehicle : IVehicle
     public double Fuel { get; private set; }
     public virtual double Consumption { get; }
 
-    public bool Travel(double distance)
+    public string Travel(double distance)
     {
         var requiredFuel = distance * this.Consumption;
-        if (this.Fuel < requiredFuel) return false;
+        if (this.Fuel < requiredFuel) return $"{this.GetType().Name} needs refueling";
 
         this.Fuel -= requiredFuel;
-        return true;
+        return $"{this.GetType().Name} travelled {distance} km";
     }
 
     public virtual void Refuel(double liters) => this.Fuel += liters;

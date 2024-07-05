@@ -26,8 +26,7 @@ public static class Program
             if (command == "Drive")
             {
                 var distance = double.Parse(commandData[2]);
-                if (!vehicle.Travel(distance)) Console.WriteLine($"{vehicleType} needs refueling");
-                else Console.WriteLine($"{vehicleType} travelled {distance} km");
+                Console.WriteLine(vehicle.Travel(distance));
             }
             else if (command == "Refuel")
             {
