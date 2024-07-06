@@ -9,7 +9,7 @@ function solve(input) {
         for (let j = start; j <= end; j++) {
             order++;
 
-            if (i + j == magicNumber) {
+            if (i + j === magicNumber) {
                 console.log(`Combination N:${order} (${i} + ${j} = ${magicNumber})`);
                 isFound = true;
                 break;

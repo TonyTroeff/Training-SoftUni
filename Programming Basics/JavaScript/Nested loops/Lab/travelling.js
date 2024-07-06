@@ -1,7 +1,7 @@
 function solve(input) {
     let index = 0;
     let destination = input[index];
-    while (destination != "End") {
+    while (destination !== "End") {
         const minBudget = Number(input[++index]);
 
         let savedMoney = 0;

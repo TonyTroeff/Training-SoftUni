@@ -4,8 +4,8 @@ function solve(input) {
 
     for (let i = floors; i > 0; i--) {
         let letter;
-        if (i == floors) letter = "L";
-        else if (i % 2 == 0) letter = "O";
+        if (i === floors) letter = "L";
+        else if (i % 2 === 0) letter = "O";
         else letter = "A";
 
         let result = "";
