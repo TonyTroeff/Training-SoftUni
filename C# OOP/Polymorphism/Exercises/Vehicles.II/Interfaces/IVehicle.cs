@@ -2,10 +2,10 @@
 
 public interface IVehicle
 {
-    double Fuel { get; }
-    double Consumption { get; }
+    double FuelQuantity { get; }
+    double FuelConsumption { get; }
     double TankCapacity { get; }
     
-    string Travel(double distance);
-    string Refuel(double liters);
+    bool Drive(double distance, bool ecoMode);
+    bool Refuel(double liters);
 }

@@ -1,45 +1,48 @@
 ﻿namespace Vehicles.II.Models;
 
+using System;
 using Vehicles.II.Interfaces;
 
 public abstract class BaseVehicle : IVehicle
 {
-    protected BaseVehicle(double fuel, double consumption, double tankCapacity)
+    protected BaseVehicle(double fuelQuantity, double fuelConsumption, double tankCapacity)
     {
-        if (fuel <= tankCapacity) this.Fuel = fuel;
-        this.Consumption = consumption;
+        if (fuelQuantity <= tankCapacity) this.FuelQuantity = fuelQuantity;
+
+        this.FuelConsumption = fuelConsumption;
         this.TankCapacity = tankCapacity;
     }
 
-    public double Fuel { get; private set; }
-    public virtual double Consumption { get; }
+    public double FuelQuantity { get; private set; }
+    public double FuelConsumption { get; }
     public double TankCapacity { get; }
 
-    public string Travel(double distance)
-    {
-        var requiredFuel = distance * this.Consumption;
-        if (this.Fuel < requiredFuel) return $"{this.GetType().Name} needs refueling";
+    protected virtual double ConsumptionIncrease { get; }
 
-        this.Fuel -= requiredFuel;
-        return $"{this.GetType().Name} travelled {distance} km";
+    public bool Drive(double distance, bool ecoMode)
+    {
+        if (distance < 0) throw new ArgumentException("Distance must not be negative");
+
+        var fuelConsumption = this.FuelConsumption;
+        if (!ecoMode) fuelConsumption += this.ConsumptionIncrease;
+
+        var requiredFuel = distance * fuelConsumption;
+        if (requiredFuel > this.FuelQuantity) return false;
+
+        this.FuelQuantity -= requiredFuel;
+        return true;
     }
 
-    public virtual string Refuel(double liters)
+    public virtual bool Refuel(double liters)
     {
-        if (liters <= 0) return "Fuel must be a positive number";
+        if (liters <= 0) throw new ArgumentException("Fuel must be a positive number");
 
-        var canRefuel = this.ValidateCanRefuel(liters);
-        if (!string.IsNullOrWhiteSpace(canRefuel)) return canRefuel;
+        var newFuelQuantity = this.FuelQuantity + liters;
+        if (newFuelQuantity > this.TankCapacity) return false;
 
-        this.Fuel += liters;
-        return string.Empty;
+        this.FuelQuantity += liters;
+        return true;
     }
-    
-    public override string ToString() => $"{this.GetType().Name}: {this.Fuel:f2}";
 
-    protected string ValidateCanRefuel(double liters)
-    {
-        if (this.Fuel + liters > this.TankCapacity) return $"Cannot fit {liters} fuel in the tank";
-        return string.Empty;
-    }
+    public override string ToString() => $"{this.GetType().Name}: {this.FuelQuantity:f2}";
 }

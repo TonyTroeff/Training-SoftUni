@@ -39,12 +39,12 @@ public static class Program
 
         return data[0] switch
         {
-            "Hen" => new Hen(data[1], double.Parse(data[2]), double.Parse(data[3])),
-            "Owl" => new Owl(data[1], double.Parse(data[2]), double.Parse(data[3])),
-            "Cat" => new Cat(data[1], double.Parse(data[2]), data[3], data[4]),
-            "Tiger" => new Tiger(data[1], double.Parse(data[2]), data[3], data[4]),
-            "Dog" => new Dog(data[1], double.Parse(data[2]), data[3]),
-            "Mouse" => new Mouse(data[1], double.Parse(data[2]), data[3]),
+            nameof(Hen) => new Hen(data[1], double.Parse(data[2]), double.Parse(data[3])),
+            nameof(Owl) => new Owl(data[1], double.Parse(data[2]), double.Parse(data[3])),
+            nameof(Cat) => new Cat(data[1], double.Parse(data[2]), data[3], data[4]),
+            nameof(Tiger) => new Tiger(data[1], double.Parse(data[2]), data[3], data[4]),
+            nameof(Dog) => new Dog(data[1], double.Parse(data[2]), data[3]),
+            nameof(Mouse) => new Mouse(data[1], double.Parse(data[2]), data[3]),
             _ => throw new InvalidOperationException("Invalid animal type")
         };
     }
@@ -55,10 +55,10 @@ public static class Program
 
         return data[0] switch
         {
-            "Fruit" => new Fruit(int.Parse(data[1])),
-            "Meat" => new Meat(int.Parse(data[1])),
-            "Seeds" => new Seeds(int.Parse(data[1])),
-            "Vegetable" => new Vegetable(int.Parse(data[1])),
+            nameof(Fruit) => new Fruit(int.Parse(data[1])),
+            nameof(Meat) => new Meat(int.Parse(data[1])),
+            nameof(Seeds) => new Seeds(int.Parse(data[1])),
+            nameof(Vegetable) => new Vegetable(int.Parse(data[1])),
             _ => throw new InvalidOperationException("Invalid food type")
         };
     }

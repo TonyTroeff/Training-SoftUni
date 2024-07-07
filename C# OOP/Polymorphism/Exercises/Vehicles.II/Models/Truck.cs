@@ -2,17 +2,12 @@
 
 public class Truck : BaseVehicle
 {
-    public Truck(double fuel, double consumption, double tankCapacity) : base(fuel, consumption, tankCapacity)
+    public Truck(double fuelQuantity, double fuelConsumption, double tankCapacity)
+        : base(fuelQuantity, fuelConsumption, tankCapacity)
     {
     }
 
-    public override double Consumption => base.Consumption + 1.6;
+    protected override double ConsumptionIncrease => 1.6;
 
-    public override string Refuel(double liters)
-    {
-        var canRefuel = this.ValidateCanRefuel(liters);
-        if (!string.IsNullOrWhiteSpace(canRefuel)) return canRefuel;
-
-        return base.Refuel(liters * 0.95);
-    }
+    public override bool Refuel(double liters) => base.Refuel(liters * 0.95);
 }

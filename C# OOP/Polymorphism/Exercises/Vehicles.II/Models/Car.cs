@@ -2,9 +2,10 @@
 
 public class Car : BaseVehicle
 {
-    public Car(double fuel, double consumption, double tankCapacity) : base(fuel, consumption, tankCapacity)
+    public Car(double fuelQuantity, double fuelConsumption, double tankCapacity)
+        : base(fuelQuantity, fuelConsumption, tankCapacity)
     {
     }
 
-    public override double Consumption => base.Consumption + 0.9;
+    protected override double ConsumptionIncrease => 0.9;
 }

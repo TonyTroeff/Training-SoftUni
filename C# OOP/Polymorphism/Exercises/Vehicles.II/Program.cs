@@ -1,6 +1,7 @@
 ﻿namespace Vehicles.II;
 
 using System;
+using System.Collections.Generic;
 using Vehicles.II.Interfaces;
 using Vehicles.II.Models;
 
@@ -9,58 +10,62 @@ public static class Program
     public static void Main()
     {
         var carInfo = Console.ReadLine().Split();
-        Car car = new Car(double.Parse(carInfo[1]), double.Parse(carInfo[2]), double.Parse(carInfo[3]));
+        var car = new Car(double.Parse(carInfo[1]), double.Parse(carInfo[2]), double.Parse(carInfo[3]));
 
         var truckInfo = Console.ReadLine().Split();
-        Truck truck = new Truck(double.Parse(truckInfo[1]), double.Parse(truckInfo[2]), double.Parse(truckInfo[3]));
+        var truck = new Truck(double.Parse(truckInfo[1]), double.Parse(truckInfo[2]), double.Parse(truckInfo[3]));
 
         var busInfo = Console.ReadLine().Split();
-        Bus bus = new Bus(double.Parse(busInfo[1]), double.Parse(busInfo[2]), double.Parse(busInfo[3]));
+        var bus = new Bus(double.Parse(busInfo[1]), double.Parse(busInfo[2]), double.Parse(busInfo[3]));
 
         var n = int.Parse(Console.ReadLine());
-        for (var i = 0; i < n; i++)
-        {
-            var commandData = Console.ReadLine().Split();
-
-            var command = commandData[0];
-            var vehicleType = commandData[1];
-
-            if (command == "Drive")
-            {
-                var vehicle = GetVehicle(vehicleType, car, truck, bus);
-                var distance = double.Parse(commandData[2]);
-
-                Console.WriteLine(vehicle.Travel(distance));
-            }
-            else if (command == "DriveEmpty")
-            {
-                var distance = double.Parse(commandData[2]);
-                
-                bus.IsEmpty = true;
-                Console.WriteLine(bus.Travel(distance));
-                bus.IsEmpty = false;
-            }
-            else if (command == "Refuel")
-            {
-                var vehicle = GetVehicle(vehicleType, car, truck, bus);
-                var liters = double.Parse(commandData[2]);
-
-                var refuel = vehicle.Refuel(liters);
-                if (!string.IsNullOrWhiteSpace(refuel)) Console.WriteLine(refuel);
-            }
-        }
+        var vehiclesMap = new Dictionary<string, IVehicle> { [nameof(Car)] = car, [nameof(Truck)] = truck, [nameof(Bus)] = bus };
+        
+        ProcessCommands(n, vehiclesMap);
 
         Console.WriteLine(car);
         Console.WriteLine(truck);
         Console.WriteLine(bus);
     }
 
-    private static IVehicle GetVehicle(string vehicleType, IVehicle car, IVehicle truck, IVehicle bus)
-        => vehicleType switch
+    private static void ProcessCommands(int n, Dictionary<string, IVehicle> vehiclesMap)
+    {
+        for (var i = 0; i < n; i++)
         {
-            "Car" => car,
-            "Truck" => truck,
-            "Bus" => bus,
-            _ => throw new InvalidOperationException("Invalid vehicle type")
-        };
+            var command = Console.ReadLine().Split();
+
+            var commandType = command[0];
+            var vehicleType = command[1];
+            var vehicle = vehiclesMap[vehicleType];
+
+            if (commandType == "Drive")
+            {
+                var distance = double.Parse(command[2]);
+                DriveVehicle(vehicleType, vehicle, distance, ecoMode: false);
+            }
+            else if (commandType == "DriveEmpty")
+            {
+                var distance = double.Parse(command[2]);
+                DriveVehicle(vehicleType, vehicle, distance, ecoMode: true);
+            }
+            else if (commandType == "Refuel")
+            {
+                try
+                {
+                    var liters = double.Parse(command[2]);
+                    if (!vehicle.Refuel(liters)) Console.WriteLine($"Cannot fit {liters} fuel in the tank");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+    }
+
+    private static void DriveVehicle(string vehicleType, IVehicle vehicle, double distance, bool ecoMode)
+    {
+        if (vehicle.Drive(distance, ecoMode)) Console.WriteLine($"{vehicleType} travelled {distance} km");
+        else Console.WriteLine($"{vehicleType} needs refueling");
+    }
 }
