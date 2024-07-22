@@ -37,6 +37,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopping", "Exercises\Shopp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchBreak", "Exercises\LunchBreak\LunchBreak.csproj", "{06C890A1-FD0E-4CD2-9BB4-DC81EBD82C49}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "More Exercises", "More Exercises", "{285FCE02-FB29-4B05-85DA-8035AEB6F936}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pets", "More Exercises\Pets\Pets.csproj", "{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +107,10 @@ Global
 		{06C890A1-FD0E-4CD2-9BB4-DC81EBD82C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06C890A1-FD0E-4CD2-9BB4-DC81EBD82C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06C890A1-FD0E-4CD2-9BB4-DC81EBD82C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +131,7 @@ Global
 		{25337F94-89DC-4868-AA2C-E1DB13078B84} = {A61AEBAB-64DE-45E2-8EB2-F90E43AE0C23}
 		{12295C36-6898-4B58-89EF-02AD95B6D6E3} = {A61AEBAB-64DE-45E2-8EB2-F90E43AE0C23}
 		{06C890A1-FD0E-4CD2-9BB4-DC81EBD82C49} = {A61AEBAB-64DE-45E2-8EB2-F90E43AE0C23}
+		{B8E6BCB6-1A5E-4EED-9CAF-3896D259D694} = {285FCE02-FB29-4B05-85DA-8035AEB6F936}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7580FC5-6A84-4E8D-B00B-7A7ED0DBFD3A}
