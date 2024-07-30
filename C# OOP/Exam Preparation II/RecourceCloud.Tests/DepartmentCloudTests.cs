@@ -33,16 +33,15 @@ public class DepartmentCloudTests
         Assert.Throws<ArgumentException>(() => this._departmentCloud.LogTask(args));
     }
 
-    [TestCase(true, true, true)]
-    [TestCase(true, true, false), TestCase(true, false, true), TestCase(false, true, true)]
-    public void LogTaskShouldThrowIfNullArgumentsAreProvided(bool firstIsNull, bool secondIsNull, bool thirdIsNull)
+    [TestCase(0), TestCase(1), TestCase(2)]
+    public void LogTaskShouldThrowIfInvalidArgumentIsProvided(int index)
     {
         var args = new string[3];
-        if (!firstIsNull) args[0] = GenerateRandomString();
-        if (!secondIsNull) args[1] = GenerateRandomString();
-        if (!thirdIsNull) args[2] = GenerateRandomString();
+        for (var i = 0; i < args.Length; i++)
+            if (i != index) args[i] = GenerateRandomString();
 
-        Assert.Throws<ArgumentException>(() => this._departmentCloud.LogTask(args));
+        Assert.Throws<ArgumentException>(
+            () => this._departmentCloud.LogTask(args));
     }
 
     [Test]
@@ -70,20 +69,29 @@ public class DepartmentCloudTests
     {
         var resourceName = GenerateRandomString();
         var firstArgs = new[] { Random.Shared.Next(1, 5).ToString(), GenerateRandomString(), resourceName };
+        
         this._departmentCloud.LogTask(firstArgs);
+        var firstTask = this._departmentCloud.Tasks.First();
 
         var secondArgs = new[] { Random.Shared.Next(1, 5).ToString(), GenerateRandomString(), resourceName };
         Assert.Multiple(() =>
         {
             Assert.That(this._departmentCloud.LogTask(secondArgs), Is.EqualTo($"{resourceName} is already logged."));
             Assert.That(this._departmentCloud.Tasks, Has.Count.EqualTo(1));
+            Assert.That(this._departmentCloud.Tasks.First(), Is.SameAs(firstTask));
         });
     }
 
     [Test]
     public void CreateResourceShouldFailIfThereAreNoTasks()
     {
-        Assert.That(this._departmentCloud.CreateResource(), Is.False);
+        var createResourceResult = this._departmentCloud.CreateResource();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(createResourceResult, Is.False);
+            Assert.That(this._departmentCloud.Resources, Is.Empty);
+        });
     }
 
     [Test]
@@ -91,7 +99,9 @@ public class DepartmentCloudTests
     {
         var priority = Random.Shared.Next(2, 5);
         var regularTaskArgs = new[] { priority.ToString(), GenerateRandomString(), GenerateRandomString() };
+        
         this._departmentCloud.LogTask(regularTaskArgs);
+        var firstTask = this._departmentCloud.Tasks.First();
         
         var moreImportantTaskArgs = new[] { (priority - 1).ToString(), GenerateRandomString(), GenerateRandomString() };
         this._departmentCloud.LogTask(moreImportantTaskArgs);
@@ -104,13 +114,13 @@ public class DepartmentCloudTests
             Assert.That(this._departmentCloud.Tasks, Has.Count.EqualTo(1));
             Assert.That(this._departmentCloud.Resources, Has.Count.EqualTo(1));
 
-            var task = this._departmentCloud.Tasks.First();
             var resource = this._departmentCloud.Resources.First();
-
-            Assert.That(task.ResourceName, Is.Not.EqualTo(resource.Name));
             Assert.That(resource.Name, Is.EqualTo(moreImportantTaskArgs[2]));
             Assert.That(resource.ResourceType, Is.EqualTo(moreImportantTaskArgs[1]));
             Assert.That(resource.IsTested, Is.False);
+
+            Assert.That(this._departmentCloud.Tasks, Has.Count.EqualTo(1));
+            Assert.That(this._departmentCloud.Tasks.First(), Is.SameAs(firstTask));
         });
     }
 
@@ -125,18 +135,21 @@ public class DepartmentCloudTests
     {
         var resourceName = GenerateRandomString();
         var regularTaskArgs = new[] { Random.Shared.Next(1, 5).ToString(), GenerateRandomString(), resourceName };
-        this._departmentCloud.LogTask(regularTaskArgs);
         
+        this._departmentCloud.LogTask(regularTaskArgs);
         this._departmentCloud.CreateResource();
+        
+        var resource = this._departmentCloud.Resources.First();
 
         var testResourceResult = this._departmentCloud.TestResource(resourceName);
         Assert.Multiple(() =>
         {
-            Assert.That(this._departmentCloud.Resources, Has.Count.EqualTo(1));
-            var resource = this._departmentCloud.Resources.First();
-            
+            Assert.That(testResourceResult, Is.Not.Null);
             Assert.That(testResourceResult, Is.SameAs(resource));
             Assert.That(resource.IsTested, Is.True);
+
+            Assert.That(this._departmentCloud.Resources, Has.Count.EqualTo(1));
+            Assert.That(this._departmentCloud.Resources.First(), Is.SameAs(resource));
         });
     }
 
