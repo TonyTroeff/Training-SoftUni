@@ -23,19 +23,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graduation", "Labs\Graduati
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Exercises", "Exercises", "{AFCB736F-CDAF-4507-8ADC-6DE177862BDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OldBooks", "Exercises\OldBooks\OldBooks.csproj", "{E989B466-5EDB-494F-BEA1-29622650C775}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OldBooks", "Exercises\OldBooks\OldBooks.csproj", "{E989B466-5EDB-494F-BEA1-29622650C775}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamPreparation", "Exercises\ExamPreparation\ExamPreparation.csproj", "{A5A85FC4-4D6A-43FA-868D-54DA4663DDC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamPreparation", "Exercises\ExamPreparation\ExamPreparation.csproj", "{A5A85FC4-4D6A-43FA-868D-54DA4663DDC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vacation", "Exercises\Vacation\Vacation.csproj", "{130B5170-1B32-48FC-AC53-38E2E3BB892B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vacation", "Exercises\Vacation\Vacation.csproj", "{130B5170-1B32-48FC-AC53-38E2E3BB892B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walking", "Exercises\Walking\Walking.csproj", "{E4230392-D48C-4EB9-8AC1-530CCE067FDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walking", "Exercises\Walking\Walking.csproj", "{E4230392-D48C-4EB9-8AC1-530CCE067FDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coins", "Exercises\Coins\Coins.csproj", "{A8F888C0-3BF8-4A1B-81A1-A61B056B8F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coins", "Exercises\Coins\Coins.csproj", "{A8F888C0-3BF8-4A1B-81A1-A61B056B8F4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake", "Exercises\Cake\Cake.csproj", "{820D99B2-8304-4050-A9B8-E324C51D58A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake", "Exercises\Cake\Cake.csproj", "{820D99B2-8304-4050-A9B8-E324C51D58A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moving", "Exercises\Moving\Moving.csproj", "{33D7DD8E-855E-4937-8009-C85764C1F0DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moving", "Exercises\Moving\Moving.csproj", "{33D7DD8E-855E-4937-8009-C85764C1F0DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "More Exercises", "More Exercises", "{833376A4-31CF-420D-A767-98E56A60081C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamOfLetters", "More Exercises\StreamOfLetters\StreamOfLetters.csproj", "{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +107,10 @@ Global
 		{33D7DD8E-855E-4937-8009-C85764C1F0DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33D7DD8E-855E-4937-8009-C85764C1F0DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33D7DD8E-855E-4937-8009-C85764C1F0DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +131,7 @@ Global
 		{A8F888C0-3BF8-4A1B-81A1-A61B056B8F4F} = {AFCB736F-CDAF-4507-8ADC-6DE177862BDC}
 		{820D99B2-8304-4050-A9B8-E324C51D58A9} = {AFCB736F-CDAF-4507-8ADC-6DE177862BDC}
 		{33D7DD8E-855E-4937-8009-C85764C1F0DF} = {AFCB736F-CDAF-4507-8ADC-6DE177862BDC}
+		{1AC5AFE2-5A14-41BC-BA2F-E941C8955CF9} = {833376A4-31CF-420D-A767-98E56A60081C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C427BB9-8C20-4138-92B6-07F9FF44544A}
