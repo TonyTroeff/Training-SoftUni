@@ -12,6 +12,12 @@ The solutions for this course can be found under "C# Fundamentals". There is a s
 
 <img src="icons/csharp.svg" width="72px" height="72px" />
 
+## C# Advanced
+
+The solutions for this course can be found under "C# Advanced". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
+
+<img src="icons/csharp.svg" width="72px" height="72px" />
+
 ## C# OOP
 
 The solutions for this course can be found under "C# OOP". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
