@@ -1,0 +1,81 @@
+﻿RenataAndrews created a profile in the dealership.
+MartinTikker created a profile in the dealership.
+TransRush created a profile in the dealership.
+CargoGoat created a profile in the dealership.
+VIPClient is not a valid type.
+RenataAndrews already exists as a profile in the dealership.
+SaloonCar: MercedesBenzC220CDI is listed in the dealership. Price: 24200.00
+SaloonCar: BMW330i is listed in the dealership. Price: 30800.00
+SaloonCar: ToyotaCamry is listed in the dealership. Price: 23650.00
+SaloonCar: Mazda6 is listed in the dealership. Price: 27940.00
+SaloonCar: VolkswagenArteonRLine is listed in the dealership. Price: 47300.00
+SaloonCar: TeslaModel3 is listed in the dealership. Price: 59400.00
+SUV: MercedesGL400d is listed in the dealership. Price: 67440.00
+SUV: BMWiX5M is listed in the dealership. Price: 75000.00
+SUV: BentleyBentyaga is listed in the dealership. Price: 146400.00
+SUV: MitsubishiPajero is listed in the dealership. Price: 105720.00
+SUV: DihatsuFeroza is listed in the dealership. Price: 6240.00
+SUV: AudiSQ8 is listed in the dealership. Price: 122400.00
+Truck: VolvoFH16 is listed in the dealership. Price: 284700.00
+Truck: MercedesActros is listed in the dealership. Price: 357500.00
+Truck: ScaniaRSeries is listed in the dealership. Price: 286000.00
+Truck: MANTGX is listed in the dealership. Price: 331500.00
+Truck: DAFXF is listed in the dealership. Price: 296400.00
+Truck: IvecoStralis is listed in the dealership. Price: 263900.00
+Truck: RenaultT is listed in the dealership. Price: 269100.00
+Van is not a valid type.
+ToyotaCamry already exists as an offer in the dealership.
+MartinTikker purchased a Mazda6.
+TransRush does not have enough budget to purchase Truck.
+TransRush purchased a DihatsuFeroza.
+RenataAndrews is not eligible to purchase a Truck.
+RenataAndrews purchased a BentleyBentyaga.
+MartinTikker purchased a TeslaModel3.
+MartinTikker purchased a BMW330i.
+WillyBetz has no profile in the dealership.
+RenataAndrews purchased a AudiSQ8.
+RenataAndrews purchased a DihatsuFeroza.
+TransRush purchased a ScaniaRSeries.
+TransRush purchased a RenaultT.
+TransRush purchased a DAFXF.
+CargoGoat does not have enough budget to purchase Truck.
+CargoGoat does not have enough budget to purchase Truck.
+CargoGoat purchased a MercedesActros.
+CargoGoat purchased a DihatsuFeroza.
+CargoGoat purchased a DihatsuFeroza.
+CargoGoat purchased a MercedesGL400d.
+WillyBetz created a profile in the dealership.
+Customer Report:
+CargoGoat - Purchases: 4
+-Models:
+--DihatsuFeroza
+--DihatsuFeroza
+--MercedesActros
+--MercedesGL400d
+MartinTikker - Purchases: 3
+-Models:
+--BMW330i
+--Mazda6
+--TeslaModel3
+RenataAndrews - Purchases: 3
+-Models:
+--AudiSQ8
+--BentleyBentyaga
+--DihatsuFeroza
+TransRush - Purchases: 4
+-Models:
+--DAFXF
+--DihatsuFeroza
+--RenaultT
+--ScaniaRSeries
+WillyBetz - Purchases: 0
+-Models:
+--none
+SUV Sales Report:
+--AudiSQ8 - Price: 122400.00, Total Model Sales: 1
+--BentleyBentyaga - Price: 146400.00, Total Model Sales: 1
+--BMWiX5M - Price: 75000.00, Total Model Sales: 0
+--DihatsuFeroza - Price: 6240.00, Total Model Sales: 4
+--MercedesGL400d - Price: 67440.00, Total Model Sales: 1
+--MitsubishiPajero - Price: 105720.00, Total Model Sales: 0
+-Total Purchases: 7
