@@ -1,6 +1,6 @@
-﻿namespace Snake.Utilities;
+﻿using System;
 
-using System;
+namespace SimpleSnake.GameObjects;
 
 public readonly struct Point : IEquatable<Point>
 {
@@ -19,7 +19,16 @@ public readonly struct Point : IEquatable<Point>
 
     public override int GetHashCode() => HashCode.Combine(this.X, this.Y);
 
-    public static Point operator +(Point left, Point right) => new(left.X + right.X, left.Y + right.Y);
+    public static Point operator +(Point left, Point right)
+        => new Point(left.X + right.X, left.Y + right.Y);
+
+    public static Point operator *(Point left, int k) => k * left;
+
+    public static Point operator *(int k, Point left)
+        => new Point(k * left.X, k * left.Y);
+
+    public static Point operator -(Point p)
+        => -1 * p;
 
     public static bool operator ==(Point left, Point right) => left.Equals(right);
 
