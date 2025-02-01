@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EqualityLogic", "Exercises\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomComparator", "Exercises\CustomComparator\CustomComparator.csproj", "{285E35D5-2CF4-4525-BD89-7AA240810F29}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Labs", "Labs", "{ACC552B3-7D49-4EB8-9477-7C27CE9CF338}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IteratorsAndComparators", "Labs\IteratorsAndComparators\IteratorsAndComparators.csproj", "{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,10 @@ Global
 		{285E35D5-2CF4-4525-BD89-7AA240810F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{285E35D5-2CF4-4525-BD89-7AA240810F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{285E35D5-2CF4-4525-BD89-7AA240810F29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,7 @@ Global
 		{7B2501D9-AFC3-4B19-BF38-B9688C4BCB1F} = {0A5D664A-05C9-4DB5-863D-E13740221503}
 		{0A5FB909-C6B2-40D1-90A9-155EA21F55E6} = {0A5D664A-05C9-4DB5-863D-E13740221503}
 		{285E35D5-2CF4-4525-BD89-7AA240810F29} = {0A5D664A-05C9-4DB5-863D-E13740221503}
+		{90DBCE5F-7AE4-45A3-A6A9-0460D7296AB2} = {ACC552B3-7D49-4EB8-9477-7C27CE9CF338}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F4A7460-EC18-44B7-94CF-E921FBBFBA9B}
