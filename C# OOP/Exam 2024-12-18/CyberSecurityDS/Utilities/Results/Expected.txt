@@ -1,0 +1,51 @@
+﻿SQLInjection is not a valid type for the system.
+MalwareAttack: RansomLock is added to the system.
+RansomLock already exists in the system.
+PhishingAttack: CredentialHarvesting is added to the system.
+MalwareAttack: SpywareInfiltration is added to the system.
+PhishingAttack: SocialEngineered is added to the system.
+MalwareAttack: KeyLoggerDeployment is added to the system.
+PhishingAttack: ITCompromise is added to the system.
+Firewall: NetShield is added to the system.
+InvalidSoftwareType is not a valid type for the system.
+NetShield already exists in the system.
+Antivirus: VirusHunter is added to the system.
+Firewall: BasicBlocker is added to the system.
+Antivirus: UltimateDefender is added to the system.
+Firewall: SecureWall is added to the system.
+RansomLock is assigned to NetShield.
+NonExistentAttack does not exist in the system.
+FakeDefense does not exist in the system.
+RansomLock is already assigned to NetShield.
+CredentialHarvesting is assigned to NetShield.
+RansomLock is already assigned to NetShield.
+SpywareInfiltration is assigned to NetShield.
+ITCompromise is assigned to VirusHunter.
+KeyLoggerDeployment is assigned to SecureWall.
+SocialEngineered is assigned to VirusHunter.
+CredentialHarvesting is already assigned to NetShield.
+NonExistentDefense does not exist in the system.
+ITCompromise is already assigned to VirusHunter.
+SpywareInfiltration could not be mitigated by NetShield.
+NonExistentAttack does not exist in the system.
+ITCompromise is mitigated successfully.
+ITCompromise is already mitigated.
+DataStealer does not exist in the system.
+Firewall cannot mitigate PhishingAttack.
+RansomLock could not be mitigated by NetShield.
+KeyLoggerDeployment is mitigated successfully.
+Security:
+Defensive Software: BasicBlocker, Effectiveness: 1, Assigned Attacks: [None]
+Defensive Software: NetShield, Effectiveness: 8, Assigned Attacks: RansomLock, CredentialHarvesting, SpywareInfiltration
+Defensive Software: SecureWall, Effectiveness: 7, Assigned Attacks: KeyLoggerDeployment
+Defensive Software: UltimateDefender, Effectiveness: 10, Assigned Attacks: [None]
+Defensive Software: VirusHunter, Effectiveness: 9, Assigned Attacks: ITCompromise, SocialEngineered
+Threads:
+-Mitigated:
+Attack: ITCompromise, Severity: 7 (Target Mail: sysadmin@techcompany.com)
+Attack: KeyLoggerDeployment, Severity: 6 (Infected Files: 120)
+-Pending:
+Attack: CredentialHarvesting, Severity: 6 (Target Mail: ceo@bigcompany.com)
+Attack: RansomLock, Severity: 9 (Infected Files: 250)
+Attack: SocialEngineered, Severity: 5 (Target Mail: hr@companyxyz.com)
+Attack: SpywareInfiltration, Severity: 10 (Infected Files: 500)
