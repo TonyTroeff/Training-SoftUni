@@ -7,7 +7,7 @@ public class Lab2 {
         String username = scanner.nextLine();
 
         Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/diablo", "root", "root");
-        PreparedStatement statement = connection.prepareStatement("select first_name, last_name, count(*) as 'games_count' from users as u join diablo.users_games ug on u.id = ug.user_id where u.user_name = ? group by u.id");
+        PreparedStatement statement = connection.prepareStatement("select first_name, last_name, count(*) as games_count from users as u join diablo.users_games ug on u.id = ug.user_id where u.user_name = ? group by u.id");
         statement.setString(1, username);
 
         ResultSet result = statement.executeQuery();
