@@ -2,43 +2,56 @@ This repository contains solutions for all exercises from the courses I have tra
 
 ## Programming basics
 
-The solutions for this course can be found under "Programming Basics/C++", "Programming Basics/C#" or "Programming Basics/JavaScript". There is a separate solution with multiple projects for every lecture.
+The solutions for this course can be found under "Programming Basics/C++", "Programming Basics/C#" or "Programming Basics/JavaScript".
 
 <img src="icons/cpp.svg" width="72px" height="72px" /> <img src="icons/csharp.svg" width="72px" height="72px" /> <img src="icons/js.svg" width="72px" height="72px" />
 
 ## C# Fundamentals
 
-The solutions for this course can be found under "C# Fundamentals". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
+The solutions for this course can be found under "C# Fundamentals".
+For each lecture, there is a separate solution containing multiple projects (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos).
 
 <img src="icons/csharp.svg" width="72px" height="72px" />
 
 ## C# Advanced
 
-The solutions for this course can be found under "C# Advanced". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
+The solutions for this course can be found under "C# Advanced".
+For each lecture, there is a separate solution containing multiple projects (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos).
 
 <img src="icons/csharp.svg" width="72px" height="72px" />
 
 ## C# OOP
 
-The solutions for this course can be found under "C# OOP". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, More Exercises, Demos).
+The solutions for this course can be found under "C# OOP".
+For each lecture, there is a separate solution containing multiple projects (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos).
 
 <img src="icons/csharp.svg" width="72px" height="72px" />
 
 ## Entity Framework Core
 
-The solutions for this course can be found under "Entity Framework Core". You can find an example implementation of the `MiniORM` framework.
+The solutions for this course can be found under "Entity Framework Core".
+There is an example implementation of the `MiniORM` framework.
 
 <img src="icons/csharp.svg" width="72px" height="72px" /> <img src="icons/ef-core.svg" width="72px" height="72px" /> <img src="icons/mssql.svg" width="72px" height="72px" />
 
+## Spring Data
+
+The solutions for this course can be found under "Spring Data".
+For each lecture, there is a separate Maven project containing multiple source files for the given problems (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos, with each problem having its own subfolder inside).
+
+<img src="icons/java.svg" width="72px" height="72px" /> <img src="icons/hibernate.svg" width="72px" height="72px" /> <img src="icons/spring.svg" width="72px" height="72px" /> <img src="icons/mysql.svg" width="72px" height="72px" />
+
 ## C++ Fundamentals
 
-The solutions for this course can be found under "C++ Fundamentals". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, Demos).
+The solutions for this course can be found under "C++ Fundamentals".
+For each lecture, there is a separate solution containing multiple projects (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos).
 
 <img src="icons/cpp.svg" width="72px" height="72px" />
 
 ## C++ Advanced
 
-The solutions for this course can be found under "C++ Advanced". There is a separate solution with multiple projects for every lecture (some of them may be grouped into subfolders, e.g. Labs, Exercises, Demos).
+The solutions for this course can be found under "C++ Advanced".
+For each lecture, there is a separate solution containing multiple projects (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos).
 
 <img src="icons/cpp.svg" width="72px" height="72px" />
 
