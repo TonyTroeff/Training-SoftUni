@@ -1,0 +1,18 @@
+services:
+    mysql:
+        image: mysql:9.3
+        container_name: spring_data_mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - mysql_data:/var/lib/mysql
+        ports:
+            - 3306:3306
+
+volumes:
+    mysql_data:
+
+
+networks:
+    default:
+        name: spring_data
