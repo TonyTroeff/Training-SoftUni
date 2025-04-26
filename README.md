@@ -39,7 +39,7 @@ There is an example implementation of the `MiniORM` framework.
 The solutions for this course can be found under "Spring Data".
 For each lecture, there is a separate Maven project containing multiple source files for the given problems (they may be organized into subfolders, e.g. Labs, Exercises, More Exercises, or Demos, with each problem having its own subfolder inside).
 
-<img src="icons/java.svg" width="72px" height="72px" /> <img src="icons/hibernate.svg" width="72px" height="72px" /> <img src="icons/spring.svg" width="72px" height="72px" /> <img src="icons/mysql.svg" width="72px" height="72px" />
+<img src="icons/java.svg" width="72px" height="72px" /> <img src="icons/spring.svg" width="72px" height="72px" /> <img src="icons/hibernate.svg" width="72px" height="72px" /> <img src="icons/mysql.svg" width="72px" height="72px" />
 
 ## C++ Fundamentals
 
