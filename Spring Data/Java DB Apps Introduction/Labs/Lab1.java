@@ -1,9 +1,7 @@
-package bg.softuni;
-
 import java.sql.*;
 import java.util.Scanner;
 
-public class RetrieveUsersByMinimumSalary {
+public class Lab1 {
     public static void main(String[] args) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         double minSalary = Double.parseDouble(scanner.nextLine());

@@ -1,9 +1,7 @@
-package bg.softuni;
-
 import java.sql.*;
 import java.util.Scanner;
 
-public class RetrieveUsersAndCountTheirGames {
+public class Lab2 {
     public static void main(String[] args) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         String username = scanner.nextLine();
