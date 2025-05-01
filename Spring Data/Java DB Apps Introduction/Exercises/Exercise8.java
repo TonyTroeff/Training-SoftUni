@@ -35,3 +35,12 @@ public class Exercise8 {
         }
     }
 }
+
+/*
+delimiter $$
+create procedure usp_get_older(in minion_id int)
+begin
+    update minions as m set m.age = m.age + 1 where m.id = minion_id;
+end $$
+delimiter ;
+*/
