@@ -2,6 +2,7 @@ package lab_1.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -16,7 +17,7 @@ public class Driver {
     private String name;
 
     @ManyToMany(mappedBy = "drivers")
-    private Set<Truck> trucks;
+    private Set<Truck> trucks = new HashSet<>();
 
     public Long getId() {
         return this.id;

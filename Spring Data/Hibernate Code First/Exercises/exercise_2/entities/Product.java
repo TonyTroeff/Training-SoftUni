@@ -2,6 +2,7 @@ package exercise_2.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -25,7 +26,7 @@ public class Product {
     private Double price;
 
     @OneToMany(mappedBy = "product")
-    private Set<Sale> sales;
+    private Set<Sale> sales = new HashSet<>();
 
     public Long getId() {
         return this.id;

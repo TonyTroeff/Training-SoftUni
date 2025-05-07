@@ -2,6 +2,7 @@ package lab_1.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 // For "table-per-class" or "joined" setup:
@@ -17,7 +18,7 @@ public class Truck extends Vehicle {
 
     @ManyToMany
     @JoinTable(name = "drivers_trucks", joinColumns = @JoinColumn(name = "truck_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "driver_id", referencedColumnName = "id"))
-    private Set<Driver> drivers;
+    private Set<Driver> drivers = new HashSet<>();
 
     public double getLoadCapacity() {
         return this.loadCapacity;

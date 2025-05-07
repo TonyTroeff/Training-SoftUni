@@ -2,6 +2,7 @@ package lab_1.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -15,7 +16,7 @@ public class Company {
     private String name;
 
     @OneToMany(mappedBy = "company")
-    private Set<Plane> planes;
+    private Set<Plane> planes = new HashSet<>();
 
     public Long getId() {
         return this.id;
