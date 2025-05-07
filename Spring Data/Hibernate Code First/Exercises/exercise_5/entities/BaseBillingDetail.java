@@ -11,7 +11,7 @@ public abstract class BaseBillingDetail extends BaseEntity {
     @Column(name = "number", nullable = false)
     private String number;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
 
