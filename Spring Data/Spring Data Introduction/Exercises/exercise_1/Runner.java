@@ -1,5 +1,6 @@
 package exercise_1;
 
+import exercise_1.dtos.AuthorSummaryDto;
 import exercise_1.enums.AgeRestriction;
 import exercise_1.enums.BookEditionType;
 import exercise_1.models.Author;
@@ -37,9 +38,54 @@ public class Runner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        this.seedData();
+
+        this.executeQuery1();
+        this.executeQuery2();
+        this.executeQuery3();
+        this.executeQuery4();
+    }
+
+    private void executeQuery1() {
+        List<Book> books = this.bookService.findBooksReleasedAfter(2000);
+
+        System.out.printf("There are %d books released after the year 2000:%n", books.size());
+        for (Book book : books)
+            System.out.println(book.getTitle());
+    }
+
+    private void executeQuery2() {
+        List<Author> authors = this.authorService.findAuthorsWithBookReleasedBefore(1990);
+
+        System.out.printf("There are %d authors with at least one book released before the year 1990:%n", authors.size());
+        for (Author author : authors)
+            System.out.printf("%s %s%n", author.getFirstName(), author.getLastName());
+    }
+
+    private void executeQuery3() {
+        List<AuthorSummaryDto> authors = this.authorService.getSummary();
+
+        System.out.printf("There are %d authors:%n", authors.size());
+        for (AuthorSummaryDto author : authors)
+            System.out.printf("%s %s (%d)%n", author.firstName(), author.lastName(), author.booksCount());
+    }
+
+    private void executeQuery4() {
+        List<Book> books = this.bookService.findBooksWrittenBy("George", "Powell");
+
+        System.out.printf("There are %d books written by George Powell:%n", books.size());
+        for (Book book : books)
+            System.out.printf("%s - %s, %d copies%n", book.getTitle(), book.getReleaseDate(), book.getCopies());
+    }
+
+    private void seedData() throws IOException {
+        System.out.println("Start data seeding.");
+
         List<Author> authors = this.seedAuthors();
         List<Category> categories = this.seedCategories();
-        List<Book> books = this.seedBooks(authors, categories);
+        this.seedBooks(authors, categories);
+
+        System.out.println("Finished data seeding.");
     }
 
     private List<Author> seedAuthors() throws IOException {
@@ -76,7 +122,6 @@ public class Runner implements CommandLineRunner {
 
         for (String line : lines) {
             String[] data = line.split("\\s+");
-            String description = data[1];
             BookEditionType editionType = BookEditionType.values()[Integer.parseInt(data[0])];
             LocalDate releaseDate = LocalDate.parse(data[1], DateTimeFormatter.ofPattern("d/M/yyyy"));
             Integer copies = Integer.parseInt(data[2]);

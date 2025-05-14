@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -34,5 +35,16 @@ public class BookServiceImpl implements BookService {
         book.setCategories(categories);
 
         return this.bookRepository.save(book);
+    }
+
+    @Override
+    public List<Book> findBooksReleasedAfter(int year) {
+        LocalDate releaseDate = LocalDate.of(year, 12, 31);
+        return this.bookRepository.findAllByReleaseDateAfter(releaseDate);
+    }
+
+    @Override
+    public List<Book> findBooksWrittenBy(String firstName, String lastName) {
+        return this.bookRepository.findAllByAuthorFirstNameAndAuthorLastNameOrderByReleaseDateDescTitleAsc(firstName, lastName);
     }
 }
