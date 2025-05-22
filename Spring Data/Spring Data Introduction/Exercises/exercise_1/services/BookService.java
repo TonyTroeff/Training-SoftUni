@@ -15,5 +15,6 @@ public interface BookService {
     Book createBook(String title, String description, BookEditionType editionType, BigDecimal price, Integer copies, LocalDate releaseDate, AgeRestriction ageRestriction, Author author, Set<Category> categories);
 
     List<Book> findBooksReleasedAfter(int year);
+
     List<Book> findBooksWrittenBy(String firstName, String lastName);
 }
