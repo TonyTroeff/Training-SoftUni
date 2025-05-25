@@ -1,6 +1,6 @@
 package exercise_1;
 
-import exercise_1.dtos.AuthorSummaryDto;
+import exercise_1.dtos.AuthorSalesDto;
 import exercise_1.enums.AgeRestriction;
 import exercise_1.enums.BookEditionType;
 import exercise_1.models.Author;
@@ -40,42 +40,80 @@ public class Runner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         this.seedData();
 
-        this.executeQuery1();
-        this.executeQuery2();
-        this.executeQuery3();
-        this.executeQuery4();
+        System.out.println("Task #1.1");
+        this.bookService.findAllByAgeRestriction(AgeRestriction.Minor).forEach(this::printTitle);
+
+        System.out.println("Task #1.2");
+        this.bookService.findAllByAgeRestriction(AgeRestriction.Teen).forEach(this::printTitle);
+
+        System.out.println("Task #2");
+        this.bookService.findAllGoldenBooks().forEach(this::printTitle);
+
+        System.out.println("Task #3");
+        this.bookService.findAllOutsidePriceBounds(BigDecimal.valueOf(5), BigDecimal.valueOf(40)).forEach(this::printTitleAndPrice);
+
+        System.out.println("Task #4.1");
+        this.bookService.findAllNotReleasedInYear(2000).forEach(this::printTitle);
+
+        System.out.println("Task #4.2");
+        this.bookService.findAllNotReleasedInYear(1998).forEach(this::printTitle);
+
+        System.out.println("Task #5.1");
+        this.bookService.findAllReleasedBefore(LocalDate.of(1992, 4, 12)).forEach(this::printTitleEditionTypeAndPrice);
+
+        System.out.println("Task #5.2");
+        this.bookService.findAllReleasedBefore(LocalDate.of(1989, 12, 30)).forEach(this::printTitleEditionTypeAndPrice);
+
+        System.out.println("Task #6.1");
+        this.authorService.findAllWhoseFirstNameEndsWith("e").forEach(this::printName);
+
+        System.out.println("Task #6.2");
+        this.authorService.findAllWhoseFirstNameEndsWith("dy").forEach(this::printName);
+
+        System.out.println("Task #7.1");
+        this.bookService.searchByTitle("sK").forEach(this::printTitle);
+
+        System.out.println("Task #7.2");
+        this.bookService.searchByTitle("WOR").forEach(this::printTitle);
+
+        System.out.println("Task #8.1");
+        this.bookService.searchByAuthor("Ric").forEach(this::printTitleAndAuthor);
+
+        System.out.println("Task #8.2");
+        this.bookService.searchByAuthor("gr").forEach(this::printTitleAndAuthor);
+
+        System.out.println("Task #9.1");
+        System.out.println(this.bookService.countBooksWithTitleLongerThan(12));
+
+        System.out.println("Task #9.2");
+        System.out.println(this.bookService.countBooksWithTitleLongerThan(40));
+
+        System.out.println("Task #10");
+        this.authorService.aggregateSales().forEach(this::printNameAndSales);
     }
 
-    private void executeQuery1() {
-        List<Book> books = this.bookService.findBooksReleasedAfter(2000);
-
-        System.out.printf("There are %d books released after the year 2000:%n", books.size());
-        for (Book book : books)
-            System.out.println(book.getTitle());
+    private void printTitle(Book book) {
+        System.out.printf("%s%n", book.getTitle());
     }
 
-    private void executeQuery2() {
-        List<Author> authors = this.authorService.findAuthorsWithBookReleasedBefore(1990);
-
-        System.out.printf("There are %d authors with at least one book released before the year 1990:%n", authors.size());
-        for (Author author : authors)
-            System.out.printf("%s %s%n", author.getFirstName(), author.getLastName());
+    private void printTitleAndPrice(Book book) {
+        System.out.printf("%s - $%.2f%n", book.getTitle(), book.getPrice());
     }
 
-    private void executeQuery3() {
-        List<AuthorSummaryDto> authors = this.authorService.getSummary();
-
-        System.out.printf("There are %d authors:%n", authors.size());
-        for (AuthorSummaryDto author : authors)
-            System.out.printf("%s %s (%d)%n", author.firstName(), author.lastName(), author.booksCount());
+    private void printTitleEditionTypeAndPrice(Book book) {
+        System.out.printf("%s %s $%.2f%n", book.getTitle(), book.getEditionType(), book.getPrice());
     }
 
-    private void executeQuery4() {
-        List<Book> books = this.bookService.findBooksWrittenBy("George", "Powell");
+    private void printTitleAndAuthor(Book book) {
+        System.out.printf("%s (%s %s)%n", book.getTitle(), book.getAuthor().getFirstName(), book.getAuthor().getLastName());
+    }
 
-        System.out.printf("There are %d books written by George Powell:%n", books.size());
-        for (Book book : books)
-            System.out.printf("%s - %s, %d copies%n", book.getTitle(), book.getReleaseDate(), book.getCopies());
+    private void printName(Author author) {
+        System.out.printf("%s %s%n", author.getFirstName(), author.getLastName());
+    }
+
+    private void printNameAndSales(AuthorSalesDto author) {
+        System.out.printf("%s %s - %d%n", author.firstName(), author.lastName(), author.soldCopies());
     }
 
     private void seedData() throws IOException {

@@ -33,7 +33,7 @@ public class Book extends BaseEntity {
     @Column(name = "age_restriction", nullable = false)
     private AgeRestriction ageRestriction;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
     private Author author;
 
