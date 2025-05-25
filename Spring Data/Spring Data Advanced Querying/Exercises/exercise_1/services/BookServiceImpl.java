@@ -75,7 +75,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public long countBooksWithTitleLongerThan(int length) {
+    public int countBooksWithTitleLongerThan(int length) {
         return this.bookRepository.countAllByTitleLengthGreaterThan(length);
+    }
+
+    @Override
+    public int increaseCopies(LocalDate releasedAfter, int amount) {
+        int modifiedBooks = this.bookRepository.increaseCopies(releasedAfter, amount);
+        return modifiedBooks * amount;
+    }
+
+    @Override
+    public int removeLeastSoldBooks(int threshold) {
+        return this.bookRepository.removeAllByCopiesLessThan(threshold);
     }
 }

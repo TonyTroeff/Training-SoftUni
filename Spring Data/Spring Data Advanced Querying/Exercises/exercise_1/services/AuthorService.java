@@ -11,4 +11,6 @@ public interface AuthorService {
     List<Author> findAllWhoseFirstNameEndsWith(String suffix);
 
     List<AuthorSalesDto> aggregateSales();
+
+    int countBooks(String firstName, String lastName);
 }

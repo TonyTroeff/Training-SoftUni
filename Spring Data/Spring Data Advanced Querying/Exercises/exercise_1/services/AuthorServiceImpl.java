@@ -33,4 +33,9 @@ public class AuthorServiceImpl implements AuthorService {
     public List<AuthorSalesDto> aggregateSales() {
         return this.authorRepository.aggregateSales();
     }
+
+    @Override
+    public int countBooks(String firstName, String lastName) {
+        return this.authorRepository.countBooks(firstName, lastName);
+    }
 }

@@ -90,6 +90,20 @@ public class Runner implements CommandLineRunner {
 
         System.out.println("Task #10");
         this.authorService.aggregateSales().forEach(this::printNameAndSales);
+
+        System.out.println("Task #11.1");
+        System.out.println(this.bookService.increaseCopies(LocalDate.of(2005, 10, 12), 100));
+
+        System.out.println("Task #11.2");
+        System.out.println(this.bookService.increaseCopies(LocalDate.of(2013, 6, 6), 44));
+
+        System.out.println("Task #12");
+        System.out.println(this.bookService.removeLeastSoldBooks(5000));
+
+        System.out.println("Task #13");
+        System.out.println(this.authorService.countBooks("Amanda", "Rice"));
+        System.out.println(this.authorService.countBooks("Wanda", "Morales"));
+
     }
 
     private void printTitle(Book book) {
@@ -191,3 +205,14 @@ public class Runner implements CommandLineRunner {
         }
     }
 }
+
+/*
+delimiter $$
+create procedure usp_count_books(in author_first_name varchar(255), in author_last_name varchar(255), out books_count int)
+begin
+select count(b.id) into books_count
+from books as b join authors as a ON b.author_id = a.id
+where a.first_name = author_first_name and a.last_name = author_last_name;
+end $$
+delimiter ;
+*/

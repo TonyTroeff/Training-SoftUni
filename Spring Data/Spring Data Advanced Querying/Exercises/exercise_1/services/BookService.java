@@ -28,5 +28,9 @@ public interface BookService {
 
     List<Book> searchByAuthor(String lastNamePrefix);
 
-    long countBooksWithTitleLongerThan(int length);
+    int countBooksWithTitleLongerThan(int length);
+
+    int increaseCopies(LocalDate releasedAfter, int amount);
+
+    int removeLeastSoldBooks(int threshold);
 }
