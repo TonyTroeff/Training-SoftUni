@@ -1,14 +1,14 @@
 package exercise_1;
 
-import exercise_1.dtos.UserDto;
-import exercise_1.dtos.UserLoginDto;
-import exercise_1.dtos.UserRegisterDto;
+import exercise_1.dtos.*;
 import exercise_1.services.GameService;
 import exercise_1.services.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -33,10 +33,13 @@ public class Runner implements CommandLineRunner {
         commands.put("RegisterUser", this::registerUser);
         commands.put("Login", this::login);
         commands.put("Logout", this::logout);
+        commands.put("AddGame", this::addGame);
+        commands.put("DeleteGame", this::deleteGame);
+        commands.put("AllGames", this::showAllGames);
 
         String input;
         while (!(input = scanner.nextLine()).equals("Exit")) {
-            String[] data = input.split("\\s+");
+            String[] data = input.split("\\|");
             String command = data[0];
 
             Function<String[], String> handler = commands.get(command);
@@ -57,7 +60,7 @@ public class Runner implements CommandLineRunner {
         UserRegisterDto dto = new UserRegisterDto(args[1], args[2], args[3]);
         this.userService.registerUser(dto);
 
-        return "A new user has been registered successfully!";
+        return "A new user was registered successfully!";
     }
 
     private String login(String[] args) {
@@ -66,16 +69,59 @@ public class Runner implements CommandLineRunner {
         UserLoginDto dto = new UserLoginDto(args[1], args[2]);
         UserDto user = this.userService.login(dto);
 
-        if (user == null) return "Invalid username or password!";
+        if (user == null) return "Invalid email or password!";
 
         this.user = user;
         return String.format("Hello, %s!", user.getFullName());
     }
 
     private String logout(String[] args) {
-        if (this.user == null) return "You are not logged in.";
+        this.ensureUserIsLoggedIn();
 
         this.user = null;
         return "You have successfully logged out.";
+    }
+
+    private String addGame(String[] args) {
+        this.ensureUserIsLoggedIn();
+
+        GameInputDto dto = new GameInputDto(args[1], new BigDecimal(args[2]), args[3], args[4], args[5]);
+        GameDto game = this.gameService.createGame(dto);
+
+        return String.format("The game \"%s\" was created successfully.", game.getTitle());
+    }
+
+    private String deleteGame(String[] args) {
+        this.ensureUserIsLoggedIn();
+
+        Long id = Long.parseLong(args[1]);
+        GameDto game = this.gameService.findById(id);
+        if (game == null) return "The game was not found.";
+
+        this.gameService.deleteGame(id);
+
+        return String.format("The game \"%s\" was deleted successfully.", game.getTitle());
+    }
+
+    private String showAllGames(String[] args) {
+        StringBuilder sb = new StringBuilder();
+
+        List<GameDto> games = this.gameService.all();
+        for (int i = 0; i < games.size(); i++) {
+            if (i > 0) sb.append(System.lineSeparator());
+
+            GameDto currentGame = games.get(i);
+            sb.append(String.format("%d. %s %.2f", i + 1, currentGame.getTitle(), currentGame.getPrice()));
+        }
+
+        return sb.toString();
+    }
+
+    private boolean userIsLoggedIn() {
+        return this.user != null;
+    }
+
+    private void ensureUserIsLoggedIn() {
+        if (!this.userIsLoggedIn()) throw new IllegalStateException("You must be logged in to perform this action.");
     }
 }
