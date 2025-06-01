@@ -22,16 +22,35 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public List<Game> getByIds(List<Long> ids) {
+        return this.gameRepository.findAllById(ids);
+    }
+
+    @Override
+    public Game getById(Long id) {
+        return this.gameRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Game getByTitle(String title) {
+        return this.gameRepository.findByTitle(title);
+    }
+
+    @Override
     public List<GameDto> all() {
         List<Game> games = this.gameRepository.findAll();
-        return games.stream()
-                .map(x -> this.modelMapper.map(x, GameDto.class))
-                .toList();
+        return this.mapToDto(games);
+    }
+
+    @Override
+    public List<GameDto> findByIds(List<Long> ids) {
+        List<Game> games = this.getByIds(ids);
+        return this.mapToDto(games);
     }
 
     @Override
     public GameDto findById(Long id) {
-        Game game = this.gameRepository.findById(id).orElse(null);
+        Game game = this.getById(id);
         if (game == null) return null;
 
         return this.modelMapper.map(game, GameDto.class);
@@ -50,5 +69,11 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public void deleteGame(Long id) {
         this.gameRepository.removeById(id);
+    }
+
+    private List<GameDto> mapToDto(List<Game> games) {
+        return games.stream()
+                .map(x -> this.modelMapper.map(x, GameDto.class))
+                .toList();
     }
 }

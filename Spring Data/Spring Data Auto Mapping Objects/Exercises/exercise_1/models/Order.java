@@ -2,22 +2,33 @@ package exercise_1.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity {
-    @ManyToOne
+    @Column(name = "purchase_date", nullable = false)
+    private LocalDateTime purchaseTime;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "orders_games",
             joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"order_id", "game_id"}))
+            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"))
     private Set<Game> games = new HashSet<>();
+
+    public LocalDateTime getPurchaseTime() {
+        return this.purchaseTime;
+    }
+
+    public void setPurchaseTime(LocalDateTime purchaseTime) {
+        this.purchaseTime = purchaseTime;
+    }
 
     public User getUser() {
         return this.user;

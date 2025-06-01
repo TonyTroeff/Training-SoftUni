@@ -33,4 +33,9 @@ public class UserServiceImpl implements UserService {
 
         return this.modelMapper.map(user, UserDto.class);
     }
+
+    @Override
+    public User getById(Long id) {
+        return this.userRepository.findById(id).orElse(null);
+    }
 }
