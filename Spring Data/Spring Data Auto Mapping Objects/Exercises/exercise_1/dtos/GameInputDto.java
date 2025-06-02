@@ -14,7 +14,7 @@ public class GameInputDto {
     private final String title;
 
     @NotNull
-    @DecimalMin(value = "0.01", inclusive = false)
+    @DecimalMin(value = "0.01")
     private final BigDecimal price;
 
     @NotNull
