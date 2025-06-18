@@ -3,6 +3,7 @@ package orm;
 import java.util.List;
 
 public interface DbContext<E> {
+    boolean createTable(Class<E> entityClass, boolean ifNotExists);
     boolean persist(E entity);
 
     List<E> find(Class<E> entityClass);

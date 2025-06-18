@@ -10,6 +10,10 @@ public class Program {
         MyConnector connector = new MyConnector("mysql://localhost:3306", "root", "root", "miniorm");
         EntityManager<User> manager = new EntityManager<>(connector);
 
+        boolean preparedSuccessfully = manager.createTable(User.class, true);
+
+        System.out.printf("Table was prepared successfully: %s%n", preparedSuccessfully);
+
         User user = new User("Tony Troeff", 23, LocalDate.now());
 
         boolean createdSuccessfully = manager.persist(user);

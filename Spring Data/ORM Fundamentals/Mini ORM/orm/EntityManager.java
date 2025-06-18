@@ -21,6 +21,43 @@ public class EntityManager<E> implements DbContext<E> {
     }
 
     @Override
+    public boolean createTable(Class<E> entityClass, boolean ifNotExists) {
+        String tableName = this.getTableName(entityClass);
+
+        Field idField = this.getIdField(entityClass);
+        String idColumnName = this.getIdColumnName(idField);
+
+        Map<String, Field> columns = this.getColumns(entityClass, f -> !f.equals(idField));
+
+        try {
+            StringBuilder query = new StringBuilder();
+
+            query.append("create table ");
+            if (ifNotExists) query.append("if not exists ");
+            query.append(tableName).append(" ");
+
+            query.append("(").append(idColumnName).append(" bigint not null auto_increment primary key");
+
+            for (Map.Entry<String, Field> entry : columns.entrySet()) {
+                String columnName = entry.getKey();
+                Field field = entry.getValue();
+
+                query.append(", ").append(columnName).append(" ").append(this.prepareType(field.getType()));
+            }
+
+            query.append(")");
+
+            Connection connection = this.connector.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query.toString());
+            statement.execute();
+
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    @Override
     public boolean persist(E entity) {
         try {
             Field idField = this.getIdField(entity.getClass());
@@ -68,9 +105,9 @@ public class EntityManager<E> implements DbContext<E> {
     }
 
     private List<E> findInternally(Class<E> entityClass, String query) {
-        try {
-            Map<String, Field> columns = this.getColumns(entityClass);
+        Map<String, Field> columns = this.getColumns(entityClass);
 
+        try {
             Connection connection = this.connector.getConnection();
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -99,14 +136,15 @@ public class EntityManager<E> implements DbContext<E> {
         List<Object> values = new ArrayList<>();
         for (Field field : columns.values()) values.add(this.getValue(field, entity));
 
-        query.append(" values ").append("(").append(values.stream().map(this::materializeValue).collect(Collectors.joining(", "))).append(")");
+        query.append(" values ").append("(").append(values.stream().map(this::prepareValue).collect(Collectors.joining(", "))).append(")");
 
         Connection connection = this.connector.getConnection();
         PreparedStatement statement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
         if (statement.executeUpdate() == 0) return false;
 
         ResultSet generatedKeys = statement.getGeneratedKeys();
-        if (!generatedKeys.next()) throw new IllegalStateException("Could not obtain the auto-generated identifier of the inserted entity.");
+        if (!generatedKeys.next())
+            throw new IllegalStateException("Could not obtain the auto-generated identifier of the inserted entity.");
 
         Object idValue = generatedKeys.getLong(1);
         this.setValue(idField, entity, idValue);
@@ -132,7 +170,7 @@ public class EntityManager<E> implements DbContext<E> {
         }
 
         String changes = values.entrySet().stream()
-                .map(x -> String.format("%s = %s", x.getKey(), this.materializeValue(x.getValue())))
+                .map(x -> String.format("%s = %s", x.getKey(), this.prepareValue(x.getValue())))
                 .collect(Collectors.joining(", "));
         query.append(changes);
 
@@ -149,7 +187,10 @@ public class EntityManager<E> implements DbContext<E> {
         if (idFields.size() > 1) throw new IllegalStateException("Entity has more than one primary key.");
         if (idFields.isEmpty()) throw new IllegalStateException("Entity does not have primary key.");
 
-        return idFields.getFirst();
+        Field idField = idFields.getFirst();
+        if (idField.getType() != Long.class) throw new IllegalStateException("Primary key must be long.");
+
+        return idField;
     }
 
     private Object getValue(Field field, E entity) throws IllegalAccessException {
@@ -222,9 +263,18 @@ public class EntityManager<E> implements DbContext<E> {
         return entity;
     }
 
-    private String materializeValue(Object value) {
+    private String prepareValue(Object value) {
         if (value == null) return "null";
         if (value instanceof String || value instanceof LocalDate) return String.format("'%s'", value);
         return value.toString();
+    }
+
+    private String prepareType(Class<?> type) {
+        if (type == Integer.class) return "int";
+        if (type == Long.class) return "bigint";
+        if (type == String.class) return "varchar(255)";
+        if (type == LocalDate.class) return "date";
+
+        throw new IllegalStateException("Unsupported type.");
     }
 }
