@@ -10,11 +10,13 @@ public class Program {
         MyConnector connector = new MyConnector("mysql://localhost:3306", "root", "root", "miniorm");
         EntityManager<User> manager = new EntityManager<>(connector);
 
-        boolean preparedSuccessfully = manager.createTable(User.class, true);
+        boolean createTableSuccess = manager.createTable(User.class, true);
+        System.out.printf("Table was prepared successfully: %s%n", createTableSuccess);
 
-        System.out.printf("Table was prepared successfully: %s%n", preparedSuccessfully);
+        boolean alterTableSuccess = manager.addMissingColumns(User.class);
+        System.out.printf("Table was altered successfully: %s%n", alterTableSuccess);
 
-        User user = new User("Tony Troeff", 23, LocalDate.now());
+        User user = new User("tony_troeff", "Tony Troeff", 23, LocalDate.now());
 
         boolean createdSuccessfully = manager.persist(user);
         System.out.printf("A new user was created successfully: %s%n", createdSuccessfully);
@@ -31,6 +33,7 @@ public class Program {
         for (User u : users) {
             System.out.printf("User id: %d%n", u.getId());
             System.out.printf("User username: %s%n", u.getUsername());
+            System.out.printf("User display name: %s%n", u.getDisplayName());
             System.out.printf("User age: %d%n", u.getAge());
             System.out.printf("User registration date: %s%n", u.getRegistration());
             System.out.println();

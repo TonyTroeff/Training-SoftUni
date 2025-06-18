@@ -47,12 +47,39 @@ public class EntityManager<E> implements DbContext<E> {
 
             query.append(")");
 
-            Connection connection = this.connector.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query.toString());
-            statement.execute();
+            executeQuery(query.toString());
 
             return true;
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean addMissingColumns(Class<E> entityClass) {
+        String tableName = this.getTableName(entityClass);
+        Field idField = this.getIdField(entityClass);
+        Map<String, Field> columns = this.getColumns(entityClass, f -> !f.equals(idField));
+
+        try {
+            Set<String> columnsInDatabase = this.getColumnsInDatabase(tableName);
+            List<String> addColumnDefinitions = new ArrayList<>();
+
+            for (Map.Entry<String, Field> entry : columns.entrySet()) {
+                String columnName = entry.getKey();
+                if (columnsInDatabase.contains(columnName)) continue;
+
+                Field field = entry.getValue();
+                addColumnDefinitions.add(String.format("%s %s", columnName, this.prepareType(field.getType())));
+            }
+
+            if (addColumnDefinitions.isEmpty()) return true;
+
+            String query = String.format("alter table %s add %s", tableName, String.join(", ", addColumnDefinitions));
+            executeQuery(query);
+
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
@@ -180,6 +207,26 @@ public class EntityManager<E> implements DbContext<E> {
         Connection connection = this.connector.getConnection();
         PreparedStatement statement = connection.prepareStatement(query.toString());
         return statement.executeUpdate() == 1;
+    }
+
+    private Set<String> getColumnsInDatabase(String tableName) throws SQLException {
+        Connection connection = this.connector.getConnection();
+        PreparedStatement statement = connection.prepareStatement("select column_name from information_schema.columns where table_schema = ? and table_name = ?");
+
+        statement.setString(1, this.connector.getDatabaseName());
+        statement.setString(2, tableName);
+
+        ResultSet resultSet = statement.executeQuery();
+        Set<String> columns = new HashSet<>();
+        while (resultSet.next()) columns.add(resultSet.getString("column_name"));
+
+        return columns;
+    }
+
+    private void executeQuery(String query) throws SQLException {
+        Connection connection = this.connector.getConnection();
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.execute();
     }
 
     private Field getIdField(Class<?> entityClass) {

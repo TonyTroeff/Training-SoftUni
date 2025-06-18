@@ -15,6 +15,9 @@ public class User {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "display_name")
+    private String displayName;
+
     @Column(name = "age")
     private Integer age;
 
@@ -24,8 +27,9 @@ public class User {
     public User() {
     }
 
-    public User(String username, Integer age, LocalDate registration) {
+    public User(String username, String displayName, Integer age, LocalDate registration) {
         this.username = username;
+        this.displayName = displayName;
         this.age = age;
         this.registration = registration;
     }
@@ -44,6 +48,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public Integer getAge() {

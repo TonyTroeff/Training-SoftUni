@@ -3,21 +3,22 @@ package orm;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class MyConnector {
     private final Connection connection;
+    private final String databaseName;
 
-    public MyConnector(String databaseServerUrl, String username, String password, String databaseName) throws SQLException {
-        Properties properties = new Properties();
-        properties.setProperty("user", username);
-        properties.setProperty("password", password);
-
+    public MyConnector(String databaseServerUrl, String user, String password, String databaseName) throws SQLException {
         String connectionString = String.format("jdbc:%s/%s", databaseServerUrl, databaseName);
-        this.connection = DriverManager.getConnection(connectionString, properties);
+        this.connection = DriverManager.getConnection(connectionString, user, password);
+        this.databaseName = databaseName;
     }
 
     public Connection getConnection() {
         return this.connection;
+    }
+
+    public String getDatabaseName() {
+        return this.databaseName;
     }
 }
