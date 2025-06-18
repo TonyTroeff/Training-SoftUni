@@ -36,6 +36,9 @@ public class Program {
             System.out.printf("User display name: %s%n", u.getDisplayName());
             System.out.printf("User age: %d%n", u.getAge());
             System.out.printf("User registration date: %s%n", u.getRegistration());
+
+            boolean deletedSuccessfully = manager.delete(u);
+            System.out.printf("--> User was deleted successfully: %s%n", deletedSuccessfully);
             System.out.println();
         }
     }

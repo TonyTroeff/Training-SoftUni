@@ -7,6 +7,7 @@ public interface DbContext<E> {
     boolean addMissingColumns(Class<E> entityClass);
 
     boolean persist(E entity);
+    boolean delete(E entity);
 
     List<E> find(Class<E> entityClass);
     List<E> find(Class<E> entityClass, String where);

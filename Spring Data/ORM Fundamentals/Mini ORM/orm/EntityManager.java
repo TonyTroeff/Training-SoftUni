@@ -96,6 +96,26 @@ public class EntityManager<E> implements DbContext<E> {
     }
 
     @Override
+    public boolean delete(E entity) {
+        Class<?> entityClass = entity.getClass();
+
+        String tableName = this.getTableName(entityClass);
+        Field idField = this.getIdField(entityClass);
+        String idColumnName = this.getIdColumnName(idField);
+
+        try {
+            Object idValue = this.getValue(idField, entity);
+            String query = String.format("delete from %s where %s = %s", tableName, idColumnName, this.prepareValue(idValue));
+
+            Connection connection = this.connector.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            return statement.executeUpdate() == 1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
     public List<E> find(Class<E> entityClass) {
         String tableName = this.getTableName(entityClass);
         String query = String.format("select * from %s", tableName);
