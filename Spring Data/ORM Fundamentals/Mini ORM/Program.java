@@ -20,5 +20,16 @@ public class Program {
 
         boolean updatedSuccessfully = manager.persist(user);
         System.out.printf("User age was updated successfully: %s%n", updatedSuccessfully);
+
+        System.out.println();
+        System.out.println("All users:");
+        Iterable<User> users = manager.find(User.class);
+        for (User u : users) {
+            System.out.printf("User id: %d%n", u.getId());
+            System.out.printf("User username: %s%n", u.getUsername());
+            System.out.printf("User age: %d%n", u.getAge());
+            System.out.printf("User registration date: %s%n", u.getRegistration());
+            System.out.println();
+        }
     }
 }

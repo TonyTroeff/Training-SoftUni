@@ -1,11 +1,13 @@
 package orm;
 
+import java.util.List;
+
 public interface DbContext<E> {
     boolean persist(E entity);
 
-    Iterable<E> find(Class<E> table);
-    Iterable<E> find(Class<E> table, String where);
+    List<E> find(Class<E> entityClass);
+    List<E> find(Class<E> entityClass, String where);
 
-    E findFirst(Class<E> table);
-    E findFirst(Class<E> table, String where);
+    E findFirst(Class<E> entityClass);
+    E findFirst(Class<E> entityClass, String where);
 }

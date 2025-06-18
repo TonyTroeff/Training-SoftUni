@@ -5,6 +5,7 @@ import orm.annotations.Entity;
 import orm.annotations.Id;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -31,23 +32,60 @@ public class EntityManager<E> implements DbContext<E> {
     }
 
     @Override
-    public Iterable<E> find(Class<E> table) {
-        return null;
+    public List<E> find(Class<E> entityClass) {
+        String tableName = this.getTableName(entityClass);
+        String query = String.format("select * from %s", tableName);
+
+        return this.findInternally(entityClass, query);
     }
 
     @Override
-    public Iterable<E> find(Class<E> table, String where) {
-        return null;
+    public List<E> find(Class<E> entityClass, String where) {
+        String tableName = this.getTableName(entityClass);
+        String query = String.format("select * from %s where %s", tableName, where);
+
+        return this.findInternally(entityClass, query);
     }
 
     @Override
-    public E findFirst(Class<E> table) {
-        return null;
+    public E findFirst(Class<E> entityClass) {
+        String tableName = this.getTableName(entityClass);
+        String query = String.format("select * from %s limit 1", tableName);
+
+        List<E> result = this.findInternally(entityClass, query);
+        if (result.isEmpty()) return null;
+        return result.getFirst();
     }
 
     @Override
-    public E findFirst(Class<E> table, String where) {
-        return null;
+    public E findFirst(Class<E> entityClass, String where) {
+        String tableName = this.getTableName(entityClass);
+        String query = String.format("select * from %s where %s limit 1", tableName, where);
+
+        List<E> result = this.findInternally(entityClass, query);
+        if (result.isEmpty()) return null;
+        return result.getFirst();
+    }
+
+    private List<E> findInternally(Class<E> entityClass, String query) {
+        try {
+            Map<String, Field> columns = this.getColumns(entityClass);
+
+            Connection connection = this.connector.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            ResultSet resultSet = statement.executeQuery();
+            List<E> entities = new ArrayList<>();
+
+            while (resultSet.next()) {
+                E currentEntity = this.createEntity(entityClass, resultSet, columns);
+                entities.add(currentEntity);
+            }
+
+            return entities;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     private boolean insert(Field idField, E entity) throws IllegalAccessException, SQLException {
@@ -131,6 +169,10 @@ public class EntityManager<E> implements DbContext<E> {
         return annotation.name();
     }
 
+    private Map<String, Field> getColumns(Class<?> entityClass) {
+        return this.getColumns(entityClass, f -> true);
+    }
+
     private Map<String, Field> getColumns(Class<?> entityClass, Function<Field, Boolean> condition) {
         Map<String, Field> result = new HashMap<>();
 
@@ -156,6 +198,28 @@ public class EntityManager<E> implements DbContext<E> {
         if (name == null || name.isEmpty()) throw new IllegalStateException("Column name cannot be empty.");
 
         return Optional.of(name);
+    }
+
+    private E createEntity(Class<E> entityClass, ResultSet resultSet, Map<String, Field> columns) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
+        E entity = entityClass.getDeclaredConstructor().newInstance();
+        for (Map.Entry<String, Field> entry : columns.entrySet()) {
+            String columnName = entry.getKey();
+            Field field = entry.getValue();
+
+            Object value = null;
+            if (field.getType() == Integer.class)
+                value = resultSet.getInt(columnName);
+            else if (field.getType() == Long.class)
+                value = resultSet.getLong(columnName);
+            else if (field.getType() == String.class)
+                value = resultSet.getString(columnName);
+            else if (field.getType() == LocalDate.class)
+                value = resultSet.getDate(columnName).toLocalDate();
+
+            this.setValue(field, entity, value);
+        }
+
+        return entity;
     }
 
     private String materializeValue(Object value) {
