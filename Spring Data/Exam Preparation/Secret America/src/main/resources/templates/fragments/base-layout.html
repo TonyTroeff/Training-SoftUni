@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head}"></th:block>
+</head>
+<body>
+    <header>
+        <th:block th:insert="~{fragments/navbar}"></th:block>
+    </header>
+    <main>
+        <th:block th:insert="~{${view}}"></th:block>
+    </main>
+    <footer>
+    <th:block th:insert="~{fragments/footer}"></th:block>
+</footer>
+</body>
+</html>

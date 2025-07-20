@@ -1,0 +1,30 @@
+</body>
+<th:block th:fragment xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="container justify-content-center mt-3">
+        <div class="jumbotron index-jumbo d-flex justify-content-center">
+            <div class="container">
+                <div class="col-md-12 d-flex border-left border-bottom w-50 ">
+                    <h1 class="myBackgroundColor">Secret America</h1>
+                </div>
+                <div class="col-md-12 d-flex mt-3">
+                    <h4>South and Latin America are regions rich in culture, history, and natural beauty,
+                        offering some of the world’s most iconic historical sites and attractions.
+                        South America boasts diverse landscapes ranging from the Amazon rainforest to the Andes mountains.
+                        The continent is home to stunning archaeological marvels and natural wonders.
+                        Latin America is known for its historical sites from ancient civilizations, vibrant cultures, and stunning beaches</h4>
+                </div>
+                <div class="col-md-12 text-center">
+                    <th:block th:if="${areImported == true}">
+                        <p><a class="btn btn-success my-5" th:href="@{/export/attractions}">Export Attractions From DB</a></p>
+                    </th:block>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <th:block th:if="${areImported == false}">
+                            <p class="bg-secondary rounded p-2">Тo see the next task, first import all XML and JSON
+                                files.</p>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

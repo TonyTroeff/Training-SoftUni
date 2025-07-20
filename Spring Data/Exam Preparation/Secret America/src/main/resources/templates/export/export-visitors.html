@@ -1,0 +1,23 @@
+<th:block th:fragment>
+    <div class="container justify-content-center mt-3">
+<!--        <div class="jumbotron jumbotron-background d-flex justify-content-center">-->
+        <div style="background-color: rgba(18,49,32,0.68); border: white 1px solid; border-radius: 8px; justify-content: center;">
+            <div class="container">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <h4>Visitors From Secret America DB</h4>
+                </div>
+                 <hr class="hr-background my-hr"/>
+                <form >
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <label for="export-category-textarea">Visitors in DB</label>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <div class="col-md-8 d-flex justify-content-center">
+                            <textarea class="form-control" id="export-category-textarea" rows="10" th:text="${visitors}" readonly></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>

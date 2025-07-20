@@ -1,0 +1,25 @@
+<th:block th:fragment>
+    <div class="container justify-content-center mt-3">
+        <div class="jumbotron jumbotron-background d-flex justify-content-center">
+        <div class="container">
+                <div class="imports">
+                    <h1 class="myBackgroundColor">Import Attractions</h1>
+                </div>
+                 <hr class="hr-background my-hr"/>
+                <form th:action="@{/import/attractions}" method="post">
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <label for="attractions-textarea" style="color: white">Attractions:</label>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <div class="col-md-8 d-flex justify-content-center">
+                            <textarea class="form-control" id="attractions-textarea" rows="10" th:text="${attractions}" name="attractions" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <button class="btn btn-success mx-5 my-5">Import Attractions</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
