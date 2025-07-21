@@ -1,0 +1,37 @@
+</body>
+</html>
+<th:block th:fragment xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="container justify-content-center mt-3">
+        <div class="jumbotron index-jumbo d-flex justify-content-center">
+            <div class="home">
+                <div class="col-md-12 d-flex border-left border-bottom w-50">
+                    <h1 class="myBackgroundColor">Mobiles</h1>
+                </div>
+                <div class="col-md-12 d-flex mt-3">
+                    <h4>
+                        Mobile smart devices are portable electronic gadgets equipped with advanced features such as
+                        internet connectivity, touchscreen interfaces, and downloadable applications. These devices
+                        include smartphones, tablets and so on, which allow users to make phone calls, send messages, browse
+                        the internet, access social media, play games, and perform various tasks on the go. With
+                        powerful processors, high-resolution displays, and integrated sensors, mobile smart devices
+                        offer an immersive and interactive user experience. They have become essential tools for
+                        communication, productivity, entertainment, and information access in today's digital age.
+                    </h4>
+                </div>
+                <div class="col-md-12 text-center">
+                    <th:block th:if="${areImported == true}">
+                        <p><a class="btn btn-primary export-button text-white" th:href="@{/export/devices}">Export
+                            devices</a></p>
+                    </th:block>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <th:block th:if="${areImported == false}">
+                            <p class="bg-dark rounded p-2">Тo see the next task, first import all JSON and XML
+                                files.</p>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</th:block>

@@ -1,0 +1,25 @@
+<th:block th:fragment xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="container justify-content-center mt-3">
+        <div class="jumbotron jumbotron-background d-flex justify-content-center">
+            <div class="container">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <h1 class="myBackgroundColor">Import Devices</h1>
+                </div>
+                 <hr class="hr-background my-hr"/>
+                <form th:action="@{/import/devices}" method="post">
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <label for="devices-textarea">Devices:</label>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-center">
+<!--                        <div class="col-md-8 d-flex justify-content-center">-->
+                            <textarea class="form-control" id="devices-textarea" rows="10" th:text="${devices}" name="devices" readonly></textarea>
+<!--                        </div>-->
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <button class="btn btn-primary mx-5 my-5">Import Devices</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>

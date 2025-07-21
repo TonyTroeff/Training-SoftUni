@@ -1,0 +1,146 @@
+[
+  {
+    "discounted": true,
+    "number": "1000123",
+    "saleDate": "2022-02-02 12:43:00",
+    "seller": 1
+  },
+  {
+    "discounted": true,
+    "number": "1000123",
+    "saleDate": "2022-02-02 12:43:00",
+    "seller": 1
+  },
+  {
+    "discounted": true,
+    "number": "1000124",
+    "saleDate": "2023-12-02 12:10:00",
+    "seller": 1
+  },
+  {
+    "discounted": true,
+    "number": "3320987",
+    "saleDate": "2022-09-15 08:23:00",
+    "seller": 12
+  },
+  {
+    "discounted": false,
+    "number": "8756321",
+    "saleDate": "2021-11-30 17:50:00",
+    "seller": 5
+  },
+  {
+    "discounted": false,
+    "number": "8756",
+    "saleDate": "2021-11-30 17:50:00",
+    "seller": 5
+  },
+  {
+    "discounted": true,
+    "number": "5213445",
+    "saleDate": "2023-05-22 10:15:00",
+    "seller": 18
+  },
+  {
+    "discounted": false,
+    "number": "3457893",
+    "saleDate": "2020-08-04 14:32:00",
+    "seller": 10
+  },
+  {
+    "discounted": true,
+    "number": "2045678",
+    "saleDate": "2023-07-11 19:27:00",
+    "seller": 2
+  },
+  {
+    "discounted": false,
+    "number": "6600123",
+    "saleDate": "2021-04-28 11:55:00",
+    "seller": 8
+  },
+  {
+    "discounted": true,
+    "number": "1234567",
+    "saleDate": "2020-10-03 16:48:00",
+    "seller": 16
+  },
+  {
+    "discounted": false,
+    "number": "4312897",
+    "saleDate": "2022-03-17 13:20:00",
+    "seller": 13
+  },
+  {
+    "discounted": true,
+    "number": "7643289",
+    "saleDate": "2024-01-01 12:00:00",
+    "seller": 3
+  },
+  {
+    "discounted": false,
+    "number": "5123901",
+    "saleDate": "2020-12-09 09:41:00",
+    "seller": 7
+  },
+  {
+    "discounted": true,
+    "number": "6781234",
+    "saleDate": "2022-06-05 20:13:00",
+    "seller": 1
+  },
+  {
+    "discounted": false,
+    "number": "8997654",
+    "saleDate": "2023-08-18 18:02:00",
+    "seller": 19
+  },
+  {
+    "discounted": true,
+    "number": "2239876",
+    "saleDate": "2021-02-14 15:28:00",
+    "seller": 11
+  },
+  {
+    "discounted": false,
+    "number": "7777777",
+    "saleDate": "2020-07-27 07:39:00",
+    "seller": 17
+  },
+  {
+    "discounted": true,
+    "number": "4567890",
+    "saleDate": "2023-01-29 09:05:00",
+    "seller": 4
+  },
+  {
+    "discounted": false,
+    "number": "3456789",
+    "saleDate": "2022-11-10 12:24:00",
+    "seller": 6
+  },
+  {
+    "discounted": true,
+    "number": "8881234",
+    "saleDate": "2020-05-01 22:45:00",
+    "seller": 15
+  },
+  {
+    "discounted": false,
+    "number": "3333333",
+    "saleDate": "2022-04-07 07:17:00",
+    "seller": 14
+  },
+  {
+    "discounted": true,
+    "number": "9876543",
+    "saleDate": "2021-09-23 10:50:00",
+    "seller": 9
+  },
+  {
+    "discounted": false,
+    "number": "3456780",
+    "saleDate": "2020-02-18 14:08:00",
+    "seller": 12
+  }
+]

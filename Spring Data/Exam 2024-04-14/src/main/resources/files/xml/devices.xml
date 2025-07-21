@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devices>
+    <device>
+        <brand>HTC</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Ultra23+</model>
+        <price>999.00</price>
+        <storage>128</storage>
+        <sale_id>1</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>S23</model>
+        <price>1899.00</price>
+        <storage>256</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>S23</model>
+        <price>899.99</price>
+        <storage>256</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>iPhone</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>15</model>
+        <price>999.00</price>
+        <storage>128</storage>
+        <sale_id>1</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Galaxy S21</model>
+        <price>899.99</price>
+        <storage>256</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>Google</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Pixel 6</model>
+        <price>799.00</price>
+        <storage>128</storage>
+        <sale_id>3</sale_id>
+    </device>
+    <device>
+        <brand>OnePlus</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>9 Pro</model>
+        <price>899.00</price>
+        <storage>256</storage>
+        <sale_id>4</sale_id>
+    </device>
+    <device>
+        <brand>Apple</brand>
+        <device_type>LAPTOP</device_type>
+        <model>iPhone 13</model>
+        <price>1099.00</price>
+        <storage>256</storage>
+        <sale_id>5</sale_id>
+    </device>
+    <device>
+        <brand>Xiaomi</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Redmi Note 10</model>
+        <price>299.99</price>
+        <storage>64</storage>
+        <sale_id>6</sale_id>
+    </device>
+    <device>
+        <brand>Motorola</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Moto G Power</model>
+        <price>249.99</price>
+        <storage>128</storage>
+        <sale_id>7</sale_id>
+    </device>
+    <device>
+        <brand>LG</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Wing</model>
+        <price>799.00</price>
+        <storage>256</storage>
+        <sale_id>8</sale_id>
+    </device>
+    <device>
+        <brand>Sony</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Xperia 1 III</model>
+        <price>1299.00</price>
+        <storage>256</storage>
+        <sale_id>9</sale_id>
+    </device>
+    <device>
+        <brand>Asus</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>ROG Phone 5</model>
+        <price>999.00</price>
+        <storage>256</storage>
+        <sale_id>10</sale_id>
+    </device>
+    <device>
+        <brand>Oppo</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>Find X3 Pro</model>
+        <price>1199.00</price>
+        <storage>256</storage>
+        <sale_id>11</sale_id>
+    </device>
+    <device>
+        <brand>Vivo</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>X60 Pro</model>
+        <price>899.00</price>
+        <storage>256</storage>
+        <sale_id>12</sale_id>
+    </device>
+    <device>
+        <brand>Realme</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>X7 Pro</model>
+        <price>499.00</price>
+        <storage>128</storage>
+        <sale_id>13</sale_id>
+    </device>
+    <device>
+        <brand>Nokia</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>8.3</model>
+        <price>699.00</price>
+        <storage>128</storage>
+        <sale_id>14</sale_id>
+    </device>
+      <device>
+        <brand>HTC</brand>
+        <device_type>SMART_PHONE</device_type>
+        <model>U12+</model>
+        <price>799.00</price>
+        <storage>128</storage>
+        <sale_id>20</sale_id>
+    </device>
+    <device>
+        <brand>Apple</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Watch Series 7</model>
+        <price>399.00</price>
+        <storage>32</storage>
+        <sale_id>1</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Galaxy Watch 4</model>
+        <price>349.99</price>
+        <storage>16</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>Fitbit</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Versa 3</model>
+        <price>229.95</price>
+        <storage>4</storage>
+        <sale_id>3</sale_id>
+    </device>
+    <device>
+        <brand>Garmin</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Forerunner 945</model>
+        <price>599.99</price>
+        <storage>16</storage>
+        <sale_id>4</sale_id>
+    </device>
+    <device>
+        <brand>Xiaomi</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Mi Watch</model>
+        <price>99.99</price>
+        <storage>8</storage>
+        <sale_id>5</sale_id>
+    </device>
+    <device>
+        <brand>Amazfit</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>GTR 3 Pro</model>
+        <price>199.99</price>
+        <storage>8</storage>
+        <sale_id>6</sale_id>
+    </device>
+    <device>
+        <brand>Fossil</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Gen 6</model>
+        <price>299.00</price>
+        <storage>8</storage>
+        <sale_id>7</sale_id>
+    </device>
+    <device>
+        <brand>Huawei</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Watch GT 3</model>
+        <price>229.99</price>
+        <storage>16</storage>
+        <sale_id>8</sale_id>
+    </device>
+    <device>
+        <brand>OnePlus</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Watch</model>
+        <price>159.00</price>
+        <storage>4</storage>
+        <sale_id>9</sale_id>
+    </device>
+    <device>
+        <brand>Realme</brand>
+        <device_type>SMART_WATCH</device_type>
+        <model>Watch 2 Pro</model>
+        <price>149.99</price>
+        <storage>16</storage>
+        <sale_id>10</sale_id>
+    </device>
+    <device>
+        <brand>Apple</brand>
+        <device_type>LAPTOP</device_type>
+        <model>MacBook Air</model>
+        <price>999.00</price>
+        <storage>256</storage>
+        <sale_id>1</sale_id>
+    </device>
+    <device>
+        <brand>Dell</brand>
+        <device_type>LAPTOP</device_type>
+        <model>XPS 13</model>
+        <price>1299.99</price>
+        <storage>512</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>Lenovo</brand>
+        <device_type>LAPTOP</device_type>
+        <model>ThinkPad X1 Carbon</model>
+        <price>1499.00</price>
+        <storage>512</storage>
+        <sale_id>3</sale_id>
+    </device>
+    <device>
+        <brand>HP</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Spectre x360</model>
+        <price>1299.00</price>
+        <storage>512</storage>
+        <sale_id>4</sale_id>
+    </device>
+    <device>
+        <brand>Acer</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Swift 3</model>
+        <price>699.00</price>
+        <storage>256</storage>
+        <sale_id>6</sale_id>
+    </device>
+    <device>
+        <brand>Asus</brand>
+        <device_type>LAPTOP</device_type>
+        <model>ZenBook 14</model>
+        <price>999.00</price>
+        <storage>512</storage>
+        <sale_id>7</sale_id>
+    </device>
+    <device>
+        <brand>Razer</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Blade 15</model>
+        <price>1799.00</price>
+        <storage>512</storage>
+        <sale_id>8</sale_id>
+    </device>
+    <device>
+        <brand>Alienware</brand>
+        <device_type>LAPTOP</device_type>
+        <model>m15 R6</model>
+        <price>2299.00</price>
+        <storage>1000</storage>
+        <sale_id>9</sale_id>
+    </device>
+    <device>
+        <brand>MSI</brand>
+        <device_type>LAPTOP</device_type>
+        <model>GS66 Stealth</model>
+        <price>1799.00</price>
+        <storage>1000</storage>
+        <sale_id>10</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Galaxy Book Pro</model>
+        <price>1099.00</price>
+        <storage>512</storage>
+        <sale_id>11</sale_id>
+    </device>
+    <device>
+        <brand>LG</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Gram 14</model>
+        <price>1199.00</price>
+        <storage>512</storage>
+        <sale_id>12</sale_id>
+    </device>
+    <device>
+        <brand>Huawei</brand>
+        <device_type>LAPTOP</device_type>
+        <model>MateBook X Pro</model>
+        <price>1499.00</price>
+        <storage>512</storage>
+        <sale_id>13</sale_id>
+    </device>
+    <device>
+        <brand>Xiaomi</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Mi Notebook Pro</model>
+        <price>899.00</price>
+        <storage>512</storage>
+        <sale_id>17</sale_id>
+    </device>
+    <device>
+        <brand>MSI</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Prestige 14</model>
+        <price>1399.00</price>
+        <storage>512</storage>
+        <sale_id>18</sale_id>
+    </device>
+    <device>
+        <brand>Razer</brand>
+        <device_type>LAPTOP</device_type>
+        <model>Blade Stealth 13</model>
+        <price>1599.00</price>
+        <storage>512</storage>
+        <sale_id>19</sale_id>
+    </device>
+    <device>
+        <brand>Lenovo</brand>
+        <device_type>LAPTOP</device_type>
+        <model>ThinkPad T14</model>
+        <price>1399.00</price>
+        <storage>512</storage>
+        <sale_id>20</sale_id>
+    </device>
+    <device>
+        <brand>Apple</brand>
+        <device_type>TABLET</device_type>
+        <model>iPad Air 4</model>
+        <price>599.00</price>
+        <storage>64</storage>
+        <sale_id>1</sale_id>
+    </device>
+    <device>
+        <brand>Samsung</brand>
+        <device_type>TABLET</device_type>
+        <model>Galaxy Tab S7+</model>
+        <price>849.99</price>
+        <storage>128</storage>
+        <sale_id>2</sale_id>
+    </device>
+    <device>
+        <brand>Lenovo</brand>
+        <device_type>TABLET</device_type>
+        <model>Tab P11 Pro</model>
+        <price>499.99</price>
+        <storage>128</storage>
+        <sale_id>3</sale_id>
+    </device>
+    <device>
+        <brand>Amazon</brand>
+        <device_type>TABLET</device_type>
+        <model>Fire HD 10</model>
+        <price>149.99</price>
+        <storage>32</storage>
+        <sale_id>4</sale_id>
+    </device>
+    <device>
+        <brand>Microsoft</brand>
+        <device_type>TABLET</device_type>
+        <model>Surface Pro 7</model>
+        <price>899.99</price>
+        <storage>256</storage>
+        <sale_id>5</sale_id>
+    </device>
+    <device>
+        <brand>Huawei</brand>
+        <device_type>TABLET</device_type>
+        <model>MatePad Pro</model>
+        <price>549.99</price>
+        <storage>128</storage>
+        <sale_id>6</sale_id>
+    </device>
+    <device>
+        <brand>Xiaomi</brand>
+        <device_type>TABLET</device_type>
+        <model>Mi Pad 5</model>
+        <price>499.99</price>
+        <storage>128</storage>
+        <sale_id>7</sale_id>
+    </device>
+    <device>
+        <brand>Google</brand>
+        <device_type>TABLET</device_type>
+        <model>Pixel Slate</model>
+        <price>799.00</price>
+        <storage>128</storage>
+        <sale_id>8</sale_id>
+    </device>
+    <device>
+        <brand>Realme</brand>
+        <device_type>TABLET</device_type>
+        <model>Pad</model>
+        <price>199.00</price>
+        <storage>64</storage>
+        <sale_id>9</sale_id>
+    </device>
+    <device>
+        <brand>Asus</brand>
+        <device_type>TABLET</device_type>
+        <model>ZenPad 3S 10</model>
+        <price>299.99</price>
+        <storage>64</storage>
+        <sale_id>10</sale_id>
+    </device>
+</devices>
