@@ -10,11 +10,11 @@ import jakarta.persistence.*;
 
 @Entity
 public class Car extends Vehicle {
-    @Basic
+    @Column(name = "seats")
     private Integer seats;
 
     @OneToOne
-    @JoinColumn(name = "plate_number_id", referencedColumnName = "id")
+    @JoinColumn(name = "plate_number_id")
     private PlateNumber plateNumber;
 
     public Integer getSeats() {

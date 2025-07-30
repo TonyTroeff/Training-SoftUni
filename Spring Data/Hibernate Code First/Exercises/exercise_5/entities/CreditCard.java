@@ -1,6 +1,5 @@
 package exercise_5.entities;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -8,15 +7,12 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = "credit_card")
 public class CreditCard extends BaseBillingDetail {
-    @Basic
     @Column(name = "type", nullable = false)
     private CreditCardType type;
 
-    @Basic
     @Column(name = "expiration_month", nullable = false)
     private Integer expirationMonth;
 
-    @Basic
     @Column(name = "expiration_year", nullable = false)
     private Integer expirationYear;
 

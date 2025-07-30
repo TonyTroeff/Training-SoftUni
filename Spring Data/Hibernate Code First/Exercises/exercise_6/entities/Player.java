@@ -8,24 +8,21 @@ import java.util.Set;
 @Entity
 @Table(name = "players")
 public class Player extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "squad_number", nullable = false)
     private Integer squadNumber;
 
-    @Basic
     @Column(name = "is_currently_injured")
     private Boolean isCurrentlyInjured;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", referencedColumnName = "id")
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "position_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "position_id", nullable = false)
     private Position position;
 
     @OneToMany(mappedBy = "player")

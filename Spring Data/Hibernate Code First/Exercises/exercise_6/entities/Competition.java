@@ -8,12 +8,11 @@ import java.util.Set;
 @Entity
 @Table(name = "competitions")
 public class Competition extends BaseEntity{
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "competition_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "competition_type_id", nullable = false)
     private CompetitionType competitionType;
 
     @OneToMany(mappedBy = "competition")

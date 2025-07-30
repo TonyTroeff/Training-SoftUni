@@ -9,23 +9,18 @@ import java.util.Set;
 @Entity
 @Table(name = "patients")
 public class Patient extends BaseEntity{
-    @Basic
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Basic
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Basic
     @Column(name = "address")
     private String address;
 
-    @Basic
     @Column(name = "email")
     private String email;
 
-    @Basic
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
@@ -34,7 +29,6 @@ public class Patient extends BaseEntity{
     @Column(name = "picture")
     private byte[] picture;
 
-    @Basic
     @Column(name = "has_medical_insurance")
     private Boolean hasMedicalInsurance;
 

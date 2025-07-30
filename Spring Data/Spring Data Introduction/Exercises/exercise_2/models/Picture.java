@@ -8,20 +8,17 @@ import java.util.Set;
 @Entity
 @Table(name = "pictures")
 public class Picture extends BaseEntity {
-    @Basic
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Basic
     @Column(name = "caption", length = 1000)
     private String caption;
 
-    @Basic
     @Column(name = "path", nullable = false)
     private String path;
 
     @ManyToMany
-    @JoinTable(name = "pictures_albums", joinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "album_id", referencedColumnName = "id"))
+    @JoinTable(name = "pictures_albums", joinColumns = @JoinColumn(name = "picture_id"), inverseJoinColumns = @JoinColumn(name = "album_id"))
     private Set<Album> albums = new HashSet<>();
 
     public String getTitle() {

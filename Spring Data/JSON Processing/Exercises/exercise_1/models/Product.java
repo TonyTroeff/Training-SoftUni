@@ -16,17 +16,15 @@ public class Product extends BaseEntity {
     private BigDecimal price;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
     @ManyToOne
-    @JoinColumn(name = "buyer_id", referencedColumnName = "id")
+    @JoinColumn(name = "buyer_id")
     private User buyer;
 
     @ManyToMany
-    @JoinTable(name = "products_categories",
-            joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
+    @JoinTable(name = "products_categories", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
     public String getName() {

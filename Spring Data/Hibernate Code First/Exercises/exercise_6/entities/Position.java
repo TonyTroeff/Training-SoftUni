@@ -8,11 +8,9 @@ import java.util.Set;
 @Entity
 @Table(name = "positions")
 public class Position extends BaseEntity {
-    @Basic
     @Column(name = "name", length = 5, nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "description", length = 100, nullable = false)
     private String description;
 

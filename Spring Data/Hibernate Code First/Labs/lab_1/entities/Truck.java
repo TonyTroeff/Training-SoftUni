@@ -13,11 +13,11 @@ import java.util.Set;
 
 @Entity
 public class Truck extends Vehicle {
-    @Basic
+    @Column(name = "load_capacity")
     private double loadCapacity;
 
     @ManyToMany
-    @JoinTable(name = "drivers_trucks", joinColumns = @JoinColumn(name = "truck_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "driver_id", referencedColumnName = "id"))
+    @JoinTable(name = "drivers_trucks", joinColumns = @JoinColumn(name = "truck_id"), inverseJoinColumns = @JoinColumn(name = "driver_id"))
     private Set<Driver> drivers = new HashSet<>();
 
     public double getLoadCapacity() {

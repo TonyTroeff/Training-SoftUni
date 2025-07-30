@@ -27,16 +27,16 @@ public abstract class Vehicle {
     @Id
     private Long id;
 
-    @Basic
+    @Column(name = "type")
     private String type;
 
-    @Basic
+    @Column(name = "model")
     private String model;
 
-    @Basic
+    @Column(name = "price")
     private BigDecimal price;
 
-    @Basic
+    @Column(name = "fuel_type")
     private String fuelType;
 
     public Long getId() {

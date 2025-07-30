@@ -5,24 +5,21 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "performances")
 public class Performance extends BaseEntity {
-    @Basic
     @Column(name = "goals", nullable = false)
     private Integer goals;
 
-    @Basic
     @Column(name = "assists", nullable = false)
     private Integer assists;
 
-    @Basic
     @Column(name = "play_time_in_minutes", nullable = false)
     private Float playTimeInMinutes;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "player_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 
     public Integer getGoals() {

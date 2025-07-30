@@ -6,11 +6,11 @@ import jakarta.persistence.*;
 @Table(name = "shopping_cart", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "game_id"}))
 public class ShoppingCartItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", referencedColumnName = "id")
+    @JoinColumn(name = "game_id")
     private Game game;
 
     public User getUser() {

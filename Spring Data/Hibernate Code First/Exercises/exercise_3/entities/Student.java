@@ -8,16 +8,14 @@ import java.util.Set;
 @Entity
 @Table(name = "students")
 public class Student extends BaseUser {
-    @Basic
     @Column(name = "average_grade")
     private Double averageGrade;
 
-    @Basic
     @Column(name = "attendance")
     private Integer attendance;
 
     @ManyToMany
-    @JoinTable(name = "students_courses", joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"))
+    @JoinTable(name = "students_courses", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Course> courses = new HashSet<>();
 
     public Double getAverageGrade() {

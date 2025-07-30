@@ -7,12 +7,11 @@ import jakarta.persistence.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "_t", discriminatorType = DiscriminatorType.STRING)
 public abstract class BaseBillingDetail extends BaseEntity {
-    @Basic
     @Column(name = "number", nullable = false)
     private String number;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     public String getNumber() {

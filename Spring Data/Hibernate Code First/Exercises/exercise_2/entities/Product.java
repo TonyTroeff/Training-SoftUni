@@ -13,15 +13,12 @@ public class Product {
     @Column(name = "id")
     private Long id;
 
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "quantity", nullable = false)
     private Double quantity;
 
-    @Basic
     @Column(name = "price", nullable = false)
     private Double price;
 

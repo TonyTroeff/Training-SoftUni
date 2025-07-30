@@ -12,55 +12,42 @@ public class WizardDeposit {
     @Column(name = "id")
     private Integer id;
 
-    @Basic
     @Column(name = "first_name", length = 50)
     private String firstName;
 
-    @Basic
     @Column(name = "last_name", length = 60, nullable = false)
     private String lastName;
 
-    @Basic
     @Column(name = "notes", length = 1000)
     private String notes;
 
-    @Basic
     @Column(name = "age", nullable = false)
     private Integer age;
 
-    @Basic
     @Column(name = "magic_wand_creator", length = 100)
     private String magicWandCreator;
 
-    @Basic
     @Column(name = "magic_wand_size")
     private Short magicWandSize;
 
-    @Basic
     @Column(name = "deposit_group", length = 20)
     private String depositGroup;
 
-    @Basic
     @Column(name = "deposit_start_date")
     private LocalDateTime depositStartDate;
 
-    @Basic
     @Column(name = "deposit_amount")
     private Double depositAmount;
 
-    @Basic
     @Column(name = "deposit_interest")
     private Double depositInterest;
 
-    @Basic
     @Column(name = "deposit_charge")
     private Double depositCharge;
 
-    @Basic
     @Column(name = "deposit_expiration_date")
     private LocalDateTime depositExpirationDate;
 
-    @Basic
     @Column(name = "is_deposit_expired")
     private Boolean isDepositExpired;
 

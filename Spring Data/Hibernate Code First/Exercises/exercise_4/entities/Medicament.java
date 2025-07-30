@@ -8,12 +8,11 @@ import java.util.Set;
 @Entity
 @Table(name = "medicaments")
 public class Medicament extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "patients_medicaments", joinColumns = @JoinColumn(name = "medicament_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "patient_id", referencedColumnName = "id"))
+    @JoinTable(name = "patients_medicaments", joinColumns = @JoinColumn(name = "medicament_id"), inverseJoinColumns = @JoinColumn(name = "patient_id"))
     private Set<Patient> patients = new HashSet<>();
 
     public String getName() {

@@ -34,11 +34,11 @@ public class Book extends BaseEntity {
     private AgeRestriction ageRestriction;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
     @ManyToMany
-    @JoinTable(name = "books_categories", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
+    @JoinTable(name = "books_categories", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
     public String getTitle() {

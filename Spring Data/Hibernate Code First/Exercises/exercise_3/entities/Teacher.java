@@ -8,11 +8,9 @@ import java.util.Set;
 @Entity
 @Table(name = "teachers")
 public class Teacher extends BaseUser {
-    @Basic
     @Column(name = "email")
     private String email;
 
-    @Basic
     @Column(name = "salary_per_hour")
     private Double salaryPerHour;
 

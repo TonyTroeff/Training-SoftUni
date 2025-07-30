@@ -13,15 +13,12 @@ public class Customer {
     @Column(name = "id")
     private Long id;
 
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "email")
     private String email;
 
-    @Basic
     @Column(name = "credit_card_number")
     private String creditCardNumber;
 

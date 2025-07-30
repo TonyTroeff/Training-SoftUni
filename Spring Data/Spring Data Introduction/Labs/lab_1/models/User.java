@@ -9,11 +9,9 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Basic(optional = false)
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Basic
     @Column(name = "age")
     private Integer age;
 

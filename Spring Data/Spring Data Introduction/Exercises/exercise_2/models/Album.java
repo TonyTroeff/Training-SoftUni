@@ -8,20 +8,17 @@ import java.util.Set;
 @Entity
 @Table(name = "albums")
 public class Album extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "background_color")
     private String backgroundColor;
 
-    @Basic
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToMany(mappedBy = "albums")

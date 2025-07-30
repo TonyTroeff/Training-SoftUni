@@ -8,7 +8,6 @@ import java.util.Set;
 @Entity
 @Table(name = "continents")
 public class Continent extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 

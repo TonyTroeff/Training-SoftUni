@@ -20,11 +20,11 @@ public class Shampoo extends BaseEntity {
     private Size size;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "label", referencedColumnName = "id")
+    @JoinColumn(name = "label")
     private Label label;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(name = "shampoos_ingredients", joinColumns = @JoinColumn(name = "shampoo_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id", referencedColumnName = "id"))
+    @JoinTable(name = "shampoos_ingredients", joinColumns = @JoinColumn(name = "shampoo_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private Set<Ingredient> ingredients;
 
     public String getBrand() {

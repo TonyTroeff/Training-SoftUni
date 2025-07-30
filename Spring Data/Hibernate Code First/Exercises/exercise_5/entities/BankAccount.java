@@ -1,6 +1,5 @@
 package exercise_5.entities;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -8,11 +7,9 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = "bank_account")
 public class BankAccount extends BaseBillingDetail {
-    @Basic
     @Column(name = "bank_name", nullable = false)
     private String bankName;
 
-    @Basic
     @Column(name = "swift_code", nullable = false)
     private String swiftCode;
 

@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Component
 public class ValidationUtilImpl implements ValidationUtil {
-
     private final Validator validator;
 
     public ValidationUtilImpl() {

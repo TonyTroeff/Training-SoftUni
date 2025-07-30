@@ -12,7 +12,6 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Basic
     @Column(name = "full_name")
     private String name;
 

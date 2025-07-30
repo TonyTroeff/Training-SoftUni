@@ -11,54 +11,45 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Basic
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Basic
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Basic
     @Column(name = "username", length = 30, nullable = false)
     private String username;
 
-    @Basic
     @Column(name = "password", length = 50, nullable = false)
     @Password(minLength = 6, requireDigits = true)
     private String password;
 
-    @Basic
     @Column(name = "email", nullable = false)
     @Email
     private String email;
 
-    @Basic
     @Column(name = "registered_on", nullable = false)
     private LocalDateTime registeredOn;
 
-    @Basic
     @Column(name = "last_time_logged_in")
     private LocalDateTime lastTimeLoggedIn;
 
-    @Basic
     @Column(name = "age")
     private Integer age;
 
-    @Basic
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     @ManyToOne
-    @JoinColumn(name = "town_id", referencedColumnName = "id")
+    @JoinColumn(name = "town_id")
     private Town bornTown;
 
     @ManyToOne
-    @JoinColumn(name = "current_town_id", referencedColumnName = "id")
+    @JoinColumn(name = "current_town_id")
     private Town currentTown;
 
     @ManyToMany
-    @JoinTable(name = "users_friends", joinColumns = @JoinColumn(name = "first_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "second_id", referencedColumnName = "id"))
+    @JoinTable(name = "users_friends", joinColumns = @JoinColumn(name = "first_id"), inverseJoinColumns = @JoinColumn(name = "second_id"))
     private Set<User> friends = new HashSet<>();
 
     @OneToMany(mappedBy = "user")

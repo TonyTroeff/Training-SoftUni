@@ -9,8 +9,7 @@ public class PlateNumber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Basic
-    @Column(unique = true)
+    @Column(name = "number", unique = true)
     private String number;
 
     @OneToOne(mappedBy = "plateNumber")

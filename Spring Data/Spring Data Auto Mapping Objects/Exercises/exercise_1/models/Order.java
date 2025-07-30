@@ -17,9 +17,7 @@ public class Order extends BaseEntity {
     private User user;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "orders_games",
-            joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"))
+    @JoinTable(name = "orders_games", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "game_id"))
     private Set<Game> games = new HashSet<>();
 
     public LocalDateTime getPurchaseTime() {

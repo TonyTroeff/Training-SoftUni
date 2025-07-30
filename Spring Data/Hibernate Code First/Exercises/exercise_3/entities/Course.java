@@ -9,28 +9,23 @@ import java.util.Set;
 @Entity
 @Table(name = "courses")
 public class Course extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "description")
     private String description;
 
-    @Basic
     @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Basic
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Basic
     @Column(name = "credits")
     private Integer credits;
 
     @ManyToOne
-    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
     @ManyToMany(mappedBy = "courses")

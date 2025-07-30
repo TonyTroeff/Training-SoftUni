@@ -10,11 +10,11 @@ import jakarta.persistence.*;
 
 @Entity
 public class Plane extends Vehicle {
-    @Basic
+    @Column(name = "passengers_capacity")
     private int passengersCapacity;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    @JoinColumn(name = "company_id")
     private Company company;
 
     public int getPassengersCapacity() {

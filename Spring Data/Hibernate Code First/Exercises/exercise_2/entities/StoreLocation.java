@@ -13,7 +13,6 @@ public class StoreLocation {
     @Column(name = "id")
     private Long id;
 
-    @Basic
     @Column(name = "location_name", nullable = false)
     private String name;
 

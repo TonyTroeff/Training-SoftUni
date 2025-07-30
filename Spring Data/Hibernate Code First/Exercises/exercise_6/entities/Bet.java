@@ -8,20 +8,18 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bets")
 public class Bet extends BaseEntity {
-    @Basic
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Basic
     @Column(name = "time", nullable = false)
     private LocalDateTime time;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "bettor_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "bettor_id", nullable = false)
     private Bettor bettor;
 
     public BigDecimal getAmount() {

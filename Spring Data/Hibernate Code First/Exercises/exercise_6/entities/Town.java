@@ -8,12 +8,11 @@ import java.util.Set;
 @Entity
 @Table(name = "towns")
 public class Town extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "country_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "country_id", nullable = false)
     private Country country;
 
     @OneToMany(mappedBy = "town")

@@ -8,7 +8,6 @@ import java.util.Set;
 @Entity
 @Table(name = "competition_types")
 public class CompetitionType extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 

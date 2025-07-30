@@ -9,44 +9,38 @@ import java.util.Set;
 @Entity
 @Table(name = "games")
 public class Game extends BaseEntity {
-    @Basic
     @Column(name = "home_goals", nullable = false)
     private Integer homeGoals;
 
-    @Basic
     @Column(name = "away_goals", nullable = false)
     private Integer awayGoals;
 
-    @Basic
     @Column(name = "home_win_bet_rate")
     private Float homeWinBetRate;
 
-    @Basic
     @Column(name = "draw_bet_rate")
     private Float drawBetRate;
 
-    @Basic
     @Column(name = "away_win_bet_rate")
     private Float awayWinBetRate;
 
-    @Basic
     @Column(name = "time")
     private LocalDateTime time;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "home_team_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "home_team_id", nullable = false)
     private Team homeTeam;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "away_team_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "away_team_id", nullable = false)
     private Team awayTeam;
 
     @ManyToOne
-    @JoinColumn(name = "competition_id", referencedColumnName = "id")
+    @JoinColumn(name = "competition_id")
     private Competition competition;
 
     @ManyToOne
-    @JoinColumn(name = "round_id", referencedColumnName = "id")
+    @JoinColumn(name = "round_id")
     private Round round;
 
     @OneToMany(mappedBy = "game")

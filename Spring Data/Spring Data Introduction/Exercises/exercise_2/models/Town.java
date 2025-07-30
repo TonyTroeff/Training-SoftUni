@@ -1,6 +1,5 @@
 package exercise_2.models;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -8,11 +7,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "towns")
 public class Town extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "country", nullable = false)
     private String country;
 

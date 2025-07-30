@@ -7,12 +7,11 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "accounts")
 public class Account extends BaseEntity {
-    @Basic
     @Column(name = "balance")
     private BigDecimal balance;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public BigDecimal getBalance() {

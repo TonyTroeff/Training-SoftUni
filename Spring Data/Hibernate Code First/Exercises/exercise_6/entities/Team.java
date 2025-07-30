@@ -9,11 +9,9 @@ import java.util.Set;
 @Entity
 @Table(name = "teams")
 public class Team extends BaseEntity {
-    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic
     @Column(name = "initials", length = 3, nullable = false)
     private String initials;
 
@@ -22,20 +20,19 @@ public class Team extends BaseEntity {
     @Column(name = "logo")
     private byte[] logo;
 
-    @Basic
     @Column(name = "budget")
     private BigDecimal budget;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "primary_kit_color_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "primary_kit_color_id", nullable = false)
     private Color primaryKitColor;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "secondary_kit_color_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "secondary_kit_color_id", nullable = false)
     private Color secondaryKitColor;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "town_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "town_id", nullable = false)
     private Town town;
 
     @OneToMany(mappedBy = "team")

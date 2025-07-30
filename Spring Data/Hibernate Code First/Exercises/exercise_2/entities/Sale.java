@@ -13,18 +13,17 @@ public class Sale {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "store_location_id", referencedColumnName = "id")
+    @JoinColumn(name = "store_location_id")
     private StoreLocation storeLocation;
 
-    @Basic
     @Column(name = "date")
     private LocalDate date;
 

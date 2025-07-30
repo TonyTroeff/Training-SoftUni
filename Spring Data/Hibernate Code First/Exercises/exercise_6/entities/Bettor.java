@@ -9,23 +9,18 @@ import java.util.Set;
 @Entity
 @Table(name = "bettors")
 public class Bettor extends BaseEntity {
-    @Basic
     @Column(name = "full_name")
     private String fullName;
 
-    @Basic
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Basic
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Basic
     @Column(name = "email")
     private String email;
 
-    @Basic
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 

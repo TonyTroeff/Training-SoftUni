@@ -12,7 +12,7 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Basic
+    @Column(name = "name")
     private String name;
 
     @OneToMany(mappedBy = "company")

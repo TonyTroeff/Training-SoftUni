@@ -18,9 +18,7 @@ public class User extends BaseEntity {
     private Integer age;
 
     @ManyToMany
-    @JoinTable(name = "users_friends",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+    @JoinTable(name = "users_friends", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "friend_id"))
     private Set<User> friends = new HashSet<>();
 
     @OneToMany(mappedBy = "seller")

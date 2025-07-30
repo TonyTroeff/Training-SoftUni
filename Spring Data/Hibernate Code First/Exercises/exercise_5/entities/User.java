@@ -7,19 +7,15 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Basic
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Basic
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Basic
     @Column(name = "email")
     private String email;
 
-    @Basic
     @Column(name = "password", nullable = false)
     private String password;
 
