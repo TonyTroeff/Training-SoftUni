@@ -2,6 +2,7 @@ package exercise_2;
 
 import exercise_2.dtos.*;
 import exercise_2.services.CarService;
+import exercise_2.services.CustomerService;
 import exercise_2.services.PartService;
 import exercise_2.services.SupplierService;
 import jakarta.xml.bind.JAXBContext;
@@ -22,19 +23,21 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 public class Runner implements CommandLineRunner {
-    private final SupplierService supplierService;
-    private final PartService partService;
     private final CarService carService;
+    private final CustomerService customerService;
+    private final PartService partService;
+    private final SupplierService supplierService;
 
-    public Runner(SupplierService supplierService, PartService partService, CarService carService) {
-        this.supplierService = supplierService;
-        this.partService = partService;
+    public Runner(CarService carService, CustomerService customerService, PartService partService, SupplierService supplierService) {
         this.carService = carService;
+        this.customerService = customerService;
+        this.partService = partService;
+        this.supplierService = supplierService;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        JAXBContext jaxbImportContext = JAXBContext.newInstance(SuppliersImportDto.class, PartsImportDto.class, CarsImportDto.class);
+        JAXBContext jaxbImportContext = JAXBContext.newInstance(CarsImportDto.class, CustomersImportDto.class, PartsImportDto.class, SuppliersImportDto.class);
         Unmarshaller unmarshaller = jaxbImportContext.createUnmarshaller();
 
         JAXBContext jaxbExportContext = JAXBContext.newInstance(SuppliersReportExportDto.class, CarsExtendedExportDto.class);
@@ -44,6 +47,7 @@ public class Runner implements CommandLineRunner {
         List<SupplierDto> suppliers = seedSuppliers(unmarshaller);
         List<PartDto> parts = seedParts(unmarshaller, suppliers);
         seedCars(unmarshaller, parts);
+        seedCustomers(unmarshaller);
 
         System.out.println("Seeding finished");
 
@@ -91,12 +95,13 @@ public class Runner implements CommandLineRunner {
         return result;
     }
 
-    private void seedCars(Unmarshaller unmarshaller, List<PartDto> parts) throws JAXBException, IOException {
+    private List<CarDto> seedCars(Unmarshaller unmarshaller, List<PartDto> parts) throws JAXBException, IOException {
         CarsImportDto importDto;
         try (InputStream inputStream = readResourceFileAsStream("cars.xml")) {
             importDto = (CarsImportDto) unmarshaller.unmarshal(inputStream);
         }
 
+        List<CarDto> result = new ArrayList<>();
         for (CarInputDto inputDto : importDto.getCars()) {
             Set<Long> partIds = new HashSet<>();
             int randomPartsCount = ThreadLocalRandom.current().nextInt(0, 3);
@@ -109,8 +114,26 @@ public class Runner implements CommandLineRunner {
 
             CarRelationsDto relationsDto = new CarRelationsDto(partIds);
 
-            carService.create(inputDto, relationsDto);
+            CarDto createdCar = carService.create(inputDto, relationsDto);
+            result.add(createdCar);
         }
+
+        return result;
+    }
+
+    private List<CustomerDto> seedCustomers(Unmarshaller unmarshaller) throws JAXBException, IOException {
+        CustomersImportDto importDto;
+        try (InputStream inputStream = readResourceFileAsStream("customers.xml")) {
+            importDto = (CustomersImportDto) unmarshaller.unmarshal(inputStream);
+        }
+
+        List<CustomerDto> result = new ArrayList<>();
+        for (CustomerInputDto inputDto : importDto.getCustomers()) {
+            CustomerDto createdCustomer = customerService.create(inputDto);
+            result.add(createdCustomer);
+        }
+
+        return result;
     }
 
     private static InputStream readResourceFileAsStream(String path) throws IOException {
