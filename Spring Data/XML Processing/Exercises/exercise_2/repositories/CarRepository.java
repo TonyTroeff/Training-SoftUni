@@ -11,4 +11,6 @@ import java.util.List;
 public interface CarRepository extends JpaRepository<Car, Long> {
     @Query("select c from Car as c left join fetch c.parts")
     List<Car> findAllWithPrefetchedParts();
+
+    List<Car> findAllByMake(String make);
 }

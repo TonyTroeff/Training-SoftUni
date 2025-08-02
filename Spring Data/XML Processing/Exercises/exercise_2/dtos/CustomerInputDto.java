@@ -1,6 +1,7 @@
 package exercise_2.dtos;
 
 import exercise_2.utils.LocalDateXmlAdapter;
+import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;

@@ -16,7 +16,7 @@ public class Part extends BaseEntity {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 

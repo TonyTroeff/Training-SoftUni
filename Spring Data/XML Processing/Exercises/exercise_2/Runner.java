@@ -1,10 +1,7 @@
 package exercise_2;
 
 import exercise_2.dtos.*;
-import exercise_2.services.CarService;
-import exercise_2.services.CustomerService;
-import exercise_2.services.PartService;
-import exercise_2.services.SupplierService;
+import exercise_2.services.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -26,12 +23,14 @@ public class Runner implements CommandLineRunner {
     private final CarService carService;
     private final CustomerService customerService;
     private final PartService partService;
+    private final SaleService saleService;
     private final SupplierService supplierService;
 
-    public Runner(CarService carService, CustomerService customerService, PartService partService, SupplierService supplierService) {
+    public Runner(CarService carService, CustomerService customerService, PartService partService, SaleService saleService, SupplierService supplierService) {
         this.carService = carService;
         this.customerService = customerService;
         this.partService = partService;
+        this.saleService = saleService;
         this.supplierService = supplierService;
     }
 
@@ -40,24 +39,22 @@ public class Runner implements CommandLineRunner {
         JAXBContext jaxbImportContext = JAXBContext.newInstance(CarsImportDto.class, CustomersImportDto.class, PartsImportDto.class, SuppliersImportDto.class);
         Unmarshaller unmarshaller = jaxbImportContext.createUnmarshaller();
 
-        JAXBContext jaxbExportContext = JAXBContext.newInstance(SuppliersReportExportDto.class, CarsExtendedExportDto.class);
+        JAXBContext jaxbExportContext = JAXBContext.newInstance(CarsExportDto.class, CarsExtendedExportDto.class, CustomersExportDto.class, SuppliersReportExportDto.class);
         Marshaller marshaller = jaxbExportContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         List<SupplierDto> suppliers = seedSuppliers(unmarshaller);
         List<PartDto> parts = seedParts(unmarshaller, suppliers);
-        seedCars(unmarshaller, parts);
-        seedCustomers(unmarshaller);
+        List<CarDto> cars = seedCars(unmarshaller, parts);
+        List<CustomerDto> customers = seedCustomers(unmarshaller);
+        seedSales(cars, customers);
 
         System.out.println("Seeding finished");
 
-        List<SupplierReportDto> supplierReports = supplierService.generateReport(false);
-        SuppliersReportExportDto exportDto = new SuppliersReportExportDto(supplierReports);
-        marshaller.marshal(exportDto, System.out);
-
-        List<CarExtendedDto> cars = carService.getExtended();
-        CarsExtendedExportDto carsExtendedExportDto = new CarsExtendedExportDto(cars);
-        marshaller.marshal(carsExtendedExportDto, System.out);
+        query1(marshaller);
+        query2(marshaller);
+        query3(marshaller);
+        query4(marshaller);
     }
 
     private List<SupplierDto> seedSuppliers(Unmarshaller unmarshaller) throws JAXBException, IOException {
@@ -134,6 +131,48 @@ public class Runner implements CommandLineRunner {
         }
 
         return result;
+    }
+
+    private void seedSales(List<CarDto> cars, List<CustomerDto> customers) {
+        int randomSalesCount = ThreadLocalRandom.current().nextInt(100, 300);
+        for (int i = 0; i < randomSalesCount; i++) {
+            SaleInputDto inputDto = new SaleInputDto();
+            inputDto.setDiscount(0.05 * ThreadLocalRandom.current().nextInt(11));
+
+            int randomCarIndex = ThreadLocalRandom.current().nextInt(cars.size());
+            CarDto randomCar = cars.get(randomCarIndex);
+
+            int randomCustomerIndex = ThreadLocalRandom.current().nextInt(customers.size());
+            CustomerDto randomCustomer = customers.get(randomCustomerIndex);
+
+            SaleRelationsDto relationsDto = new SaleRelationsDto(randomCar.getId(), randomCustomer.getId());
+
+            saleService.create(inputDto, relationsDto);
+        }
+    }
+
+    private void query1(Marshaller marshaller) throws JAXBException {
+        List<CustomerDto> customers = customerService.exportAll();
+        CustomersExportDto exportDto = new CustomersExportDto(customers);
+        marshaller.marshal(exportDto, System.out);
+    }
+
+    private void query2(Marshaller marshaller) throws JAXBException {
+        List<CarDto> cars = carService.exportAllByMake("Toyota");
+        CarsExportDto exportDto = new CarsExportDto(cars);
+        marshaller.marshal(exportDto, System.out);
+    }
+
+    private void query3(Marshaller marshaller) throws JAXBException {
+        List<SupplierReportDto> supplierReports = supplierService.generateReport(false);
+        SuppliersReportExportDto exportDto = new SuppliersReportExportDto(supplierReports);
+        marshaller.marshal(exportDto, System.out);
+    }
+
+    private void query4(Marshaller marshaller) throws JAXBException {
+        List<CarExtendedDto> extendedCars = carService.getExtended();
+        CarsExtendedExportDto carsExtendedExportDto = new CarsExtendedExportDto(extendedCars);
+        marshaller.marshal(carsExtendedExportDto, System.out);
     }
 
     private static InputStream readResourceFileAsStream(String path) throws IOException {

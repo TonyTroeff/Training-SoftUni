@@ -45,6 +45,19 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public List<CarDto> exportAllByMake(String make) {
+        List<Car> cars = repository.findAllByMake(make);
+
+        List<CarDto> result = new ArrayList<>();
+        for (Car car : cars) {
+            CarDto carDto = modelMapper.map(car, CarDto.class);
+            result.add(carDto);
+        }
+
+        return result;
+    }
+
+    @Override
     public List<CarExtendedDto> getExtended() {
         List<Car> cars = repository.findAllWithPrefetchedParts();
 
@@ -55,5 +68,10 @@ public class CarServiceImpl implements CarService {
         }
 
         return result;
+    }
+
+    @Override
+    public Car getReferenceById(Long id) {
+        return repository.getReferenceById(id);
     }
 }
