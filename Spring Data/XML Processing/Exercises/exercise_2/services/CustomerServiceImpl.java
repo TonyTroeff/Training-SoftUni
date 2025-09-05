@@ -1,6 +1,7 @@
 package exercise_2.services;
 
 import exercise_2.dtos.CustomerDto;
+import exercise_2.dtos.CustomerExtendedDto;
 import exercise_2.dtos.CustomerInputDto;
 import exercise_2.entities.Customer;
 import exercise_2.repositories.CustomerRepository;
@@ -39,6 +40,11 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<CustomerExtendedDto> exportExtended() {
+        return repository.findAllWithAggregatedSales();
     }
 
     @Override

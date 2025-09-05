@@ -2,9 +2,12 @@ package exercise_2.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "customers")
@@ -17,6 +20,9 @@ public class Customer extends BaseEntity {
 
     @Column(name = "is_young_driver")
     private Boolean isYoungDriver;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Sale> sales = new HashSet<>();
 
     public String getName() {
         return name;
@@ -40,5 +46,13 @@ public class Customer extends BaseEntity {
 
     public void setYoungDriver(Boolean youngDriver) {
         isYoungDriver = youngDriver;
+    }
+
+    public Set<Sale> getSales() {
+        return sales;
+    }
+
+    public void setSales(Set<Sale> sales) {
+        this.sales = sales;
     }
 }

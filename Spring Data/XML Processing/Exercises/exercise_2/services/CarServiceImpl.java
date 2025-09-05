@@ -58,7 +58,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarExtendedDto> getExtended() {
+    public List<CarExtendedDto> exportExtended() {
         List<Car> cars = repository.findAllWithPrefetchedParts();
 
         List<CarExtendedDto> result = new ArrayList<>();

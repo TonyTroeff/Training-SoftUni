@@ -39,7 +39,7 @@ public class Runner implements CommandLineRunner {
         JAXBContext jaxbImportContext = JAXBContext.newInstance(CarsImportDto.class, CustomersImportDto.class, PartsImportDto.class, SuppliersImportDto.class);
         Unmarshaller unmarshaller = jaxbImportContext.createUnmarshaller();
 
-        JAXBContext jaxbExportContext = JAXBContext.newInstance(CarsExportDto.class, CarsExtendedExportDto.class, CustomersExportDto.class, SuppliersReportExportDto.class);
+        JAXBContext jaxbExportContext = JAXBContext.newInstance(CarsExportDto.class, CarsExtendedExportDto.class, CustomersExportDto.class, CustomersExtendedExportDto.class, SuppliersReportExportDto.class);
         Marshaller marshaller = jaxbExportContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
@@ -55,6 +55,7 @@ public class Runner implements CommandLineRunner {
         query2(marshaller);
         query3(marshaller);
         query4(marshaller);
+        query5(marshaller);
     }
 
     private List<SupplierDto> seedSuppliers(Unmarshaller unmarshaller) throws JAXBException, IOException {
@@ -170,9 +171,15 @@ public class Runner implements CommandLineRunner {
     }
 
     private void query4(Marshaller marshaller) throws JAXBException {
-        List<CarExtendedDto> extendedCars = carService.getExtended();
+        List<CarExtendedDto> extendedCars = carService.exportExtended();
         CarsExtendedExportDto carsExtendedExportDto = new CarsExtendedExportDto(extendedCars);
         marshaller.marshal(carsExtendedExportDto, System.out);
+    }
+
+    private void query5(Marshaller marshaller) throws JAXBException {
+        List<CustomerExtendedDto> extendedCustomers = customerService.exportExtended();
+        CustomersExtendedExportDto customersExtendedExportDto = new CustomersExtendedExportDto(extendedCustomers);
+        marshaller.marshal(customersExtendedExportDto, System.out);
     }
 
     private static InputStream readResourceFileAsStream(String path) throws IOException {

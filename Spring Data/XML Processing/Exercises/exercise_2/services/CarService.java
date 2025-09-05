@@ -15,7 +15,7 @@ public interface CarService {
     CarDto create(@Valid CarInputDto inputDto, @Valid CarRelationsDto relationsDto);
 
     List<CarDto> exportAllByMake(String make);
-    List<CarExtendedDto> getExtended();
+    List<CarExtendedDto> exportExtended();
 
     Car getReferenceById(Long id);
 }
