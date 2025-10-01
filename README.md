@@ -34,6 +34,13 @@ There is an example implementation of the `MiniORM` framework.
 
 <img src="icons/csharp.svg" width="72px" height="72px" /> <img src="icons/ef-core.svg" width="72px" height="72px" /> <img src="icons/mssql.svg" width="72px" height="72px" />
 
+## JS Front-End
+
+The solutions for this course can be found under "JS Front-End".
+Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, More Exercises, or Demos) with the corresponding solutions.
+
+<img src="icons/js.svg" width="72px" height="72px" />
+
 ## Spring Data
 
 The solutions for this course can be found under "Spring Data".
