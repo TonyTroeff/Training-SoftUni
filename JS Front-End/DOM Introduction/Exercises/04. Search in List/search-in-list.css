@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, input, button {
+    font: inherit
+}
+
+body {
+    font-size: 1em;
+    padding: 2em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+
+input {
+    display: block;
+    width: 100%;
+    background: #FFF;
+    border: 0.1em solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.5em 0.8em;
+}
+
+label {
+    font-weight: 900;
+    color: var(--accent-color);
+}
+
+button {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+    /* text-transform: uppercase; */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    padding: 0.5em 0.8em;
+
+    &:hover {
+        text-decoration: underline;
+    }    
+}
+
+form {
+    display: flex;
+    gap: 1em;
+}
+
+ul {
+    border: 0.1em solid var(--accent-color);
+    border-radius: var(--border-radius);
+    background-color: #fff;
+    margin-bottom: 1em;
+    
+    li {
+        border-radius: var(--border-radius);
+        list-style: outside none;
+        padding: 0.5em 0.8em;
+        opacity: 0.5;
+        background: rgb(0, 0, 0, 0.05);
+        line-height: 1;
+        margin: 0.4em;
+
+        &.match {
+            /* font-weight: bold; */
+            /* text-decoration: underline; */
+            opacity: 1;
+        }
+    }
+}
+
+#result {
+    padding-top: 0.5em;
+    font-weight: bold;
+}

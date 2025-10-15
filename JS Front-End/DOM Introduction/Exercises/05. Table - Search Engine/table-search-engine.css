@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    font-size: 1em;
+    padding: 2em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    background-color: #fff;
+    border: 0.1em solid var(--accent-color);
+    border-spacing: 0;
+    border-radius: var(--border-radius);
+
+    th, td {
+        line-height: 1;
+        border: 0.1em solid var(--accent-color);
+        padding: 0.5em 0.8em;
+        text-align: left;
+    }
+
+    thead th {
+        background-color: hsl(from var(--accent-color) h s 20%);
+        color: var(--accent-color-text);
+    }
+
+    thead tr:first-child th:first-child {
+        border-top-left-radius: 0.2em;
+    }
+
+    thead tr:first-child th:last-child {
+        border-top-right-radius: 0.2em;
+    }
+
+    tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 0.2em;
+    }
+    tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 0.2em;
+    }
+
+    tr.select  {
+        background: yellow;
+    }
+}
+
+form {
+    padding-top: 1em;
+    display: flex;
+    gap: 1em;
+}
+
+input, button {
+    display: inline-block;
+    border: 2px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.2em 0.8em;
+}
+
+input {
+    flex-grow: 1;
+}
+
+button {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }    
+}

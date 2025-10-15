@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>TABLE - SEARCH ENGINE</title>
+
+    <link rel="stylesheet" href="table-search-engine.css">
+    <script src="./table-search-engine.js"></script>
+</head>
+<body>
+
+    <table class="container">
+        <thead>
+            <tr>
+                <th>Student name</th>
+                <th>Student email</th>
+                <th>Student course</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Dan</td>
+                <td>john@john-dan.com</td>
+                <td>JS-CORE</td>
+            </tr>
+            <tr>
+                <td>Max Peterson</td>
+                <td>max@softuni.bg</td>
+                <td>JS-WEB</td>
+            </tr>
+            <tr>
+                <td>Philip Anderson</td>
+                <td>philip@softuni.bg</td>
+                <td>FRONT-END</td>
+            </tr>
+            <tr>
+                <td>Sam Lima</td>
+                <td>sam@gmail.com</td>
+                <td>TECH-JS</td>
+            </tr>
+            <tr>
+                <td>Eva Longoria</td>
+                <td>eva@gmail.com</td>
+                <td>All possible courses</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <form>
+        <input type="text" id="searchField" />
+        <button type="button" id="searchBtn" onclick="solve()">Search</button>
+    </form>
+
+    <div id="result"></div>
+
+</body>
+</html>
