@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+}
+
+body, input, button {
+    font: inherit
+}
+
+body {
+    font-size: 1em;
+    padding: 2em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+#wrapper {
+    margin-bottom: 2em;
+
+    input {
+        margin-bottom: 1em;
+    }
+}
+
+input {
+    display: block;
+    width: 100%;
+    background: #FFF;
+    border: 0.1em solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.5em 0.8em;
+}
+
+label {
+    font-weight: 900;
+    color: var(--accent-color);
+}
+
+input[type="button"] {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+    /* text-transform: uppercase; */
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }    
+}
+
+.result-container {
+    background: #fff;
+    border: 0.1em solid var(--accent-color);
+    padding: 1em 1.4em;
+    border-radius: var(--border-radius)
+}
