@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, textarea, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    font-size: 1em;
+    padding: 2em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+input, textarea, button {
+    display: block;
+    border: 2px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.4em 0.8em;
+}
+
+textarea {
+    width: 100%;
+    margin: 1em 0;
+}
+
+button {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }    
+}
+
+#outputs {
+    padding-top: 2em;
+
+    & > div {
+        padding-bottom: 1em;
+    }
+}

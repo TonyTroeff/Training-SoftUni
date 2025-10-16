@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Number Convertor</title>
+
+    <link rel="stylesheet" href="number-convertor.css">
+    <script src="./number-convertor.js"></script>
+</head>
+<body>
+
+    <div id="container">
+
+        <label for="input">Number</label>
+        <input type="number" id="input" />
+        
+        <label for="selectMenuFrom">From</label>
+        <select id="selectMenuFrom">
+            <option selected value="decimal">Decimal</option>
+        </select>
+        
+        <label for="selectMenuTo">To</label>
+        <select id="selectMenuTo">
+            <option value="" selected>Please select an option</option>
+            <option value="binary">Binary</option>
+            <option value="hexadecimal">Hexadecimal</option>
+        </select>
+        
+        <button type="button" onclick="solve()">Convert it</button>
+
+    </div>
+    
+    <footer>
+        <label for="result">Result</label>
+        <input type="text" name="output" id="result" disabled readonly />
+    </footer>
+    
+</body>
+</html>
