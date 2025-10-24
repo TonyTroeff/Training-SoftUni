@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Locked Profile</title>
+
+        <link rel="stylesheet" href="locked-profile.css" />
+        <script src="locked-profile.js"></script>
+    </head>
+    <body>
+        <main>
+            <div class="profile">
+                <img src="./icon-profile.png" class="user-icon" />
+
+                <div class="radio-group">
+                    <label for="user1Lock">Lock</label>
+                    <input type="radio" name="user1Locked" id="user1Lock" checked />
+
+                    <label for="user1Unlock">Unlock</label>
+                    <input type="radio" name="user1Locked" id="user1Unlock" /><br />
+                </div>
+
+                <label for="user1Username">Username</label>
+                <input type="text" name="user1Username" id="user1Username" value="User 1 Userov" disabled readonly />
+
+                <div id="user1HiddenFields" class="hidden-fields active">
+                    <label>Email:</label>
+                    <input type="email" name="user1Email" value="user1-userov@users.bg" disabled readonly />
+
+                    <label>Age:</label>
+                    <input type="email" name="user1Age" value="18" disabled readonly />
+                </div>
+
+                <button>Show more</button>
+            </div>
+
+            <div class="profile">
+                <img src="./icon-profile.png" class="user-icon" />
+
+                <div class="radio-group">
+                    <label for="user2Lock">Lock</label>
+                    <input type="radio" name="user2Locked" id="user2Lock" checked />
+
+                    <label for="user2Unlock">Unlock</label>
+                    <input type="radio" name="user2Locked" id="user2Unlock" />
+                </div>
+
+                <label for="user2Username">Username</label>
+                <input type="text" name="user2Username" value="User 2 Userov" disabled readonly />
+
+                <div id="user2HiddenFields" class="hidden-fields active">
+                    <label>Email:</label>
+                    <input type="email" name="user2Email" value="user2-userov@users.bg" disabled readonly />
+
+                    <label>Age:</label>
+                    <input type="email" name="user2Age" value="25" disabled readonly />
+                </div>
+
+                <button>Show more</button>
+            </div>
+
+            <div class="profile">
+                <img src="./icon-profile.png" class="user-icon" />
+
+                <div class="radio-group">
+                    <label for="user3Lock">Lock</label>
+                    <input type="radio" name="user3Locked" id="user3Lock" checked />
+
+                    <label for="user3Unlock">Unlock</label>
+                    <input type="radio" name="user3Locked" id="user3Unlock" />
+                </div>
+
+                <label for="user3Username">Username</label>
+                <input type="text" name="user3Username" value="User 3 Userov" disabled readonly />
+
+                <div id="user3HiddenFields" class="hidden-fields active">
+                    <label>Email:</label>
+                    <input type="email" name="user3Email" value="user3-userov@users.bg" disabled readonly />
+
+                    <label>Age:</label>
+                    <input type="email" name="user3Age" value="23" disabled readonly />
+                </div>
+
+                <button>Show more</button>
+            </div>
+        </main>
+    </body>
+</html>

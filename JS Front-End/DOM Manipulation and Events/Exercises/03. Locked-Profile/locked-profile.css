@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, select, textarea, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    padding: 1em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+main {
+    max-width: 60em;
+    margin: 0 auto;
+    display: flex;
+    gap: 2em;
+    padding: 2em 0;
+    align-items: flex-start;
+}
+
+label:has( + input[type="radio"]) {
+    border: 2px solid var(--accent-color);
+    background-color: transparent;
+    color: var(--accent-color);
+    padding: 0.5em 0.9em;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+label:has( + input[type="radio"]:checked) {
+    background-color: var(--accent-color);
+    color: var(--accent-color-text);
+}
+
+input[type="radio"] {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+label[for*="Username"] {
+    margin-top: 1.5em;
+}
+
+label:has( + input[type="text"]),
+label:has( + input[type="email"]) {
+    display: block;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"] {
+    display: block;
+    width: 100%;
+    padding: 0.5em 0.8em;
+    margin-bottom: 1em;
+}
+
+.radio-group {
+    display: flex;
+
+    label {
+        flex: 1;
+        text-align: center;
+
+        &:first-of-type {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &:last-of-type {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+}
+
+.profile {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    padding: 1em;
+    background-color: #fff;
+    width: auto;
+    box-shadow: 0 0 1em rgb(0, 0, 0, 0.1);
+
+    .user-icon {
+        margin-bottom: 1em;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        margin-top: 1em;
+        border-radius: var(--border-radius);
+        border-color: var(--accent-color);
+        background-color: var(--accent-color);
+        color: var(--accent-color-text);
+        padding: 0.5em 0.7em;
+        cursor: pointer;
+
+        &:active {
+            background-color: #000;
+        }
+    }
+
+    &:has(input[id*="Lock"]:checked) button {
+        opacity: 0.6;
+    }
+
+    .hidden-fields.active {
+        display: none;
+    }
+}

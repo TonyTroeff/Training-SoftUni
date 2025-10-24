@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, select, textarea, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    padding: 1em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+main {
+    max-width: 40em;
+    margin: 0 auto;
+    gap: 2em;
+    padding: 2em 0;
+    align-items: flex-start;
+}
+
+input, textarea {
+    display: block;
+    width: 100%;
+}
+
+textarea {
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.5em 0.7em;
+    background: #fff;
+
+    &:read-only {
+        border-color: #CCC;
+        outline: none;
+    }
+}
+
+button,
+input[type="submit"] {
+    padding: 0.5em 1em;
+    border: 2px solid var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--accent-color-text);
+    border-radius: var(--border-radius);
+    margin-top: 1em;
+    cursor: pointer;
+
+    &:active {
+        background-color: #000;
+    }
+}
+
+h2 {
+    padding-bottom: 0.5rem;
+    padding-top: 2rem;
+}
+
+form {
+    gap: 2em;
+
+    textarea {
+        height: 2.8em;
+    }
+
+    button {
+        white-space: nowrap;
+    }
+}

@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, select, textarea, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    padding: 1em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+
+input, select, button {
+    display: block;
+    width: 100%;
+    border: 2px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 0.4em 0.8em;
+    background-color: #fff;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 1em;
+}
+
+textarea {
+    width: 100%;
+    margin: 1em 0;
+    height: 40vh;
+}
+
+input[type="submit"], button {
+    background: var(--accent-color);
+    color: var(--accent-color-text);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:active {
+        background-color: #000;
+    }
+}
+
+form {
+    display: flex;
+    gap: 1em;
+
+    input[type="submit"] {
+        flex-shrink: 99;
+    }
+}
+
+#content {
+    padding: 2em 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+
+    div {
+        flex: 0 1 300px;
+        padding: 1em;
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1/1;
+
+        background-color: var(--accent-color);
+        border-radius: var(--border-radius);
+        color: var(--accent-color-text);
+        padding: 1em;
+        cursor: pointer;
+
+        &:active {
+            background-color: #000;
+        }
+    }
+}
