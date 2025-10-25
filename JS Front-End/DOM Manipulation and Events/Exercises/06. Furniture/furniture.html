@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Furniture</title>
+
+    <link rel="stylesheet" href="furniture.css">
+    <script src="furniture.js"></script>
+</head>
+
+<body>
+
+    <div id="exercise">
+        <h1>Furniture List</h1>
+
+        <form id="input">
+            <textarea rows="5" cols="50">[{"name": "Sofa", "img": "https://res.cloudinary.com/maisonsdumonde/image/upload/q_auto,f_auto/w_200/img/grey-3-seater-sofa-bed-200-13-0-175521_9.jpg", "price": 150, "decFactor": 1.2}, {"name": "Table", "img": "https://images.pexels.com/photos/2092058/pexels-photo-2092058.jpeg", "price": 230, "decFactor": 1.8}]</textarea>
+            <input type="submit" value="Generate">
+        </form>
+
+        <form id="shop">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Decoration factor</th>
+                        <th>Mark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="https://www.lidl-shop.nl/media/fcf868f9526b38d0b0a43cc2ace72b80.jpeg">
+                        </td>
+                        <td>
+                            <p>Office chair</p>
+                        </td>
+                        <td>
+                            <p>160</p>
+                        </td>
+                        <td>
+                            <p>0.5</p>
+                        </td>
+                        <td>
+                            <input type="checkbox" disabled />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <textarea rows="4" cols="50" disabled></textarea>
+            <input type="submit" value="Buy">
+
+        </form>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 16px/1.5 "Lato", sans-serif;
+
+    @media (width < 900px) {
+        font-size: 14px;
+    }
+
+    @media (width < 600px) {
+        font-size: 12px;
+    }
+
+    @media (width < 500px) {
+        font-size: 11px;
+    }
+}
+
+body, select, textarea, input, button, table, form, td, th {
+    font: inherit
+}
+
+body {
+    padding: 1em;
+    background: #eee;
+}
+
+:root {
+    --accent-color: #234465;
+    --accent-color-text: #FFF;
+    --border-radius: 0.3em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  padding-bottom: 0.5em;
+  line-height: 1.2;
+
+  span {
+    display: block;
+    font-size: 0.8em;
+    padding-bottom: 0.2em;
+    opacity: 0.6;
+  }
+}
+
+h1 { font-size: 2.8em; font-weight: 900; }
+h2 { font-size: 2.2em; }
+h3 { font-size: 1.8em; }
+h4 { font-size: 1.4em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1.0em; }
+
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+main {
+  max-width: 50em;
+  margin: 0 auto;
+  gap: 2em;
+  padding: 2em 0;
+  align-items: flex-start;
+}
+
+ul {
+  display: flex;
+  gap: 2em;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    list-style: none outside;
+    background-color: var(--accent-color);
+    color: var(--accent-color-text);
+    border-radius: var(--border-radius);
+    padding: 0.7em 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in;
+    position: relative;
+
+    &:hover {
+      background-color: #060;
+      transition-duration: 0.1s;
+    }
+
+    &:active {
+      background-color: #000;
+      top: 0.1em;
+    }
+  }
+}
+
+.question {
+
+  border: 2px solid var(--accent-color);
+  background-color: #fff;
+  padding: 2em;
+  border-radius: var(--border-radius);
+  box-shadow: 0 0 1em 0 rgb(0, 0, 0, 0.1);
+
+  &.hidden {
+    display: none;
+  }
+}
+
+#results {
+  font-size: 2em;
+  font-style: italic;
+  opacity: 0.6;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<title>SUDOMU</title>
+
+    <link rel="stylesheet" href="sudomu.css">
+	<script src="sudomu.js"></script>
+</head>
+<body>
+
+	<main>
+
+		<header>
+			<h1>Sudomu</h1>
+
+			<select id="size">
+				<option value="3">3x3</option>
+				<option value="9">9x9</option>
+			</select>
+		</header>
+
+		<form id="solutionCheck">
+
+			<table>
+				<tbody>
+					<tr>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+					</tr>
+					<tr>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+					</tr>
+					<tr>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+						<td><input step="1" min="1" max="3" type="number" required></td>
+					</tr>
+				</tbody>
+			</table>
+		
+			<div class="buttons">
+				<input type="submit" value="Quick Check">
+				<input type="reset" value="Clear">
+			</div>
+
+		</form>
+
+		<p id="check"></p>
+
+	</main>
+
+</body>
+</html>
