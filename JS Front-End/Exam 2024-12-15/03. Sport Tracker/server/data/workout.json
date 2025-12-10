@@ -1,0 +1,20 @@
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+      "workout": "Tabata",
+      "location": "ul. 'Dimitar Dospevski' 9",
+      "date": "2024-11-15",
+      "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  },
+  "bdabf5e9-23be-40a1-9f14-9117b6702a9d": {
+    "workout": "Kangoo Jumps",
+    "location": "ul. 'Ivan Susanin' 53",
+    "date": "2024-11-15",
+      "_id": "bdabf5e9-23be-40a1-9f14-9117b6702a9d"
+  },
+  "7b3143e1-d6df-4e67-bd7e-5f8b03f2fd3f": {
+    "workout": "Zumba",
+    "location": "ul. '21-vi Vek' 23",
+    "date": "2024-11-15",
+      "_id": "7b3143e1-d6df-4e67-bd7e-5f8b03f2fd3f"
+  }
+}

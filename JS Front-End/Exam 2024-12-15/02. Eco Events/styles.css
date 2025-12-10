@@ -1,0 +1,220 @@
+@import url("https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap");
+
+body {
+    background-position: 0% 55%;
+    background-image: url("https://cdn.pixabay.com/photo/2021/11/01/21/31/nature-6761843_1280.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: "Indie Flower", cursive;
+}
+
+h1 {
+    padding: 0px 50px;
+    font-size: 40px;
+    text-align: center;
+    font-weight: 900;
+    color: #000000;
+}
+
+h2 {
+    font-size: 24px;
+    color: #413f3f;
+    text-align: start;
+    margin: 0;
+    text-align: center;
+}
+
+h3 {
+    font-size: 20px;
+    text-align: center;
+    color: #4e4c4c;
+    margin: 0;
+    padding: 50px;
+}
+
+h4 {
+    margin-top: 0px;
+    margin-bottom: 1px;
+    color: #4e4c4c;
+    font-size: large;
+}
+
+p {
+    text-decoration: none;
+    color: #9eb2c0;
+    margin: 7px 7px 7px 0px;
+}
+
+textarea {
+    border-color: #dae4eb;
+    color: #dae4eb;
+    border-radius: 10px;
+}
+
+input[type="text"] {
+    border: solid 1px black;
+    border-radius: 10px;
+}
+
+input[placeholder="Email"],
+input[placeholder="Event"],
+input[placeholder="Location"] {
+    text-align: center;
+}
+
+span {
+    font-size: 60px;
+    color: #464646;
+    font-weight: 500;
+}
+
+.bar {
+    background-color: #17cadaf4;
+    border-radius: 9px;
+    height: 50px;
+}
+
+#next-btn {
+    display: inline-block;
+    line-height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #cf853c;
+    color: #ffffff;
+    border: 1px solid black;
+    text-align: center;
+    outline: none;
+    width: 100px;
+    border-radius: 10px;
+}
+
+.action-btn {
+    font-family: sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #F8312F;
+    color: #ffffff;
+    text-align: center;
+    float: center;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    border: 1px solid brown;
+    outline: none;
+}
+
+#clear-btn {
+    display: block;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #f97e76;
+    color: #ffffff;
+    text-align: center;
+    margin: auto;
+}
+
+#main {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 50px;
+}
+
+#left-container {
+    margin-top: 50px;
+}
+
+#newApply {
+    height: 400px;
+    box-shadow: rgba(0, 0, 0, 0.2) 10px 10px 10px;
+    width: 350px;
+    border-radius: 20px;
+    background-color: #17cadaf4;
+}
+
+.registerEvent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#email,
+#event,
+#location {
+    width: 250px;
+    height: 45px;
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#right-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.application {
+    width: 90%;
+    margin-bottom: 20px;
+    margin-top:20px;
+    display: inline-block;
+}
+
+.application span:first-child {
+    color: #f97e76;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 150%;
+}
+
+.application article {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: -50px;
+}
+
+.application article h4,
+p {
+    color: #000000;
+    font-size: 18px;
+    text-align: center;
+}
+
+#preview-list button {
+    padding: 5px;
+    margin-left: 80px;
+}
+
+.application strong {
+    font-weight: bold;
+}
+
+.container {
+    border-radius: 20px;
+}
+
+.title-bar {
+    width: 450px;
+    height: auto;
+}
+
+#event-container {
+    margin-top: 100px;
+}
+
+#event-list > li {
+    border-bottom: 1px solid black;
+    padding: 0;
+}
+
+#next-btn:disabled {
+    background-color: #054E01;
+}

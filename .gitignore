@@ -17,3 +17,6 @@ target/
 # JetBrains
 .idea/
 cmake-build-debug/
+
+# JavaScript
+node_modules/

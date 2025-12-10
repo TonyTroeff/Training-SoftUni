@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sport Tracker</title>
+        <link rel="stylesheet" href="./style/style.css" />
+    </head>
+
+    <body>
+        <h1>Sport Tracker</h1>
+        <main>
+            <section id="main-container">
+                <div id="form">
+                    <h1>Enter the next workout</h1>
+                    <form action="#">
+                        <label for="workout">Workout:</label>
+                        <input type="text" id="workout" name="workout" />
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" name="location" />
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date" />
+                    </form>
+                    <div id="btn-container">
+                        <button id="add-workout">Add Workout</button>
+                        <button id="edit-workout" disabled>Edit Workout</button>
+                    </div>
+                </div>
+            </section>
+            <div id="wrapper">
+                <section id="history">
+                    <h2>Ended Workout:</h2>
+                    <button id="load-workout">Load Workout</button>
+                    <div id="list"></div>
+                </section>
+            </div>
+        </main>
+        <script src="app.js"></script>
+    </body>
+</html>

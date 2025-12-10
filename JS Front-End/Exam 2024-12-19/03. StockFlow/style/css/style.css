@@ -1,0 +1,276 @@
+
+body {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    background: linear-gradient(#e6e6e6, #bbbbbb);
+    background-position: 0% 90%;
+    background-image: url("../img/bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    align-items:start;
+    justify-content:center;
+    flex-direction:row;
+    gap: 100px;
+    margin-top: 80px;
+}
+
+body>h1 {
+color: #0076a8;
+background-color: #2c2c2c57;
+margin: 0;
+font-size: 44px;
+}
+
+#main-container {
+    position: relative;
+    width: 500px;
+    height: 380px;
+    border-radius: 10px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    background-color: white;
+    margin-bottom: 1.7em;
+}
+
+#form {
+    width: 460px;
+    display: flex;
+    flex-flow: column nowrap;
+    padding-left: 20px;
+}
+
+#form form {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+}
+
+#form>h1 {
+    box-shadow: 0 2px 0px #0076a8;
+    padding: 4px;
+    margin-bottom: 0.3em;
+    color: #0076a8;
+}
+
+label {
+    margin-top: 4px;
+    color: #0076a8;
+    font-weight: bold;
+}
+
+#form form input,
+#form form select {
+    -moz-appearance: none;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* Safari and Chrome */
+    appearance: none;
+    border: none;
+    border-bottom: 1.8px solid #0076a8;
+    padding: 5px;
+    margin-top: 1.5px;
+    position: relative;
+    font-size: 14.5px;
+}
+
+
+#form form .form-field {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    margin-bottom: 12.5px;
+}
+
+#form form #date-val {
+    display: flex;
+    justify-content: space-between;
+}
+
+#form form #date-val select {
+    width: 45%;
+}
+
+#form #order-btn, #edit-order {
+    background: #0076a8;
+    padding: 5px;
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-weight: 400;
+    font-size: 12pt;
+    margin-top: 10px;
+}
+
+#form #edit-order:disabled {
+    background-color: #bbbbbb;
+}
+
+#form #order-btn:disabled {
+    background-color: #bbbbbb;
+}
+
+
+#form #order-btn:hover {
+    background: transparent;
+    box-shadow: 0 0 0 3px #0076a8;
+    color: #4183d7;
+}
+
+.change-btn,
+.done-btn {
+    background: #0076a8;
+    padding: 6.5px;
+    width: 140px;
+    border: none;
+    border-radius: 50px;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    font-size: 9pt;
+    margin: 10px;
+    margin-bottom: 5px;
+    margin-top: 30px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.change-btn:hover,
+.done-btn:hover {
+    background: transparent;
+    box-shadow: 0 0 0 3px #0076a8;
+    color: #0076a8;
+}
+
+.clear-btn, #load-orders {
+    background:#0076a8;
+    padding: 6.5px;
+    width: 140px;
+    border: none;
+    border-radius: 50px;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    font-size: 9pt;
+    margin-top: 1em;
+}
+
+.clear-btn:hover, #load-orders:hover {
+    background: transparent;
+    box-shadow: 0 0 0 3px #0076a8;
+    color: #0076a8;
+}
+
+.change-btn:disabled,
+.done-btn:disabled {
+    background: linear-gradient( 135deg, #bdbdbd 0%, #cfcfae 100%);
+}
+
+.change-btn:disabled:hover,
+.done-btn:disabled:hover {
+    box-shadow: none;
+    color: #fcfcfc;
+}
+
+#order-info {
+    min-height: 220px;
+}
+
+h2 {
+    padding: 5px;
+    margin-top: 0.5em;
+    color: #0076a8;
+    font-size: 23px;
+    box-shadow: 0 2px 0px #0076a8;
+}
+
+#order-info {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.911);
+    width: 350px;
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 2em;
+}
+
+#order-info>h2,
+#finished-course>h2 {
+    font-size: 20px;
+}
+
+.container {
+    /* box-shadow: 10px 10px 20px hsl(0, 54%, 46%);*/
+    padding: 0px 4px 4px 4px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    word-break: break-all;
+    position: relative;
+    background-color: rgb(243, 244, 245);
+    border: 4px outset #0076a8;
+    border-radius: 15px;
+}
+
+#wrapper {
+    justify-content: center;
+    display: flex;
+}
+
+.container {
+    text-align: center;
+    height: auto;
+   
+}
+
+.container>h2 {
+    color:#0076a8;
+    font-size: 16px;
+    text-align: center;
+    padding-left: 2px;
+    padding: 3.5px;
+    font-weight: 700;
+    margin-bottom: -0.7em;
+    margin-top: 0.25em;
+}
+
+.container>h3 {
+    color: #0076a8;
+    font-size: 14px;
+    text-align: left;
+    padding-left: 2px;
+    padding: 5px;
+    font-weight: 600;
+    margin-bottom: -1.68em;
+}
+
+.container>h4 {
+    color: hsl(0, 0%, 59%);
+    font-size: 14px;
+    text-align: left;
+    padding: 5px;
+    font-weight: 600;
+    margin-bottom: -0.1em;
+}
+
+#edit-order:disabled:hover{
+    cursor: not-allowed;
+}
+
+button:disabled {
+    pointer-events: none;
+    /* Additional styling for the disabled button */
+    opacity: 0.5; /* Example: reducing opacity to visually indicate it's disabled */
+    cursor: not-allowed; /* Example: changing cursor to indicate it's disabled */
+  }
+  
+  button:disabled:hover {
+    /* Additional styling for the disabled button on hover */
+    /* Define any styles you want to apply when the button is disabled and hovered */
+  }
+  

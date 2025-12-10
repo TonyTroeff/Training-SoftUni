@@ -1,0 +1,20 @@
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "Sport Hat",
+    "quantity": "25",
+    "date": "2024-02-15",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  },
+  "d4b8d3e7-2d79-4421-a5b8-dca29e4c69e8": {
+    "name": "Classic Glasses",
+    "quantity": "30",
+    "date": "2024-02-18",
+    "_id": "d4b8d3e7-2d79-4421-a5b8-dca29e4c69e8"
+  },
+  "f6c9a109-3f8d-42c2-9b79-2c4b8968ef19": {
+    "name": "Leather Wallet",
+    "quantity": "20",
+    "date": "2024-02-20",
+    "_id": "f6c9a109-3f8d-42c2-9b79-2c4b8968ef19"
+  }
+}

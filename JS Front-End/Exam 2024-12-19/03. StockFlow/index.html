@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>StockFlow</title>
+        <link rel="stylesheet" href="./style/css/style.css" />
+    </head>
+
+    <body>
+        <h1>StockFlow</h1>
+        <main>
+            <section id="main-container">
+                <div id="form">
+                    <h1>Create Order</h1>
+                    <form action="#">
+                        <label for="name">Stock Name:</label>
+                        <input type="text" id="name" name="name" />
+
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" />
+
+                        <label for="date">Order date:</label>
+                        <input type="date" id="date" name="date" />
+
+                        <button id="order-btn">Order</button>
+                        <button id="edit-order" disabled>Edit order</button>
+                    </form>
+                </div>
+            </section>
+
+            <div id="wrapper">
+                <section id="order-info">
+                    <h2>Order List:</h2>
+                    <button id="load-orders">Load All Orders</button>
+                    <div id="list">
+                        <!-- <div class="container">
+                        <h2>Glasses</h2>
+                        <h3>2023-06-09</h3>
+                        <h3>100</h3>
+                        <button class="change-btn">Change</button>
+                        <button class="done-btn">Done</button>
+                    </div> -->
+                    </div>
+                </section>
+            </div>
+        </main>
+        <script src="app.js"></script>
+    </body>
+</html>
