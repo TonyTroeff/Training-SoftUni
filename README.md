@@ -1,5 +1,13 @@
 This repository contains solutions for all exercises from the courses I have trained in SoftUni
 
+## AI Integrations for Developers
+
+The resources for this course can be found under "AI Integrations for Developers".
+Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, or Demos).
+All materials are provided as Jupyter notebooks designed to run in [Google Colab](https://colab.research.google.com/).
+
+<img src="icons/jupyter.svg" width="72px" height="72px" /> <img src="icons/openai.svg" width="72px" height="72px" /> <img src="icons/openrouter.svg" width="72px" height="72px" /> <img src="icons/claude.svg" width="72px" height="72px" />
+
 ## Programming basics
 
 The solutions for this course can be found under "Programming Basics/C++", "Programming Basics/C#" or "Programming Basics/JavaScript".
