@@ -1,0 +1,3 @@
+# Django Basics
+
+In the Django Basics course, we will lay the foundations of web programming with Python and Django. We will explore how networks actually work, what HTTP is, and what the fundamental principles of web development are. The course will cover the core concepts of the MTV (Model–Template–View) architecture, such as Function-Based Views and Class-Based Views, and in addition to these, we will use forms (Form and ModelForm) for application development, work with media files, and store data in PostgreSQL. The training includes practical exercises (labs) and workshops for building complete, fully functional Django web applications.
