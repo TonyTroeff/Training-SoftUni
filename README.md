@@ -6,7 +6,7 @@ The resources for this course can be found under "AI Integrations for Developers
 Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, or Demos).
 All materials are provided as Jupyter notebooks designed to run in [Google Colab](https://colab.research.google.com/).
 
-<img src="icons/jupyter.svg" width="72px" height="72px" /> <img src="icons/openai.svg" width="72px" height="72px" /> <img src="icons/openrouter.svg" width="72px" height="72px" /> <img src="icons/claude.svg" width="72px" height="72px" />
+<img src="icons/jupyter.svg" width="72px" height="72px" /> <img src="icons/openai.svg" width="72px" height="72px" /> <img src="icons/openrouter.svg" width="72px" height="72px" /> <img src="icons/claude.svg" width="72px" height="72px" /> <img src="icons/chromadb.svg" width="72px" height="72px" />
 
 ## Programming basics
 
