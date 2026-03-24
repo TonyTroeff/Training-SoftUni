@@ -1,0 +1,59 @@
+﻿Client CommonUser is successfully registered.
+CommonUser is already registered.
+Admin AdminUser1 is successfully registered with data access.
+user@applicationmail.bg is already used by another user.
+Admin AdminUser2 is successfully registered with data access.
+The number of application administrators is limited.
+Client john_doe is successfully registered.
+Client MikeRoss is successfully registered.
+Client janeSVG is successfully registered.
+Item: Laptop is added in the application. Price: 1200.00
+CommonUser has no data access.
+Laptop already exists in the application.
+Furniture is not a valid type for the application.
+UnknownUser has no data access.
+Service: SoftwareInstallation is added in the application. Price: 100.00
+Item: Monitor is added in the application. Price: 300.00
+Item: GamingMouse is added in the application. Price: 80.00
+Item: ExternalHardDrive is added in the application. Price: 120.00
+Service: AntivirusSubscrition is added in the application. Price: 50.00
+Service: CloudStorage is added in the application. Price: 10.00
+Service: DeviceSetup is added in the application. Price: 40.00
+Laptop -> Price is updated: 1200.00 -> 1300.00
+Tablet does not exist in the application.
+john_doe has no data access.
+UnknownUser has no data access.
+CloudStorage -> Price is updated: 10.00 -> 15.00
+john_doe purchased Laptop. Price: 910.00
+MikeRoss purchased Monitor. Price: 300.00
+AdminUser1 has no authorization for this functionality.
+SmartWatch does not exist in the application.
+Laptop is out of stock.
+UnknownUser has no authorization for this functionality.
+MikeRoss purchased CloudStorage. Price: 12.00
+john_doe purchased GamingMouse. Price: 56.00
+CloudStorage is out of stock.
+john_doe purchased SoftwareInstallation. Price: 80.00
+MikeRoss purchased AntivirusSubscrition. Price: 40.00
+john_doe purchased ExternalHardDrive. Price: 84.00
+janeSVG has no data access.
+7 products are listed again.
+janeSVG purchased CloudStorage. Price: 12.00
+Application administration:
+AdminUser1 - Status: Admin, Contact Info: hidden
+AdminUser2 - Status: Admin, Contact Info: hidden
+Clients:
+CommonUser - Status: Client, Contact Info: user@applicationmail.bg
+janeSVG - Status: Client, Contact Info: jennifer_savage@mail.de
+-Black Friday Purchases: 1
+--CloudStorage
+john_doe - Status: Client, Contact Info: john.doe@gmail.com
+-Black Friday Purchases: 4
+--Laptop
+--GamingMouse
+--SoftwareInstallation
+--ExternalHardDrive
+MikeRoss - Status: Client, Contact Info: mike.ross@hotmail.com
+-Black Friday Purchases: 2
+--CloudStorage
+--AntivirusSubscrition
