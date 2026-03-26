@@ -6,6 +6,9 @@ bin/
 obj/
 x64/
 
+# Test results
+TestResults/
+
 # Java
 target/
 .mvn/
