@@ -23,3 +23,6 @@ cmake-build-debug/
 
 # JavaScript
 node_modules/
+
+# Python
+venv/
