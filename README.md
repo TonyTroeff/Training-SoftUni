@@ -6,7 +6,15 @@ The resources for this course can be found under "AI Integrations for Developers
 Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, or Demos).
 All materials are provided as Jupyter notebooks designed to run in [Google Colab](https://colab.research.google.com/).
 
-<img src="icons/jupyter.svg" width="72px" height="72px" align="middle" /> <img src="icons/openai.svg" width="72px" height="72px" align="middle" /> <img src="icons/claude.svg" width="72px" height="72px" align="middle" /> <img src="icons/gemini.svg" width="72px" height="72px" align="middle" /> <img src="icons/openrouter.svg" width="72px" height="72px" align="middle" /> <img src="icons/elevenlabs.svg" width="72px" height="72px" align="middle" /> <img src="icons/lumaai.svg" width="72px" height="72px" align="middle" /> <img src="icons/chromadb.svg" width="72px" height="72px" align="middle" />
+<img src="icons/jupyter.svg" width="72px" height="72px" align="middle" /> <img src="icons/openai.svg" width="72px" height="72px" align="middle" /> <img src="icons/claude.svg" width="72px" height="72px" align="middle" /> <img src="icons/gemini.svg" width="72px" height="72px" align="middle" /> <img src="icons/openrouter.svg" width="72px" height="72px" align="middle" /> <img src="icons/elevenlabs.svg" width="72px" height="72px" align="middle" /> <img src="icons/lumaai.svg" width="72px" height="72px" align="middle" /> <img src="icons/chromadb.svg" width="72px" height="72px" align="middle" /> <img src="icons/huggingface.svg" width="72px" height="72px" align="middle" /> <img src="icons/kaggle.svg" width="72px" height="72px" align="middle" />
+
+## AI Agents and Workflows for Developers
+
+The resources for this course can be found under "AI Agents and Workflows for Developers".
+Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, or Demos).
+All materials are provided as Jupyter notebooks designed to run in [Google Colab](https://colab.research.google.com/).
+
+<img src="icons/n8n.svg" width="72px" height="72px" align="middle" /> <img src="icons/langchain.svg" width="72px" height="72px" align="middle" />
 
 ## Programming basics
 
