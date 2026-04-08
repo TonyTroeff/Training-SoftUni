@@ -1,0 +1,294 @@
+{
+  "name": "Convert GitHub file from Markdown to HTML",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -16
+      ],
+      "id": "436fc1ae-0bf5-4b63-9e66-cf41186a4b40",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Parameters').item.json.user }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Parameters').item.json.repository }}",
+          "mode": "name"
+        },
+        "filePath": "={{ $('Parameters').item.json.path }}/{{ $('Parameters').item.json.fileName }}",
+        "binaryPropertyName": "file",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "d74f2597-25a4-4788-b1a5-82ec1f1058b4",
+      "name": "Get a file",
+      "webhookId": "58db3fdd-f869-4679-a78f-f3fcd3b17491",
+      "credentials": {
+        "githubApi": {
+          "id": "nnUP5dJKDIB0cITq",
+          "name": "GitHub Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "file",
+        "destinationKey": "markdown",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "ead4876e-775c-45d5-bae7-84e5c1504b86",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.markdown }}",
+        "destinationKey": "html",
+        "options": {
+          "completeHTMLDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "87d4a421-1a0f-4891-84d3-33d868fd8b4b",
+      "name": "Markdown-to-HTML"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "binaryPropertyName": "intermediate",
+        "options": {
+          "fileName": "intermediate.txt"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        -16
+      ],
+      "id": "223c897f-8e9a-41b7-aa01-9d99d4927ffd",
+      "name": "HTML-to-File"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "intermediate",
+        "destinationKey": "base64html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        -16
+      ],
+      "id": "9f43ac16-0f44-411c-ba6d-effe72f5ddce",
+      "name": "File-to-Base64"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64html",
+        "binaryPropertyName": "result",
+        "options": {
+          "fileName": "result.html",
+          "mimeType": "text/html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1296,
+        -16
+      ],
+      "id": "9f1ca8ac-ee86-481e-8403-865d2a6c995c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const user = $('Parameters').item.json.user;\nconst repository = $('Parameters').item.json.repository;\nconst path = $('Parameters').item.json.path;\n\nlet html = $input.item.json.html;\n\nhtml = html.replace('</head>', `<base href=\"https://raw.githubusercontent.com/${user}/${repository}/refs/heads/main/${path}\">\\n</head>`)\n\n\nreturn { json: { html } }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -16
+      ],
+      "id": "1f5f85cb-bee7-43e0-8c03-695aba3547c7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14c08994-29f3-43bc-951b-ffbf9b42eb79",
+              "name": "user",
+              "value": "TonyTroeff",
+              "type": "string"
+            },
+            {
+              "id": "669c5f77-da61-451d-b94b-4b3b7153803d",
+              "name": "repository",
+              "value": "Training-SoftUni",
+              "type": "string"
+            },
+            {
+              "id": "6ec10fb8-932b-44af-8a15-59ace45cea64",
+              "name": "path",
+              "value": "AI Integrations for Developers",
+              "type": "string"
+            },
+            {
+              "id": "0bde913a-a109-4fa7-bc62-b8cc2d9c71d8",
+              "name": "fileName",
+              "value": "README.md",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "43174d1d-5b34-4b9d-869e-f143969cb255",
+      "name": "Parameters"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Markdown-to-HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown-to-HTML": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML-to-File": {
+      "main": [
+        [
+          {
+            "node": "File-to-Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File-to-Base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTML-to-File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f627e98-382f-42c8-9b94-42c24235fb39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "oGqnThiaELwukOcj",
+  "tags": []
+}

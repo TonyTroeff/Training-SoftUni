@@ -1,0 +1,241 @@
+{
+  "name": "Send a positive morning message (Idea #1)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        -80
+      ],
+      "id": "a8c5a175-e1ea-474b-8b0c-9c006156a862",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.positive.news/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -80
+      ],
+      "id": "51704be1-6e65-4c7d-b5f3-47fb32ea89f2",
+      "name": "Fetch positive news"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "127660ab-5919-423a-abfe-e5ec9c020d8e",
+              "leftValue": "={{ $json.pubDate.toDateTime().toUTC().startOf('day') }}",
+              "rightValue": "={{ $('Schedule Trigger').item.json.timestamp.toDateTime().toUTC().startOf('day') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "98c4a9fa-c2eb-4a19-8da9-e3e97eaa7154",
+      "name": "Filter recent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Today is {{ $('Schedule Trigger').item.json.timestamp.toDateTime().format('yyyy-MM-dd') }}.\nI found {{ $json.positiveNews.length }} positive news:\n\n{{ $json.positiveNews.map(x => x.content).join('\\n=====\\n') }}",
+        "options": {
+          "systemMessage": "You are a helpful personal assistant and your task is to prepare a nice email for your principal. You main task is to cheer them up. For this purpose, they will provide the current date and a few recent positive news. You can use all kind of ideas, quotes, humor to make them feel happy.\n\nGuardrails:\n- Generate the body of the email. Do not suggest a subject for the email.\n- Use only the news provided to you in the following user message. Nothing more.\n- Do not leave any placeholders in the email body.\n- Call your principal by name: \"Tony\".\n- You don’t have a name, but if you need to refer to yourself, use “your personal assistant.”\n- Keep your output concise. No need for unnecessary details."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -80
+      ],
+      "id": "3e9e7bd1-1b39-476b-9394-59bb5cc37ac8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5-nano"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 1024,
+          "reasoningEffort": "low",
+          "timeout": 60000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        520,
+        144
+      ],
+      "id": "537fdf74-9ced-4872-803a-715aeb52db61",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "positiveNews",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -80
+      ],
+      "id": "fb6818d5-0ab3-4e2a-acf4-f84f739bcac7",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "tony13troev@gmail.com",
+        "subject": "=Hey! It's a new day ({{ $('Schedule Trigger').item.json.timestamp.toDateTime().format('yyyy-MM-dd') }}) and you are doing great!",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": true,
+          "senderName": "The \"New day\" Welcoming Committee"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -80
+      ],
+      "id": "6225fbb0-d04d-43d6-a8a1-e14cc327ff84",
+      "name": "Send a mail",
+      "webhookId": "28ebfe4c-f301-40bb-9683-5eaf76e5cf9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch positive news",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch positive news": {
+      "main": [
+        [
+          {
+            "node": "Filter recent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter recent": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "931ef8ef-ae56-49a9-8121-b031bb68b0b4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "hoyRld8XygfrjOgl",
+  "tags": []
+}

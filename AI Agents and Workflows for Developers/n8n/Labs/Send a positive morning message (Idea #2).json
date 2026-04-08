@@ -1,0 +1,258 @@
+{
+  "name": "Send a positive morning message (Idea #2)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -176
+      ],
+      "id": "04ee1776-c811-469d-8d15-b2956dd495b8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Generate an inspirational email body. You can use the \"fetch web\" built-in tool to load information about some recent positive news.",
+        "options": {
+          "systemMessage": "You are a helpful assistant. You have to prepare a positive morning message to your principal.\n\nRules:\n- Do not include templates in the email body. Use the \"Mr./Mrs.\" text to refer to the principal.\n- Do not include any phrases that are not part of the email body.",
+          "maxIterations": 7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        -80
+      ],
+      "id": "39272be1-ffbc-4949-b94a-4b006dafb61d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5-nano"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -312,
+        144
+      ],
+      "id": "54cc117b-5706-4cdb-b430-dc59ca1096bc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get mails').item.json.Email }}",
+        "subject": "Happy new morning!",
+        "emailType": "text",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -80
+      ],
+      "id": "1e9bc392-35c7-4feb-a796-fdde54ce14f5",
+      "name": "Send a message",
+      "webhookId": "d345626c-5381-4633-ad0d-b72b0a23519a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        16
+      ],
+      "id": "2daa6e3e-4dd8-4547-a38c-2e4c4bd99dc0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19HTXdMlwRg4qOwxbFvnjyayacF5zfCSZ_MhB5hZysW0",
+          "mode": "list",
+          "cachedResultName": "Mail list",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19HTXdMlwRg4qOwxbFvnjyayacF5zfCSZ_MhB5hZysW0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19HTXdMlwRg4qOwxbFvnjyayacF5zfCSZ_MhB5hZysW0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "542689f0-85ff-4dc8-a9b5-a20f303fdccb",
+      "name": "Get mails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0d741393-3904-487b-98d2-5af5628f84d4",
+              "leftValue": "={{ $json['Send \"New morning\" message'] }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "c139baf3-280a-4256-b605-736666447642",
+      "name": "Filter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get mails": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fac12efc-d865-41c5-b296-f297eb4569a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "zVtEJVRuQCmOvejf",
+  "tags": []
+}

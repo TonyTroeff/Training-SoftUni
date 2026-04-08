@@ -1,0 +1,109 @@
+{
+  "name": "Merge greetings with the users based on the language",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f7f8068b-52c9-4038-bd67-9ee50136e4fd",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        368,
+        256
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      name: 'Stefan',\n      language: 'de',\n    }\n  },\n  {\n    json: {\n      name: 'Jim',\n      language: 'en',\n    }\n  },\n  {\n    json: {\n      name: 'Hans',\n      language: 'de',\n    }\n  }\n];"
+      },
+      "id": "860e5e46-a04d-41cb-b91a-c9f02603bcdf",
+      "name": "Sample data (name + language)",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        592,
+        160
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      greeting: 'Good morning!',\n      language: 'en',\n    }\n  },\n  {\n    json: {\n      greeting: 'Guten Morgen',\n      language: 'de',\n    }\n  }\n];"
+      },
+      "id": "5c6a867b-fd8a-49b7-ac35-ff84ed6d89f7",
+      "name": "Sample data (greeting + language)",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        592,
+        352
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "language",
+        "options": {}
+      },
+      "id": "08fca489-8f4c-4327-9919-922bd1be1cd5",
+      "name": "Merge (name + language + greeting)",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        816,
+        256
+      ],
+      "typeVersion": 3
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Sample data (name + language)": {
+      "main": [
+        [
+          {
+            "node": "Merge (name + language + greeting)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample data (greeting + language)": {
+      "main": [
+        [
+          {
+            "node": "Merge (name + language + greeting)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Sample data (name + language)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sample data (greeting + language)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec29d147-ef0c-4468-ba7d-733d33c3fe7e",
+  "meta": {
+    "templateId": "655",
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "gEp2MYpIYGU2opyD",
+  "tags": []
+}

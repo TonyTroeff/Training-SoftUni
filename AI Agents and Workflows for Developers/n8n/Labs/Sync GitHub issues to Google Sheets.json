@@ -1,0 +1,159 @@
+{
+  "name": "Sync GitHub issues to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -128
+      ],
+      "id": "a30d9790-df1f-4e26-b0c9-a5b732f1fc40",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "owner": {
+          "__rl": true,
+          "value": "TryAtSoftware",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Extensions"
+        },
+        "limit": 100,
+        "getRepositoryIssuesFilters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        -128
+      ],
+      "id": "e5570125-6efa-4d63-b11f-d347284930cb",
+      "name": "Get issues of a repository",
+      "webhookId": "ac67e1ca-dc19-4320-aac6-1a68ec846afd",
+      "credentials": {
+        "githubApi": {
+          "id": "nnUP5dJKDIB0cITq",
+          "name": "GitHub Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Zk1Ri5-gPoAys_ml49fwHi7o6pkgkiMchYVVYSsXuBo",
+          "mode": "list",
+          "cachedResultName": "GitHub Issues",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zk1Ri5-gPoAys_ml49fwHi7o6pkgkiMchYVVYSsXuBo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=TryAtSoftware.Extensions",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Issue #": "={{ $('Get issues of a repository').item.json.number }}",
+            "Title": "={{ $('Get issues of a repository').item.json.title }}",
+            "State": "={{ $('Get issues of a repository').item.json.state }}"
+          },
+          "matchingColumns": [
+            "Issue #"
+          ],
+          "schema": [
+            {
+              "id": "Issue #",
+              "displayName": "Issue #",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        -128
+      ],
+      "id": "da5275c2-4d91-4424-8396-23674267e26d",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get issues of a repository",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get issues of a repository": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "28360505-c52e-4955-8066-8e1cf58fedcd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "Dy5n3lY0GrLgitaq",
+  "tags": []
+}

@@ -1,0 +1,415 @@
+{
+  "name": "Handle change in the \"Meeting Notes\" Notion DB",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "databaseId": {
+          "__rl": true,
+          "value": "1c31bbb2-277b-80cb-90cf-fe4013e1732d",
+          "mode": "list",
+          "cachedResultName": "Meeting Notes",
+          "cachedResultUrl": "https://www.notion.so/1c31bbb2277b80cb90cffe4013e1732d"
+        },
+        "simple": false
+      },
+      "id": "cdac3d4f-5741-4133-bd69-0a926c2df41f",
+      "name": "On new page added",
+      "type": "n8n-nodes-base.notionTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        -432
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cc09e76d-e1b1-4f71-ba0d-d70ff30cf5c1",
+              "leftValue": "={{ $json.properties['AI Enhancement'].select }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0ed35db6-7177-4d89-9672-ad4c5db06f36",
+              "leftValue": "={{ $json.properties['AI Enhancement'].select.id }}",
+              "rightValue": "=6621e025-f30c-46e8-a006-5e19bbc5dc1a",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1584,
+        -336
+      ],
+      "id": "22651111-c546-4484-9d32-b2afa9fa00f5",
+      "name": "If should enhance"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Extract page details').item.json.pageId }}",
+          "mode": "id"
+        },
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "AI Enhancement|select",
+              "selectValue": "Initiated"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1136,
+        -336
+      ],
+      "id": "fa6516d2-d390-4792-8449-a126fb6ec23c",
+      "name": "Initiate AI Enhancement",
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Extract page details').item.json.pageId }}",
+          "mode": "id"
+        },
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "AI Enhancement|select",
+              "selectValue": "Failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        -288
+      ],
+      "id": "4f625ddd-1d09-4b7a-b368-749fe728626e",
+      "name": "Fail AI Enhancement",
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "=The AI Enhancement failed:\n{{ $('Improve Writing').item.json.error }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -336
+      ],
+      "id": "89b1d4eb-f3f0-46b3-8d4e-ea6243eaccd9",
+      "name": "Propagate error"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZsFliuvxjB5c5YZb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ZsFliuvxjB5c5YZb",
+          "cachedResultName": "Improve Writing in Notion Page"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pageId": "={{ $('Extract page details').item.json.pageId }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "pageId",
+              "displayName": "pageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -912,
+        -336
+      ],
+      "name": "Improve Writing",
+      "id": "359833e3-744d-41b4-b408-5826558ed6c2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Extract page details').item.json.pageId }}",
+          "mode": "id"
+        },
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "AI Enhancement|select",
+              "selectValue": "Done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -688,
+        -416
+      ],
+      "id": "6148a931-e512-481a-8066-99c1255403e1",
+      "name": "Finish AI Enhancement",
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "event": "pagedUpdatedInDatabase",
+        "databaseId": {
+          "__rl": true,
+          "value": "1c31bbb2-277b-80cb-90cf-fe4013e1732d",
+          "mode": "list",
+          "cachedResultName": "Meeting Notes",
+          "cachedResultUrl": "https://www.notion.so/1c31bbb2277b80cb90cffe4013e1732d"
+        },
+        "simple": false
+      },
+      "type": "n8n-nodes-base.notionTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        -240
+      ],
+      "id": "e06a181d-62b4-41f5-b02f-81eecbd4aa4f",
+      "name": "On existing page updated",
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4630ae66-20c8-48d3-afaf-5eebe655fd27",
+              "name": "pageId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1360,
+        -336
+      ],
+      "id": "81ad356d-6cf4-408d-abfe-7f3932f3e4b2",
+      "name": "Extract page details"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On new page added": {
+      "main": [
+        [
+          {
+            "node": "If should enhance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If should enhance": {
+      "main": [
+        [
+          {
+            "node": "Extract page details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Initiate AI Enhancement": {
+      "main": [
+        [
+          {
+            "node": "Improve Writing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail AI Enhancement": {
+      "main": [
+        [
+          {
+            "node": "Propagate error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Improve Writing": {
+      "main": [
+        [
+          {
+            "node": "Finish AI Enhancement",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail AI Enhancement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finish AI Enhancement": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Fail AI Enhancement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On existing page updated": {
+      "main": [
+        [
+          {
+            "node": "If should enhance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract page details": {
+      "main": [
+        [
+          {
+            "node": "Initiate AI Enhancement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "21373ea5-ff65-4cd8-aaeb-4eabb3d22d64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab00938d33db826ea1410cd7d91ffe3a50b882d0c6b10545b6c6f4027be4a4de"
+  },
+  "id": "Y3LPE2Tu0ccQiES8",
+  "tags": []
+}

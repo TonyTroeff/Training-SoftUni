@@ -1,0 +1,367 @@
+{
+  "name": "Explore: Building blocks",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -224
+      ],
+      "id": "cef578a6-0c45-4d76-b074-2d8286993216",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "sendTo": "tony13troev@gmail.com",
+        "subject": "=City:  {{ $json.name }}",
+        "emailType": "text",
+        "message": "=Hey! This is {{ $json.name }}, {{ $json.country }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        -112
+      ],
+      "id": "5781ae53-3957-4c8c-a6a2-377871fedef7",
+      "name": "Send a message",
+      "webhookId": "628163a6-fbd4-4ed5-8b1d-fac777f7c4dc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "cities",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        64
+      ],
+      "id": "0862339c-c00b-4b5b-8094-99abc0b4ae12",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "tony13troev@gmail.com",
+        "subject": "Aggregated city information",
+        "message": "=<ul>\n{{ $json.cities.map(x => `<li><strong>${x.name}</strong>, ${x.country}</li>`).join('\\n') }}\n</ul>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        -32
+      ],
+      "id": "487d15f6-95bf-492d-94ce-af0334cf2685",
+      "name": "Send an aggregated message",
+      "webhookId": "0311b162-591f-4b34-917c-31f2cef35eca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "edba1bd8-a0de-4cc0-a36e-484ddb384119",
+              "leftValue": "={{ $json.population }}",
+              "rightValue": 10000000,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        272,
+        -368
+      ],
+      "id": "a86e3ff9-abf8-4d6c-b7af-0f4b1f4f5a37",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4c843782-cbf0-4eb7-be97-faf3b29b1004",
+              "leftValue": "={{ $json.country }}",
+              "rightValue": "United",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -176,
+        -224
+      ],
+      "id": "12e4e954-b76e-4704-a783-c0bf718f0296",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        48,
+        -224
+      ],
+      "id": "e9784bf7-d165-418d-ac4a-b3641f075867",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\n$input.item.json.myNewField = 1;\n\nreturn {\n  json: {\n    cities: $json.cities.filter(x => x.name.length % 2 === 0)\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        160
+      ],
+      "id": "f49a54cd-04ff-40a8-83f0-8cb9c8f1d35d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "cities",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        160
+      ],
+      "id": "8c3b3d23-ada4-4934-a196-d3f47efa341c",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "name": "Sofia",
+          "country": "Bulgaria",
+          "population": 1300000
+        }
+      },
+      {
+        "json": {
+          "name": "Rome",
+          "country": "Italy",
+          "population": 4300000
+        }
+      },
+      {
+        "json": {
+          "name": "Paris",
+          "country": "France",
+          "population": 2100000
+        }
+      },
+      {
+        "json": {
+          "name": "Berlin",
+          "country": "Germany",
+          "population": 3700000
+        }
+      },
+      {
+        "json": {
+          "name": "Madrid",
+          "country": "Spain",
+          "population": 3200000
+        }
+      },
+      {
+        "json": {
+          "name": "London",
+          "country": "United Kingdom",
+          "population": 8900000
+        }
+      },
+      {
+        "json": {
+          "name": "New York",
+          "country": "United States",
+          "population": 8400000
+        }
+      },
+      {
+        "json": {
+          "name": "Tokyo",
+          "country": "Japan",
+          "population": 14000000
+        }
+      },
+      {
+        "json": {
+          "name": "Sydney",
+          "country": "Australia",
+          "population": 5300000
+        }
+      },
+      {
+        "json": {
+          "name": "Cairo",
+          "country": "Egypt",
+          "population": 10000000
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send an aggregated message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send an aggregated message": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3cf969ab-8392-458b-8bfe-907a516af772",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "l5e3XvLzBJDkZFt5",
+  "tags": []
+}

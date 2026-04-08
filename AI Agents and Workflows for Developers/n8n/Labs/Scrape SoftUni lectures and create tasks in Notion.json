@@ -1,0 +1,488 @@
+{
+  "name": "Scrape SoftUni lectures and create tasks in Notion",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Create tasks for SoftUni course",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Training ID",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Training Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Parent Task ID",
+              "placeholder": "Take this value from the parent task URL",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -336,
+        -128
+      ],
+      "id": "68e26da2-7e1c-4522-a729-1645777a7552",
+      "name": "On form submission",
+      "webhookId": "c75a6f21-1217-4ce8-88b7-16ca689245b6"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "lessons",
+              "cssSelector": "section.lectures li.lecture article.lecture-title",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -128
+      ],
+      "id": "0596dd7e-e900-4e61-8f10-e19efb2796d6",
+      "name": "Extract lessons"
+    },
+    {
+      "parameters": {
+        "url": "=https://softuni.bg/trainings/{{ $json['Training ID'] }}/{{ $json['Training Name'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "3059b8ea-d8d0-4487-bfd5-cf6fe4d2f58e",
+      "name": "Render course page"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "lessons",
+        "options": {
+          "destinationFieldName": "lesson"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -128
+      ],
+      "id": "36d4075b-fa9d-49d1-8d37-800474748997",
+      "name": "Split out lessons"
+    },
+    {
+      "parameters": {
+        "url": "=https://softuni.bg/trainings/trainings/GetLectureDetails",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "trainingId",
+              "value": "={{ $('On form submission').item.json['Training ID'] }}"
+            },
+            {
+              "name": "lectureId",
+              "value": "={{ $json.lesson.replace(/^\\#lesson\\-/, '') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        496,
+        -128
+      ],
+      "id": "22acd88c-1c55-43bc-86f7-c949135e9b20",
+      "name": "Render lesson page"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "p.lecture-details-title"
+            },
+            {
+              "key": "text",
+              "cssSelector": "div.lecture-details-short-description-list"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        -128
+      ],
+      "id": "3df2a12b-7ef0-4df4-8338-e3284e329385",
+      "name": "Extract lesson details"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fbf1b179-5953-4654-b6b9-13994826946c",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        912,
+        -128
+      ],
+      "id": "ccb54a95-f2da-4203-a684-695b4c3ffd41",
+      "name": "Keep non-empty items"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a helpful lesson analyzer. The user will provide short description (in Bulgarian) about a given lesson and you need to extract key details.\n\nRules:\n- The name can be usually found in the beginning of the user message\n- The type can be either \"Lecture\", \"Workshop\", or \"Other\"\n- If the lesson name starts with \"Exercise: \", it should be classified as \"Lecture\" and the prefix should be discarded\n- If the lesson name is \"Regular Exam\", \"Retake Exam\", \"Resources\", \"Course Info\", etc., classify as \"Other\"\n- The date should be interpreted from the course name and the provided lesson description"
+            },
+            {
+              "content": "=The course is called: {{ $('On form submission').item.json['Training Name'] }}\nThe lesson is called: {{ $json.title }}\nLesson description:\n{{ $json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoning": {
+            "reasoningOptions": {
+              "effort": "low",
+              "summary": "none"
+            }
+          },
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "verbosity": "low",
+              "name": "lesson_analysis",
+              "schema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"description\": \"Name of the event\"\n    },\n    \"type\": {\n      \"type\": \"string\",\n      \"enum\": [\"Lecture\", \"Workshop\", \"Other\"],\n      \"description\": \"Type of the event\"\n    },\n    \"date\": {\n      \"type\": \"string\",\n      \"format\": \"date\",\n      \"description\": \"Date of the event in YYYY-MM-DD format\"\n    },\n    \"realtime\": {\n      \"type\": \"boolean\",\n      \"description\": \"Whether the event is in real-time\"\n    }\n  },\n  \"required\": [\"name\", \"type\", \"date\", \"realtime\"],\n  \"additionalProperties\": false\n}",
+              "strict": true
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        -128
+      ],
+      "id": "89ed211c-0362-42d8-8dd3-62c73ef097e5",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c514ebde-eefb-472f-a522-e7571a67512d",
+              "name": "lesson",
+              "value": "={{ $json.output[0].content[0].text }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1456,
+        -128
+      ],
+      "id": "b65407ba-84fb-4f80-ba2a-a930dbc93e13",
+      "name": "Extract structured output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "932e212e-0a87-499b-aba5-5cc9fe42b49f",
+              "leftValue": "={{ $json.lesson.realtime }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "4a83058a-e449-47d1-ba32-13fb2dacc2e0",
+              "leftValue": "={{ $json.lesson.type }}",
+              "rightValue": "Other",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -128
+      ],
+      "id": "595834c5-8fcd-43b9-aa6e-59fe9d316a12",
+      "name": "Keep real-time lectures and workshops only"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "1c41bbb2-277b-8030-b6c0-f4c2618549de",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "https://www.notion.so/1c41bbb2277b8030b6c0f4c2618549de"
+        },
+        "title": "=SoftUni {{ $json.lesson.type }}: \"{{ $json.lesson.name }}\"",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Engagement Period|date",
+              "range": true,
+              "dateStart": "={{ $json.lesson.date }} 18:00:00",
+              "dateEnd": "={{ $json.lesson.date }} 22:00:00",
+              "timezone": "Europe/Sofia"
+            },
+            {
+              "key": "Category|select",
+              "selectValue": "SoftUni"
+            },
+            {
+              "key": "Status|status",
+              "statusValue": "Forthcoming"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "High"
+            },
+            {
+              "key": "Parent task|relation",
+              "relationValue": [
+                "={{ $('On form submission').item.json['Parent Task ID'] }}"
+              ]
+            },
+            {
+              "key": "Assign|people",
+              "peopleValue": [
+                "1c3d872b-594c-8154-8714-00023fab5c9b"
+              ]
+            }
+          ]
+        },
+        "options": {
+          "iconType": "emoji"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        -128
+      ],
+      "id": "530fd05c-26d1-4ebd-b961-01d0c5d5ca31",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "xWu222HL5l98EMCS",
+          "name": "Notion Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Render course page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render course page": {
+      "main": [
+        [
+          {
+            "node": "Extract lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract lessons": {
+      "main": [
+        [
+          {
+            "node": "Split out lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out lessons": {
+      "main": [
+        [
+          {
+            "node": "Render lesson page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render lesson page": {
+      "main": [
+        [
+          {
+            "node": "Extract lesson details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract lesson details": {
+      "main": [
+        [
+          {
+            "node": "Keep non-empty items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep non-empty items": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Extract structured output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract structured output": {
+      "main": [
+        [
+          {
+            "node": "Keep real-time lectures and workshops only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep real-time lectures and workshops only": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6403abae-4070-410f-b612-bef487a44e0b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "n1xoh6Y7p9Ls0KOV",
+  "tags": []
+}

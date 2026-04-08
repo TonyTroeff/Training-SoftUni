@@ -1,0 +1,151 @@
+{
+  "name": "Sync GitHub issues to Data tables",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -128
+      ],
+      "id": "b1e061a2-bd41-4c81-b9be-6b03b5b7c4df",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "owner": {
+          "__rl": true,
+          "value": "TryAtSoftware",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Extensions"
+        },
+        "limit": 100,
+        "getRepositoryIssuesFilters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        -128
+      ],
+      "id": "02d21286-e2e6-4489-82a3-32f09b3b147f",
+      "name": "Get issues of a repository",
+      "webhookId": "3ffa7efc-6c2c-4304-b255-25b44cec58b3",
+      "credentials": {
+        "githubApi": {
+          "id": "nnUP5dJKDIB0cITq",
+          "name": "GitHub Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "ZMrZ2AOz6By6Mgno",
+          "mode": "list",
+          "cachedResultName": "GitHub-to-Drive sync state",
+          "cachedResultUrl": "/projects/4U0lXLahTZRaQSyZ/datatables/ZMrZ2AOz6By6Mgno"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "issueId",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "issueId": "={{ $json.id }}",
+            "issueTimestamp": "={{ $json.updated_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "issueId",
+              "displayName": "issueId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "issueTimestamp",
+              "displayName": "issueTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -128
+      ],
+      "id": "e2451b72-afb7-4612-97b5-6d71536d193f",
+      "name": "Upsert row(s)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get issues of a repository",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get issues of a repository": {
+      "main": [
+        [
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert row(s)": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2a17a07e-45ab-4df0-9d1a-676fa8306781",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "FfVEXIaZBjYD8U2D",
+  "tags": []
+}

@@ -1,0 +1,305 @@
+{
+  "name": "Improve Writing in Notion Page",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.notion.com/v1/blocks/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"{{ $json.type }}\": {\n    \"rich_text\": [\n      {\n        \"type\": \"text\",\n        \"text\": {\n          \"content\": \"{{ $json.content }}\"\n        }\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "id": "428bacc0-e25d-4357-998f-f78a4b5dac29",
+      "name": "Update Block via API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        -16
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.pageId }}",
+          "mode": "id"
+        },
+        "returnAll": true
+      },
+      "id": "b8c9150f-f407-4d50-8842-b798ed24ff52",
+      "name": "Get Content Blocks",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1504,
+        -16
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "rcrrGvGw6QnYQAZS",
+          "name": "Notion Integration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "contentBlocks",
+        "include": "specifiedFields",
+        "fieldsToInclude": "id, type, content",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        -16
+      ],
+      "id": "b4635b5a-0a4e-415a-885c-db23cb538d50",
+      "name": "Aggregate Content Blocks"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "f4744d26-53c7-40d5-9883-e01dab9ac2ad",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\nconst enhancedContent = $input.item.json.output[0].content[0].text.split('\\n').filter(x => x != '');\n\nconst originalContentBlocks = $('Aggregate Content Blocks').first().json.contentBlocks;\nif (enhancedContent.length != originalContentBlocks.length) throw new Error(\"Content block arrays have different length.\");\n\nreturn {\n    data: enhancedContent.map((x, idx) => ({ ...originalContentBlocks[idx], content: x }))\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -16
+      ],
+      "id": "d031d25e-e5ae-4fde-8a68-47b6f47d4d02",
+      "name": "Extract Enhanced Content Blocks"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "nvidia/nemotron-3-nano-4b",
+          "mode": "list",
+          "cachedResultName": "NVIDIA/NEMOTRON-3-NANO-4B"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a professional writing editor. Your task is to improve the clarity, grammar, flow, and style of the given text blocks.\n\nINPUT FORMAT:\n- You will receive multiple text blocks formatted as: [<type>] <text>\n\nINSTRUCTIONS:\n- Improve each block independently.\n- Preserve the original meaning, intent, and factual content.\n- Maintain the original tone and style (e.g., formal remains formal, casual remains casual).\n- Correct grammar, punctuation, clarity, and sentence flow.\n- Make wording more natural and concise where appropriate.\n\nOUTPUT RULES:\n- Output ONLY the improved text.\n- Return each improved block on a separate line.\n- Do NOT add, remove, merge, split, or reorder blocks.\n- Do NOT include commentary, explanations, labels, or formatting notes.\n- Do NOT modify the content of headings - use them only as a reference.\n- Do NOT repeat the [<type>] tags.\n- Do NOT skip any blocks.\n- Every non-heading text block must end with a period."
+            },
+            {
+              "content": "={{ $json.contentBlocks.map((x, idx) => `[${x.type}] ${x.content}`).join('\\n') }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        -16
+      ],
+      "id": "1d7d7e34-f129-40a9-9b60-3d4b88334255",
+      "name": "Enhance Content",
+      "executeOnce": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "dwx3dCj3dCAdk1Sr",
+          "name": "LM Studio (DESKTOP-B16IVEM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "pageId"
+            }
+          ]
+        }
+      },
+      "id": "b4775483-10f3-4d34-94db-e81ae03b05c8",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -1728,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4eeece91-b7ee-477e-869d-62511e27dc7f",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1280,
+        -16
+      ],
+      "id": "0add5cd7-b1d4-4454-afed-7edc6d918b79",
+      "name": "Filter empty Content Blocks"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Content Blocks": {
+      "main": [
+        [
+          {
+            "node": "Filter empty Content Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Aggregate Content Blocks": {
+      "main": [
+        [
+          {
+            "node": "Enhance Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Update Block via API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Enhanced Content Blocks": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Enhance Content": {
+      "main": [
+        [
+          {
+            "node": "Extract Enhanced Content Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Update Block via API": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Content Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter empty Content Blocks": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Content Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3ed13a9-5e76-4375-98be-ae8f239cdeb6",
+  "meta": {
+    "instanceId": "ab00938d33db826ea1410cd7d91ffe3a50b882d0c6b10545b6c6f4027be4a4de"
+  },
+  "id": "ZsFliuvxjB5c5YZb",
+  "tags": []
+}

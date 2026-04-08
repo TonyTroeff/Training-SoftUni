@@ -1,0 +1,115 @@
+{
+  "name": "Create a suite of issues in Linear",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Create a new suite of issues",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Title",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "dd93a510-6f70-4f5e-b9fc-61db26e84786",
+      "name": "On form submission",
+      "webhookId": "86bf9a92-6121-4c39-88d8-a1d8e792604a"
+    },
+    {
+      "parameters": {
+        "teamId": "263b1a23-f727-4a3d-a547-633815bcf8e5",
+        "title": "=[Task] {{ $('On form submission').item.json.Title }}",
+        "additionalFields": {
+          "assigneeId": "788f79ee-f3ac-4375-b5d0-15d98758f719",
+          "priorityId": 3,
+          "stateId": "21ffbe25-beb8-49cc-ad5f-4fab66cc68c4"
+        }
+      },
+      "type": "n8n-nodes-base.linear",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "c6277516-315e-4b1a-a789-f62c0e30b239",
+      "name": "Create the [Task] issue",
+      "credentials": {
+        "linearApi": {
+          "id": "K02WOg4cCjwE2S79",
+          "name": "Linear Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "teamId": "263b1a23-f727-4a3d-a547-633815bcf8e5",
+        "title": "=[QA] {{ $('On form submission').item.json.Title }}",
+        "additionalFields": {
+          "assigneeId": "788f79ee-f3ac-4375-b5d0-15d98758f719",
+          "priorityId": 4,
+          "stateId": "859facab-def1-41ae-8dc2-63da2f8d2134"
+        }
+      },
+      "type": "n8n-nodes-base.linear",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "3f96353e-b122-4736-8fd0-362505036ff4",
+      "name": "Create the [QA] issue",
+      "credentials": {
+        "linearApi": {
+          "id": "K02WOg4cCjwE2S79",
+          "name": "Linear Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Create the [Task] issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create the [Task] issue": {
+      "main": [
+        [
+          {
+            "node": "Create the [QA] issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c88c404b-c35a-4cc8-a393-a61fd5047b0f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "wdbuywo0Ok8L6tMT",
+  "tags": []
+}

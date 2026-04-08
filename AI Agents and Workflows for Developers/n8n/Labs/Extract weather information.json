@@ -1,0 +1,398 @@
+{
+  "name": "Extract weather information",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -160
+      ],
+      "id": "b0d458c1-5dea-4e55-a7d6-b2becc374799",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "91128f47-2c98-4b0a-9fd8-e62404595ea8",
+              "name": "windSpeed",
+              "value": "={{ $('Fetch weather data').item.json.wind.speed }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        -256
+      ],
+      "id": "13dcb2da-5a62-4bcd-966d-4881df8dade8",
+      "name": "Extend with wind speed"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efcab350-d3c8-48b6-9152-59079603fa4f",
+              "name": "name",
+              "value": "={{ $('When clicking ‘Execute workflow’').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "8c5efbe6-89a9-4379-8411-e6e8c19c32d5",
+              "name": "country",
+              "value": "={{ $('When clicking ‘Execute workflow’').item.json.country }}",
+              "type": "string"
+            },
+            {
+              "id": "b79bc5bd-0887-4fee-9a9e-f556803858d8",
+              "name": "population",
+              "value": "={{ $('When clicking ‘Execute workflow’').item.json.population }}",
+              "type": "number"
+            },
+            {
+              "id": "f13874cd-3e33-424b-9b03-72acb5f07b45",
+              "name": "temperature",
+              "value": "={{ $('Fetch weather data').item.json.main.temp }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -160
+      ],
+      "id": "db1cd7d9-e326-40b0-97cc-19a15769f3c0",
+      "name": "Transform items"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.name }}, {{ $json.country }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -160
+      ],
+      "id": "6eb7e3df-4ea6-4520-8465-6fe46a37ccc6",
+      "name": "Fetch weather data",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "53XV2M3HrACWkpub",
+          "name": "OpenWeatherMap Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f1e45381-e0c4-4205-be88-990aae8231d9",
+              "leftValue": "={{ $json.main.temp }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        -160
+      ],
+      "id": "15e6bca2-76a5-488f-bf42-0687a302611d",
+      "name": "Filter by temperature"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1b6505f6-563e-4891-a672-2d10ddfe3b1a",
+              "leftValue": "={{ $('When clicking ‘Execute workflow’').item.json.population }}",
+              "rightValue": 5000000,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        -160
+      ],
+      "id": "5640b751-9a75-4470-ada5-90f4cac06a39",
+      "name": "Check population count"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ac7ffefb-f0b2-4266-83af-e66f06a7985a",
+              "name": "humidity",
+              "value": "={{ $('Fetch weather data').item.json.main.humidity }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        -64
+      ],
+      "id": "b588018e-8f5c-4dd2-b53d-7fa8eb227baf",
+      "name": "Extend with humidity"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        976,
+        -160
+      ],
+      "id": "215186f1-4916-44c1-81ff-3de9d740f3d6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -160
+      ],
+      "id": "d50eac97-c452-4f52-b7ed-efd0eea373c0",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "name": "Sofia",
+          "country": "Bulgaria",
+          "population": 1300000
+        }
+      },
+      {
+        "json": {
+          "name": "Rome",
+          "country": "Italy",
+          "population": 4300000
+        }
+      },
+      {
+        "json": {
+          "name": "Paris",
+          "country": "France",
+          "population": 2100000
+        }
+      },
+      {
+        "json": {
+          "name": "Berlin",
+          "country": "Germany",
+          "population": 3700000
+        }
+      },
+      {
+        "json": {
+          "name": "Madrid",
+          "country": "Spain",
+          "population": 3200000
+        }
+      },
+      {
+        "json": {
+          "name": "London",
+          "country": "United Kingdom",
+          "population": 8900000
+        }
+      },
+      {
+        "json": {
+          "name": "New York",
+          "country": "United States",
+          "population": 8400000
+        }
+      },
+      {
+        "json": {
+          "name": "Tokyo",
+          "country": "Japan",
+          "population": 14000000
+        }
+      },
+      {
+        "json": {
+          "name": "Sydney",
+          "country": "Australia",
+          "population": 5300000
+        }
+      },
+      {
+        "json": {
+          "name": "Cairo",
+          "country": "Egypt",
+          "population": 10000000
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch weather data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform items": {
+      "main": [
+        [
+          {
+            "node": "Check population count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch weather data": {
+      "main": [
+        [
+          {
+            "node": "Filter by temperature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by temperature": {
+      "main": [
+        [
+          {
+            "node": "Transform items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check population count": {
+      "main": [
+        [
+          {
+            "node": "Extend with wind speed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extend with humidity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extend with humidity": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extend with wind speed": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3e298cff-9eea-4ae4-b270-e11a204f415d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "j0m351eOw2NjZVZ1",
+  "tags": []
+}
