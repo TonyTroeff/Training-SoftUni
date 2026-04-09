@@ -1,0 +1,184 @@
+{
+  "name": "Task Management MCP Server (Google Sheets)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "task-management"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        384
+      ],
+      "id": "f69ac14f-1c95-4806-8d8b-40b6f3edc42f",
+      "name": "MCP Server Trigger",
+      "webhookId": "87ccbfc4-3bda-4933-adff-974d2040b6d9"
+    },
+    {
+      "parameters": {
+        "description": "Creates a new task. Use this tool when you start working over a new problem.",
+        "workflowId": {
+          "__rl": true,
+          "value": "xrpxu7v4BlCe7I1J",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xrpxu7v4BlCe7I1J",
+          "cachedResultName": "Create a new sheet with header"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "spreadseet_url": "https://docs.google.com/spreadsheets/d/1L3F1yX8Syf4yJcBGFb_lE4ttCCUeOrLnpQkaa2Zd5ik/edit?usp=drivesdk",
+            "sheet_name": "={{ $fromAI(\"task\", \"The name of the task. This value MUST be unique. To guarantee uniqueness, you can use a short abbreviation for the actual task and a timestamp in the format \\\"yyyymmddhhmmss\\\".\") }}",
+            "columns": "Step,Complexity"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "spreadseet_url",
+              "displayName": "spreadseet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sheet_name",
+              "displayName": "sheet_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "columns",
+              "displayName": "columns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        608
+      ],
+      "id": "31f43f34-61e9-4f2f-b4d0-55dd86bc608e",
+      "name": "create_new_task"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Records a reasoning or execution step taken toward solving a task. Use this tool to log reasoning, decisions, or intermediate results. Refer to it as soon as progress is made.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1L3F1yX8Syf4yJcBGFb_lE4ttCCUeOrLnpQkaa2Zd5ik/edit?usp=drivesdk",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"task\", \"The name of the task.\") }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Step": "={{ $fromAI(\"step\", \"A short description of the currently executed step.\") }}",
+            "Complexity": "={{ $fromAI(\"complexity\", \"The complexity of the step - can be a number from 1 to 10.\") }}"
+          },
+          "matchingColumns": [
+            "Step"
+          ],
+          "schema": [
+            {
+              "id": "Step",
+              "displayName": "Step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Complexity",
+              "displayName": "Complexity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -608,
+        608
+      ],
+      "id": "352b9e2f-0759-480e-9894-484cd2107f2e",
+      "name": "write_step",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "create_new_task": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_step": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "04a9c522-85bf-45e7-9e6d-56188fa6c571",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "Jg9jKOpjUuvA7xDr",
+  "tags": []
+}

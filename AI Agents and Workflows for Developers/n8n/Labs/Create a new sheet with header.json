@@ -1,0 +1,200 @@
+{
+  "name": "Create a new sheet with header",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "spreadsheet_url"
+            },
+            {
+              "name": "sheet_name"
+            },
+            {
+              "name": "columns"
+            }
+          ]
+        }
+      },
+      "id": "a6a197e7-36f4-4600-9f1c-6d7041a71beb",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -928,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheet_url }}",
+          "mode": "url"
+        },
+        "title": "={{ $json.sheet_name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -704,
+        592
+      ],
+      "id": "68b81f5b-7868-494c-8f1f-6d8c7c91a2fa",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{\n  JSON.stringify(\n    Object.assign(\n      {},\n      ...$('Start').item.json.columns.split(\",\")\n        .map(x => ({ [x]: null }))\n    )\n  )\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        592
+      ],
+      "id": "3ddb3f8f-904a-41a2-b9a1-3885b76e1e3e",
+      "name": "Prepare header"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Create sheet').item.json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Create sheet').item.json.sheetId }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        592
+      ],
+      "id": "077b768f-0d9e-4dbb-8c5c-458ad05a3f31",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a07cce1-1d23-4d66-b039-522788021b53",
+              "name": "result",
+              "value": "ok",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        592
+      ],
+      "id": "6e6deed2-e2ed-4f68-a99e-5c65fc5e07c6",
+      "name": "Prepare output"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "spreadseet_url": "https://docs.google.com/spreadsheets/d/1L3F1yX8Syf4yJcBGFb_lE4ttCCUeOrLnpQkaa2Zd5ik",
+          "sheet_name": "task_20260407153000",
+          "columns": "Step,Complexity"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create sheet": {
+      "main": [
+        [
+          {
+            "node": "Prepare header",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare header": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Prepare output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01a744a0-99c8-49e5-992c-b03a49138421",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "xrpxu7v4BlCe7I1J",
+  "tags": []
+}
