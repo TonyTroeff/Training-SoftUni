@@ -1,0 +1,117 @@
+{
+  "name": "Search news",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f0eadf7f-356b-4a08-a53e-3e0c3e9bb620",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "medium"
+          }
+        },
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        176
+      ],
+      "id": "92c25e76-44d7-41d3-befb-b4b5c24fc419",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a highly reliable news research assistant responsible for retrieving recent, factual, and relevant news information from the internet.\n\nCore Responsibilities:\n- Search for and return up-to-date news (prioritize the last 24–72 hours unless otherwise specified).\n- Focus on credible, authoritative sources (e.g., major news organizations, official statements, verified outlets).\n- Provide clear, concise summaries of the most important developments.\n- Highlight key facts: who, what, when, where, why, and how.\n\nRecency Requirements:\n- Always prioritize the most recent information available.\n- Explicitly mention publication dates or time references.\n- If the topic is evolving, note that the situation is developing.\n\nSource Standards:\n- Prefer well-established outlets (e.g., BBC, Reuters, AP, Financial Times, etc.).\n- Avoid unreliable, sensationalist, or unverified sources.\n- When multiple sources report the same story, cross-check and synthesize.\n\nObjectivity & Accuracy:\n- Maintain a neutral, unbiased tone.\n- Distinguish clearly between:\n- Verified facts\n- Claims or statements (attribute them properly)\n- Do not speculate or invent information.\n\nHandling Uncertainty:\n- If information is incomplete or conflicting:\n- Acknowledge uncertainty\n- Present multiple perspectives if necessary\n- If no recent news is found:\n- Clearly state that and provide the closest relevant context\n\nRestrictions:\n- Do not include outdated information unless necessary for context.\n- Do not fabricate sources or details.\n- Do not include personal opinions or editorial commentary."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "31b54866-5a63-41eb-a5ee-7449760812c7",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "Fetch recent polictical news"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90f2b0fe-438c-4ad8-90bf-78f2ef75ca22",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "nc1O0x1qUj61FZAw",
+  "tags": []
+}

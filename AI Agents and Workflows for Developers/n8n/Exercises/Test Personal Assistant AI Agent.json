@@ -1,0 +1,273 @@
+{
+  "name": "Test Personal Assistant AI Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -160
+      ],
+      "id": "a0f0dcff-b3c5-4c19-9778-7300cfb078ef",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI! Can you check the weather in Shumen, Varna, Sofia, and Plovdiv?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        -160
+      ],
+      "id": "5ed7c927-0930-449f-8364-7bcf71dc43ab",
+      "name": "Ask about the weather"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI!\n\nCompose and send three emails:\n- In the first one share an interesting fact.\n- In the second, offer help with my shopping duties.\n- And in the third, just ask how am I doing.\n\nUse different subjects and refer to the receiver as \"John\".\nThe tone should be non-formal."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        432,
+        -160
+      ],
+      "id": "02b857af-469f-4bd4-8bcd-c0c13018ebe0",
+      "name": "Send email"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI! Can you check the weather in Shumen, Varna, Sofia, and Plovdiv? And then send me an email with a summarized report. I will be traveling to and from these cities and I need to know what clothes should I pack."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        656,
+        -160
+      ],
+      "id": "5c9e97a6-8e2a-4d0f-bc52-bcb8e287d7d7",
+      "name": "Ask about a weather report sent by mail"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI! Can you create an event for me - I have a business meeting with an old friend of mine tomorrow from 14:00 (UTC) to 16:30 (UTC)."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -16,
+        -160
+      ],
+      "id": "354be55c-96af-4f29-af43-92bb96e72463",
+      "name": "Create a business meeting event"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4577401-6eef-405c-995e-3c854fb8a066",
+              "name": "webhook_url",
+              "value": "http://localhost:5678/webhook-test/personal-assistant",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -160
+      ],
+      "id": "5923d313-7df6-4044-a655-6f8cd336b5ed",
+      "name": "Parameters"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI! I want you to send me an email with 3 recent impactful positive news."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        -160
+      ],
+      "id": "94dbae4a-2a8c-4ea0-98b8-620249ae5e10",
+      "name": "Get email about recent positive news"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.webhook_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Hello, AI! I want you to send me an email with 3 recent impactful political news."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1104,
+        -160
+      ],
+      "id": "acf5ce0e-7c97-4795-931b-26ec0f8c3dd3",
+      "name": "Get email about recent political news"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask about the weather": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Ask about a weather report sent by mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask about a weather report sent by mail": {
+      "main": [
+        [
+          {
+            "node": "Get email about recent positive news",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Create a business meeting event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a business meeting event": {
+      "main": [
+        [
+          {
+            "node": "Ask about the weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email about recent positive news": {
+      "main": [
+        [
+          {
+            "node": "Get email about recent political news",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7180954c-8d01-43a9-9d86-62ace8f6482f",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "imybxZlxJt8Rc0wQ",
+  "tags": []
+}

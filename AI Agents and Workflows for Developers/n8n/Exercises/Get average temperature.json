@@ -1,0 +1,114 @@
+{
+  "name": "Get average temperature",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "city"
+            },
+            {
+              "name": "country"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        16,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5bc830e3-5e9b-459c-b2f0-d4597c44b401",
+              "name": "avg_temp",
+              "value": "={{ ($json.main.temp_min + $json.main.temp_max) / 2 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        304
+      ],
+      "id": "36a702b0-10d9-48ff-96f4-0197ec5bdf31",
+      "name": "Prepare output"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.city }}, {{ $json.country }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        240,
+        304
+      ],
+      "id": "3637724d-68f3-42c3-b9bb-84721e0abd77",
+      "name": "Get current weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "53XV2M3HrACWkpub",
+          "name": "OpenWeatherMap Account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "city": "Plovdiv",
+          "country": "Bulgaria"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get current weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get current weather": {
+      "main": [
+        [
+          {
+            "node": "Prepare output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "25b771b0-76dc-4258-8e0d-3376515b1a91",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "8K1LOwVcvsC0Lu5T",
+  "tags": []
+}

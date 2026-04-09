@@ -1,0 +1,126 @@
+{
+  "name": "News MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "news"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -96
+      ],
+      "id": "4a7bfb6c-0575-4666-a2b9-88df4770a396",
+      "name": "MCP Server Trigger",
+      "webhookId": "7b98fab2-00e0-4203-b8ec-68ecc2bdd542"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to fetch some recent positive news.",
+        "workflowId": {
+          "__rl": true,
+          "value": "wTc3g3OdodLthWtN",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/wTc3g3OdodLthWtN",
+          "cachedResultName": "Fetch recent positive news"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        128
+      ],
+      "id": "6d65239d-c816-4433-ab87-682a5f47a97f",
+      "name": "get_recent_positive_news"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool whenever you need information about recent news on a given topic.",
+        "workflowId": {
+          "__rl": true,
+          "value": "nc1O0x1qUj61FZAw",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/nc1O0x1qUj61FZAw",
+          "cachedResultName": "Search news"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `A search query in natural language.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        128
+      ],
+      "id": "7167fcbd-2bc0-4039-87ee-45f8a8e22674",
+      "name": "search_news"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_recent_positive_news": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_news": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "80c1427a-3d07-4fe4-a299-32746786377c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "id": "7uL0L0t1HGRiJCTB",
+  "tags": []
+}
