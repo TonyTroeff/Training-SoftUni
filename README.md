@@ -1,5 +1,11 @@
 This repository contains solutions for all exercises from the courses I have trained in SoftUni
 
+## AI-Assisted Development
+
+The resources for this course can be found under "AI-Assisted Development".
+
+<img src="icons/copilot.svg" width="72px" height="72px" align="middle" /> <img src="icons/cursor.svg" width="72px" height="72px" align="middle" /> <img src="icons/claude.svg" width="72px" height="72px" align="middle" />
+
 ## AI Integrations for Developers
 
 The resources for this course can be found under "AI Integrations for Developers".
