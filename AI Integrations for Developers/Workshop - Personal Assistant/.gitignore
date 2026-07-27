@@ -1,0 +1,21 @@
+# Secrets — .env.example is the committed template
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+
+# Local store — see ASSISTANT_DATA_DIR
+data/
+
+# Tool caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
