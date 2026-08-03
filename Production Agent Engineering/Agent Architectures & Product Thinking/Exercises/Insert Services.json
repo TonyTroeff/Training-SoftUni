@@ -1,0 +1,189 @@
+{
+  "name": "Insert Services",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "ef68825e-3258-4868-b65e-8624d77c6f43",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe8da4dd-6d2c-44c8-8820-50ee778fca82",
+              "name": "services",
+              "value": "УСЛУГИ, ПАКЕТИ И ОРИЕНТИРОВЪЧНИ ЦЕНИ ЗА НОВИ КЛИЕНТИ\n\nУСЛ-01 Внедряване на AI агент\nОбхват: анализ на процеса, изграждане в n8n, интеграции (имейл, CRM, таблици), обучение на екипа.\nОриентировъчна цена: от 3 200 лв. Срок: 3 до 5 седмици.\n\nУСЛ-02 Абонамент за поддръжка\nBasic — до 5 автоматизации, реакция до 24 ч. — 90 лв./мес.\nBusiness — до 20 автоматизации, реакция до 8 ч. — 280 лв./мес.\nEnterprise — 20+, реакция до 4 ч. — по договаряне.\n\nУСЛ-03 Корпоративни проекти\nМинимум 10 работни места. Отстъпки: 10-24 = 5%, 25-49 = 8%, 50+ = индивидуална оферта с одобрение от търговски директор. Срок за оферта: до 2 работни дни.\n\nУСЛ-04 Обучения\nПрактическо обучение за екипи — 4 часа, група до 10 души — 800 лв.\nOnboarding сесия — 2 часа — 400 лв.\n\nПРОЦЕС НА РАБОТА С НОВ КЛИЕНТ\n1. Опознавателен разговор (30 мин., безплатен).\n2. Кратък одит на процеса и писмена оферта до 2 работни дни.\n3. Договор и предплата 50%.\n4. Внедряване на етапи с демонстрация на всеки етап.\n5. Един месец безплатна поддръжка след приемане.\n\nАБСОЛЮТНИ ЗАБРАНИ ЗА АГЕНТА: отстъпка над 8%, лизинг и вноски, срок под стандартния, неустойки и ексклузивитет. При всяко от тях — ескалация, без обещания.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "2891243a-baac-4dd7-9c24-2be88585d805",
+      "name": "Read FAQ"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_services",
+          "mode": "id"
+        },
+        "options": {
+          "clearCollection": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9bfababb-a1cf-4363-b2f7-ee85e678afc1",
+      "name": "Chroma Vector Store",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        240
+      ],
+      "id": "269e0213-9451-4565-ba2b-91732242bf01",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.services }}",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        240
+      ],
+      "id": "9bc8c15c-1da5-4cab-8837-1363d17715a9",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 300,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        432,
+        448
+      ],
+      "id": "42133e64-82d7-4b62-a65f-7207f4d01fce",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read FAQ": {
+      "main": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e1b3b084-3d2e-496c-8ee7-4ea39d5fa97e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "moYRDOJxgII8DBDd",
+  "tags": []
+}

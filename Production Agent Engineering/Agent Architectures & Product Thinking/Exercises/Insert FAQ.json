@@ -1,0 +1,191 @@
+{
+  "name": "Insert FAQ",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "2b376dd5-81e0-4914-8b4a-b05a90e14000",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe8da4dd-6d2c-44c8-8820-50ee778fca82",
+              "name": "faq",
+              "value": "## FAQ-01 · Гаранция  Гаранционният срок на всички продукти, продадени от ТехноДом, е **24 месеца** от датата на фактурата за физически лица и **12 месеца** за юридически лица. Гаранцията покрива фабрични дефекти. Не покрива: механични повреди, течности, неоторизиран ремонт, нормално износване на батерии под 80% капацитет след 12 месеца.  ## FAQ-02 · Как се предявява гаранция  Клиентът попълва онлайн формата на technodom.bg/garantsia или отговаря на имейла си с номер на фактура и снимка на дефекта. Сервизът отговаря в рамките на **2 работни дни**. Транспортът до сервиза е за сметка на ТехноДом при валидна гаранция.  ## FAQ-03 · Срок за ремонт  Стандартният срок за гаранционен ремонт е **до 30 календарни дни** от приемането на устройството. При липса на резервна част клиентът получава заместващо устройство или възстановяване на сумата.  ## FAQ-04 · Връщане на стока  Онлайн поръчки могат да се върнат в **14-дневен срок** от получаването, без посочване на причина, при запазена търговска опаковка. Сумата се възстановява в срок до 14 дни след получаване на върнатата стока.  ## FAQ-05 · Доставка  Доставката за София е **до 24 часа** при поръчка преди 16:00 ч. в работен ден. За страната — **1 до 3 работни дни** чрез куриер Спиди. Доставката е безплатна при поръчка над **150 лв.** Под тази сума таксата е **6,90 лв.**  ## FAQ-06 · Начини на плащане  Приемат се: наложен платеж, банков превод, дебитна/кредитна карта онлайн. За юридически лица — банков превод с отложено плащане до 14 дни след одобрен кредитен лимит.  ## FAQ-07 · Фактури  Фактура се издава автоматично при поръчка с попълнени фирмени данни. Корекция на фактура е възможна до **5 работни дни** след издаването ѝ. Дублиращо копие се изпраща по имейл при поискване.  ## FAQ-08 · Работно време на поддръжката  Понеделник – петък, **09:00 – 18:00 ч.** Извън това време писмата се обработват на следващия работен ден. Няма телефонна поддръжка през уикенда.  ## FAQ-09 · Наличност и резервация  Наличността на сайта се обновява на всеки 15 минути. Продукт може да бъде резервиран за **48 часа** чрез бутона „Запази“. След това резервацията отпада автоматично.  ## FAQ-10 · Отказ на поръчка  Поръчка може да бъде отказана безплатно, докато статусът ѝ е „В обработка“. След статус „Предадена на куриер“ отказът се третира като връщане по FAQ-04.  ## FAQ-11 · Технически консултации  Безплатна консултация за избор на продукт се предоставя по имейл или чат. Консултации по конфигуриране на вече закупено оборудване са част от платените услуги — виж ценоразписа.  ## FAQ-12 · Лични данни  ТехноДом обработва лични данни съгласно GDPR. Клиент може да поиска изтриване на профила си чрез писмо до gdpr@technodom.bg. Заявката се обработва до 30 дни.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "9d4e2186-8182-4f11-9a5f-11955d4f0a94",
+      "name": "Read FAQ"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_faq",
+          "mode": "id"
+        },
+        "options": {
+          "clearCollection": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        0
+      ],
+      "id": "a5a7213c-4c84-4715-99ac-32fa633ae31b",
+      "name": "Chroma Vector Store",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        240
+      ],
+      "id": "c6b664a8-30c9-487b-89a0-0a7b46e6c302",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.faq }}",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        240
+      ],
+      "id": "9fd865bb-e768-4ab8-874b-406082a3f11b",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 300,
+        "chunkOverlap": 100,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        432,
+        448
+      ],
+      "id": "de52ebab-8a63-4018-994e-207078c66f60",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read FAQ": {
+      "main": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "09cbf42c-dd15-4f39-a6b1-abf0fbc77686",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "uPZEKbVGh0BwjydY",
+  "tags": []
+}
