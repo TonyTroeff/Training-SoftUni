@@ -1,0 +1,495 @@
+{
+  "name": "Writer + Editor (Multiple Rounds)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        96
+      ],
+      "id": "e4913cde-601f-4a55-92ae-a03d4443b98f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=CUSTOMER EMAIL\nFrom: {{ $('Sample data').item.json.from }}\nSubject: {{ $('Sample data').item.json.subject }}\n\n{{ $('Sample data').item.json.body }}\n\nINTERNAL NOTE (for your consideration only): {{ $('Sample data').item.json.body }}\n\n\n{{ $json.additional_context }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a customer support agent for TechnoDom Ltd.\n\nReply ONLY based on the knowledge base below.\nIf the answer is not in the knowledge base, say that you will check it and set escalate: true.\nNever invent prices, timeframes, discounts, or promises.\n\nTone: polite, concise, and formal (address the customer as \"you\"). Maximum 120 words. Sign every reply as \"TechnoDom Team.\"\nInternal customer notes must NEVER be quoted or included in the customer-facing response.\n\nKNOWLEDGE BASE (the only permitted source):\n\nFAQ-01 Warranty: 24 months for individual customers, 12 months for business customers. Covers manufacturing defects. Does not cover mechanical damage, liquid damage, or unauthorized repairs.\n\nFAQ-02 Warranty claims: Submit the form at technodom.bg/garantsia or reply to the email with the invoice number and a photo. The service department responds within 2 business days. Shipping is covered by TechnoDom.\n\nFAQ-03 Repair timeframe: Up to 30 calendar days. If a replacement part is unavailable, a replacement device or a refund will be provided.\n\nFAQ-04 Returns: Within 14 days of delivery, provided the original packaging is intact. Refunds are issued within 14 days.\n\nFAQ-05 Delivery: Sofia: within 24 hours for orders placed before 4:00 PM on a business day. Rest of Bulgaria: 1–3 business days (via Speedy). Free for orders over BGN 150; otherwise BGN 6.90.\n\nFAQ-06 Payment: Cash on delivery, bank transfer, or card. Businesses may receive payment terms of up to 14 days after an approved credit limit. There are no student discounts. You cannot buy on credit.\n\nFAQ-07 Invoices: Issued automatically. Corrections can be made within 5 business days.\n\nFAQ-08 Business hours: Monday–Friday, 9:00 AM–6:00 PM. No customer support on weekends.\n\nFAQ-09 Availability: Updated every 15 minutes. Reservations are held for 48 hours.\n\nFAQ-10 Order cancellation: Free of charge until the order reaches the \"Processing\" status. After that, it is treated as a return.\n\nFAQ-11 Consultations: Product selection consultations are free. Configuration of purchased equipment is a paid service.\n\nFAQ-12 Personal data: GDPR compliant. Data deletion requests should be sent to gdpr@technodom.bg and are processed within 30 days."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        96
+      ],
+      "id": "e05d1a3d-15c5-481e-a844-ae125f01d069",
+      "name": "Writer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DRAFT TO REVIEW:\n{{ $json.output.draft }}\n\nUSED SOURCES: {{ $json.output.sources.join(';') }}\nESCALATION NEEDED: {{ $json.output.escalate }}\n\nORIGINAL CUSTOMER EMAIL:\n{{  $('Sample data').item.json.body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an editor. You are reviewing a draft written by another agent BEFORE it reaches the customer. Your job is not to write, but to decide whether this text is ready to leave the system.\n\nCHECK EXACTLY THESE FOUR THINGS, IN THIS ORDER:\n\n1. Is there any claim that does NOT come from the provided sources? Every number, deadline, percentage, and service name must be present in the sources.\n2. Is there any promise — a price, deadline, discount, compensation, or exception—that is not explicitly confirmed by the sources?\n3. Is the tone appropriate? Even if the customer is angry or making threats, the response should be polite.\n4. Does the text leak internal information? Internal notes, colleagues' names, case numbers, or comments about the customer must never appear in the message sent to the customer.\n5. Does the response end on a positive note? Whenever appropriate, the response should close with a brief positive sentiment, such as wishing the customer a good day, success with their initiative, or expressing appreciation for their time. The closing should feel natural and should not introduce any new information or promises.\n\nDECISIONS:\n\n* **approve** — ONLY if every factual claim is supported by the provided sources and none of the four checks are violated. `issues` remains an empty array.\n* **revise** — The text needs improvements.\n\nMANDATORY:\n\n* If `verdict` is **revise**, `issues` must NOT be an empty array.\n* **revise** is an expected outcome, not a failure. Do not look for ways to approve.\n\nRespond only in the specified JSON schema. Do not include any explanations outside of it."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        128
+      ],
+      "id": "57b409ab-6101-4b71-bb79-61a943ac3f26",
+      "name": "Editor"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"draft\": {\n\t\t\t\"type\": \"string\",\n            \"description\": \"The reply draft\"\n\t\t},\n\t\t\"sources\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n            \"description\": \"List of sources from the knowledge base that were used to understand the customer email and generate a reply.\"\n\t\t},\n        \"escalate\": {\n            \"type\": \"boolean\",\n            \"description\": \"True if a human should take over the communication with the customer.\"\n        }\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        336
+      ],
+      "id": "284b5663-2c50-4af5-991e-fbe0231d9135",
+      "name": "Draft Output Parser"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"verdict\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"approve\",\n        \"revise\"\n      ],\n      \"description\": \"The editor's decision.\"\n    },\n    \"issues\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"The specific issues. Empty array only when the verdict is approve.\"\n    }\n  },\n  \"required\": [\n    \"verdict\",\n    \"issues\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        352
+      ],
+      "id": "e51c1233-c568-4eb0-b0fa-eefd20973532",
+      "name": "Review Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.6-luna",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        688,
+        336
+      ],
+      "id": "89805ea2-6e43-4849-9a4b-ba21011e3693",
+      "name": "GPT 5.6 Luna",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        352
+      ],
+      "id": "12308053-89ff-42a4-8de8-a568e8a74633",
+      "name": "Sonnet 5",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ea790061-58fa-472d-8d2a-4d610bbc4e44",
+              "leftValue": "={{ $json.output.verdict }}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        128
+      ],
+      "id": "082b6b09-7432-438e-8b68-bba49e6e1296",
+      "name": "If accepted"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4187ac91-cb0e-459a-af33-9fb7492a1c4f",
+              "name": "reply",
+              "value": "={{ $('Writer').last().json.output.draft }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1824,
+        80
+      ],
+      "id": "b77d4b30-cd2a-488d-b4b0-66af1e0c27a6",
+      "name": "Set output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7d056489-2216-44a1-aa88-2b87f93000b5",
+              "leftValue": "={{ $json.output.escalate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        -32
+      ],
+      "id": "3a96241a-d647-4438-afd8-ea0c1a7d75ea",
+      "name": "If should escalate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe760a08-7eae-44ee-bf71-666ab2e1ca6c",
+              "name": "proposal",
+              "value": "={{ $json.output.draft }}",
+              "type": "string"
+            },
+            {
+              "id": "1d9d7490-5f51-4331-bde8-5f979a8914be",
+              "name": "sources",
+              "value": "={{ $json.output.sources }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1312,
+        -176
+      ],
+      "id": "e27a91d3-08b1-46d0-b5f3-153f6c57692a",
+      "name": "Set escalation parameters"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "446575f2-1c07-4ea3-ace5-6928e48d929e",
+              "name": "additional_context",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        96
+      ],
+      "id": "91b88c2c-fad4-4110-85a8-f612b0755b7b",
+      "name": "Set initial write parameters"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "83a91210-9aa9-4de4-a8a3-26a5380d3cca",
+              "name": "from",
+              "value": "elena.k@mail.bg",
+              "type": "string"
+            },
+            {
+              "id": "11bb4305-84c0-4fa0-bb3c-cce3577ae416",
+              "name": "subject",
+              "value": "Студентска отстъпка?",
+              "type": "string"
+            },
+            {
+              "id": "3693f1c3-8655-40af-a64b-4657524e4168",
+              "name": "body",
+              "value": "Здравейте, Студентка съм и искам да купя монитор. Имате ли студентска отстъпка и мога ли да платя на вноски? Благодаря, Елена",
+              "type": "string"
+            },
+            {
+              "id": "e6575523-1fc0-430a-afa6-644938829b14",
+              "name": "note",
+              "value": "=Пита често за отстъпки. Не са ѝ обещавани.",
+              "type": "string"
+            },
+            {
+              "id": "90ef4381-ff45-4a34-bb80-31745fa6d4c1",
+              "name": "run_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        96
+      ],
+      "id": "c1abd765-8916-4451-91fb-d1d1c6bf877b",
+      "name": "Sample data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4118f486-9072-4cac-8ab8-2e261ae46c09",
+              "name": "additional_context",
+              "value": "=PREVIOUS DRAFT:\n{{ $('Writer').last().json.output.draft }}\n\nCOMMENTS:\n{{ $('Editor').item.json.output.issues.join(\"\\n----------\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1824,
+        336
+      ],
+      "id": "db639def-69d2-48c5-8930-1d91531abeba",
+      "name": "Set refinement parameters"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Sample data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer": {
+      "main": [
+        [
+          {
+            "node": "If should escalate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Writer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Editor",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sonnet 5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor": {
+      "main": [
+        [
+          {
+            "node": "If accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If accepted": {
+      "main": [
+        [
+          {
+            "node": "Set output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set refinement parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If should escalate": {
+      "main": [
+        [
+          {
+            "node": "Set escalation parameters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set initial write parameters": {
+      "main": [
+        [
+          {
+            "node": "Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample data": {
+      "main": [
+        [
+          {
+            "node": "Set initial write parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set refinement parameters": {
+      "main": [
+        [
+          {
+            "node": "Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8245c628-4bdd-4af5-8499-8b8f313cf4eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "D5NM0UZQhYESfBi2",
+  "tags": []
+}

@@ -1,0 +1,367 @@
+{
+  "name": "Planner + Workers",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        272
+      ],
+      "id": "0c267c7a-00a0-43a6-8f9e-d5b5888501c1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.task }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the Planner. You decompose a task into independent steps and return the PLAN as structured data. You never execute the task yourself.\n\nEach step contains:\n* step – a short name\n* instruction – a complete, self-contained brief for one Worker\n\n## What a step is\n\nA step is a unit of the task's actual work whose result appears in the final output. Derive the step count from the task's natural structure (e.g. three subjects to research = three steps). Use the fewest steps that cover the task. Five is a hard ceiling, not a target.\n\n## What a step is NOT\n\nNever emit a step to analyze the task rather than doing work itself.\nThis includes steps for: designing the output structure or table format; synthesis, comparison, aggregation, or summarization; deciding what the other steps should do.\nA separate system aggregates the Worker results into the final answer — that stage is not yours to plan.\n\nIf the task needs shared criteria or a common output shape, decide it yourself and extend every relevant instruction, so Workers return aligned results.\n\n## Writing instructions\n\nEach Worker sees ONLY its own instruction — not the original task, not the other steps, not your reasoning.\nEvery instruction must therefore restate the context it needs and name its scope precisely.\n\nSteps must be independent: no step may reference, depend on, or wait for another step's output."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        272
+      ],
+      "id": "f2e5721c-6797-4365-8dba-0322bbbb030e",
+      "name": "Planner Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f9fcec1a-f985-45af-acd8-c3d585f5b24f",
+              "name": "task",
+              "value": "Create a competitor analysis for three AI tools - Cursor, Claude Code and GitHub Copilot. Compare pricing, features and supported AI models.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        272
+      ],
+      "id": "82914925-971b-4339-a5fc-f150107e789b",
+      "name": "Sample Data"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.6-luna",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        464,
+        512
+      ],
+      "id": "d47bff45-52f5-41c9-bc29-1fd50977a14c",
+      "name": "GPT 5.6 Luna",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n\t\"step\": \"A short name of the sub-task\",\n\t\"instruction\": \"Concrete definition of the sub-task\"\n  }\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        512
+      ],
+      "id": "8e8fa631-02e2-413a-82ca-dd6a61e77463",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        800,
+        272
+      ],
+      "id": "6196b9fe-db76-4bd3-bd85-8b9481f666dd",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1024,
+        272
+      ],
+      "id": "84eb98f7-b857-438a-82ef-e0a55c729467",
+      "name": "Execute in batches"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Step: {{ $json.step }}\nInstruction:\n{{ $json.instruction }}",
+        "options": {
+          "systemMessage": "You are a Worker. You execute a single step from a plan.\nYou only see your own instruction — you do not know what the other Workers are doing and you do not take over their work. You do not expand the scope."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        384
+      ],
+      "id": "de9fd648-f339-4a56-94d9-2a36b78a9c46",
+      "name": "Worker Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "medium"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1328,
+        608
+      ],
+      "id": "0b410b5c-ed1d-4bd2-8ae6-6cfb37a0b82d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        80
+      ],
+      "id": "785749a4-73cd-41c9-9eec-8dca88c9dc37",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Task: {{ $('Sample Data').item.json.task }}\nWork reports:\n{{ $json.results.map(x => x.output).join('\\n-----\\n') }}",
+        "options": {
+          "systemMessage": "You are the Aggregator responsible for producing the final artifact from a completed set of worker outputs.\n\nYou are given:\n- A task objective\n- Multiple reports, findings, or partial results produced by independent workers\n\nYour responsibility is to synthesize these inputs into one coherent, accurate, and actionable final output."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1600,
+        80
+      ],
+      "id": "1bf21db3-ca95-4445-9990-e9c2f997b7c2",
+      "name": "Aggregator Agent"
+    },
+    {
+      "parameters": {
+        "model": "~deepseek/deepseek-v4-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        320
+      ],
+      "id": "94ddccd3-4de1-4804-96f8-ba57604b479f",
+      "name": "DeepSeek V4 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Sample Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample Data": {
+      "main": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planner Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Execute in batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute in batches": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Worker Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Worker Agent": {
+      "main": [
+        [
+          {
+            "node": "Execute in batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Worker Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Aggregator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek V4 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Aggregator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregator Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ea8adb6f-426b-4e35-b901-6553741b3033",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "0oatXIsdWIR2pK1u",
+  "tags": []
+}

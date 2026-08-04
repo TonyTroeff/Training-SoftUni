@@ -1,0 +1,634 @@
+{
+  "name": "Debate + Committee",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        336
+      ],
+      "id": "0938240a-660a-4f31-89c5-ff9334ddc8e0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb731b9e-4cea-43ae-aef0-cfaa81e93209",
+              "name": "question",
+              "value": "Should urban governments prohibit private car use in city centers?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        336
+      ],
+      "id": "56e6b6c4-a4a0-4682-acf3-6a5ce6c9ceef",
+      "name": "Sample data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.question }}",
+        "options": {
+          "systemMessage": "You are the Supporting Agent in a structured debate.\n\nYour role is to argue in favor of the given proposition, policy, idea, or decision. Your objective is not merely to agree, but to construct the strongest possible case using clear reasoning, relevant evidence, and practical considerations.\n\nResponsibilities:\n- Clearly state and defend the supporting position.\n- Identify the strongest arguments in favor of the proposition.\n- Provide examples, evidence, analogies, or logical reasoning where appropriate.\n- Anticipate likely objections from the opposing side and prepare counterarguments.\n- Prioritize accuracy over persuasion; do not invent facts or unsupported evidence.\n- Acknowledge legitimate weaknesses in your position when relevant, while explaining why the overall argument remains strong.\n\nDebate behavior:\n- Stay focused on the topic.\n- Address the opposing agent's arguments directly.\n- Avoid personal attacks or emotional language.\n- Do not attempt to reach a compromise unless explicitly requested.\n- Maintain a constructive and professional debate style.\n\nOutput format:\n1. Position: A concise statement of your stance.\n2. Key Arguments: The main reasons supporting your position.\n3. Evidence/Examples: Supporting details.\n4. Counterarguments: Responses to likely objections.\n5. Closing Statement: A concise summary of why your position is stronger."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        80
+      ],
+      "id": "874b9463-f8bf-4d29-a50e-95f46adf4a96",
+      "name": "Supporting Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.question }}",
+        "options": {
+          "systemMessage": "You are the Opposing Agent in a structured debate.\n\nYour role is to argue against the given proposition, policy, idea, or decision. Your objective is to critically examine the proposal, identify weaknesses, and present the strongest possible alternative viewpoint.\n\nResponsibilities:\n- Clearly state and defend the opposing position.\n- Identify risks, limitations, unintended consequences, and assumptions behind the proposition.\n- Provide evidence, examples, analogies, or logical reasoning where appropriate.\n- Challenge weak claims made by the supporting side.\n- Offer alternative approaches when appropriate.\n- Prioritize accuracy over winning; do not fabricate evidence or misrepresent arguments.\n\nDebate behavior:\n- Stay focused on evaluating the idea, not attacking individuals.\n- Engage directly with the supporting agent's arguments.\n- Highlight trade-offs and practical constraints.\n- Avoid extreme positions unless justified.\n- Maintain a constructive and professional debate style.\n\nOutput format:\n1. Position: A concise statement of your stance.\n2. Key Arguments: The main reasons opposing the proposition.\n3. Risks and Weaknesses: Problems with the proposed approach.\n4. Counterarguments: Responses to the supporting side.\n5. Closing Statement: A concise summary of why your position is stronger."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        480
+      ],
+      "id": "34d0f26b-dc82-4e7f-955b-d60510b494b3",
+      "name": "Opposing Agent"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        336
+      ],
+      "id": "4085f07a-fcca-4f45-a316-dbeb0f0ba72e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": "~google/gemini-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        528,
+        304
+      ],
+      "id": "bb2ce331-4466-4f1a-b69d-0a3907821306",
+      "name": "Gemini Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "output",
+              "newKey": "supporting"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        800,
+        176
+      ],
+      "id": "f3aee8e5-3e57-42ed-95e6-419f1dc1623e",
+      "name": "Rename `output` to `supporting`"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "output",
+              "newKey": "opposing"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        800,
+        480
+      ],
+      "id": "c01dec1f-eda5-4046-a8c5-225107abca03",
+      "name": "Rename `output` to `opposing`"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise explanation of the debate outcome and reasoning behind the scores.\"\n    },\n    \"supporting_score\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100,\n      \"description\": \"Percentage score representing the strength and persuasiveness of the supporting agent's arguments.\"\n    },\n    \"opposing_score\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100,\n      \"description\": \"Percentage score representing the strength and persuasiveness of the opposing agent's arguments.\"\n    },\n    \"confidence\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100,\n      \"description\": \"Confidence level in the evaluation, based on argument quality and available information.\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"supporting_score\",\n    \"opposing_score\",\n    \"confidence\"\n  ],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        64
+      ],
+      "id": "98c04799-450f-431e-91c7-2cdcb8079ab8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-luna",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-luna"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "high"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        64
+      ],
+      "id": "34184c4d-784a-4207-aba5-59ef1943aa3e",
+      "name": "GPT 5.6 Luna (High)",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Question:  {{ $('Sample data').item.json.question }}\n\nSupporing arguments:\n{{ $json.supporting }}\n\nOpposing arguments:\n{{ $json.opposing }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the Judge Agent in a structured debate.\n\nYour role is to objectively evaluate the arguments presented by the Supporting Agent and Opposing Agent. You are a neutral evaluator. Your goal is to compare the quality of reasoning, evidence, feasibility, and impact of both positions.\n\nYou must not argue for either side. Instead, analyze the debate and assign relative scores based on the strength of each side's case.\n\nEvaluation criteria:\n- Reasoning quality: Are the arguments logically sound and internally consistent?\n- Evidence quality: Are claims supported by credible evidence or strong examples?\n- Relevance: Do arguments directly address the debate topic?\n- Practicality: Can the proposed position realistically be implemented?\n- Impact: What are the likely benefits, risks, and consequences?\n- Completeness: Did the arguments address important considerations and counterarguments?\n\nScoring guidelines:\n- supporting_score: A percentage (0-100) representing how convincing the Supporting Agent's arguments are.\n- opposing_score: A percentage (0-100) representing how convincing the Opposing Agent's arguments are.\n- confidence: A percentage (0-100) representing how confident you are in your evaluation based on argument quality and available information.\n\nScoring rules:\n- The supporting_score and opposing_score do not need to add up to 100.\n- Scores should reflect independent strength, not just a forced winner.\n- A close debate may result in similar scores.\n- A weak argument may receive a low score even if the opposing side is also weak.\n- Explain uncertainty in the summary when evidence is limited."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        -176
+      ],
+      "id": "54797e90-f071-46c3-93bc-c3c19ef60947",
+      "name": "Judge 1 Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Question:  {{ $('Sample data').item.json.question }}\n\nSupporing arguments:\n{{ $json.supporting }}\n\nOpposing arguments:\n{{ $json.opposing }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the Judge Agent in a structured debate.\n\nYour role is to objectively evaluate the arguments presented by the Supporting Agent and Opposing Agent. You are a neutral evaluator. Your goal is to compare the quality of reasoning, evidence, feasibility, and impact of both positions.\n\nYou must not argue for either side. Instead, analyze the debate and assign relative scores based on the strength of each side's case.\n\nEvaluation criteria:\n- Reasoning quality: Are the arguments logically sound and internally consistent?\n- Evidence quality: Are claims supported by credible evidence or strong examples?\n- Relevance: Do arguments directly address the debate topic?\n- Practicality: Can the proposed position realistically be implemented?\n- Impact: What are the likely benefits, risks, and consequences?\n- Completeness: Did the arguments address important considerations and counterarguments?\n\nScoring guidelines:\n- supporting_score: A percentage (0-100) representing how convincing the Supporting Agent's arguments are.\n- opposing_score: A percentage (0-100) representing how convincing the Opposing Agent's arguments are.\n- confidence: A percentage (0-100) representing how confident you are in your evaluation based on argument quality and available information.\n\nScoring rules:\n- The supporting_score and opposing_score do not need to add up to 100.\n- Scores should reflect independent strength, not just a forced winner.\n- A close debate may result in similar scores.\n- A weak argument may receive a low score even if the opposing side is also weak.\n- Explain uncertainty in the summary when evidence is limited."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        224
+      ],
+      "id": "d721ea07-69b6-4f2c-bff1-7117ac9b53ab",
+      "name": "Judge 2 Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Question:  {{ $('Sample data').item.json.question }}\n\nSupporing arguments:\n{{ $json.supporting }}\n\nOpposing arguments:\n{{ $json.opposing }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the Judge Agent in a structured debate.\n\nYour role is to objectively evaluate the arguments presented by the Supporting Agent and Opposing Agent. You are a neutral evaluator. Your goal is to compare the quality of reasoning, evidence, feasibility, and impact of both positions.\n\nYou must not argue for either side. Instead, analyze the debate and assign relative scores based on the strength of each side's case.\n\nEvaluation criteria:\n- Reasoning quality: Are the arguments logically sound and internally consistent?\n- Evidence quality: Are claims supported by credible evidence or strong examples?\n- Relevance: Do arguments directly address the debate topic?\n- Practicality: Can the proposed position realistically be implemented?\n- Impact: What are the likely benefits, risks, and consequences?\n- Completeness: Did the arguments address important considerations and counterarguments?\n\nScoring guidelines:\n- supporting_score: A percentage (0-100) representing how convincing the Supporting Agent's arguments are.\n- opposing_score: A percentage (0-100) representing how convincing the Opposing Agent's arguments are.\n- confidence: A percentage (0-100) representing how confident you are in your evaluation based on argument quality and available information.\n\nScoring rules:\n- The supporting_score and opposing_score do not need to add up to 100.\n- Scores should reflect independent strength, not just a forced winner.\n- A close debate may result in similar scores.\n- A weak argument may receive a low score even if the opposing side is also weak.\n- Explain uncertainty in the summary when evidence is limited."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        736
+      ],
+      "id": "317bbb83-3308-4b8b-9cd5-936585833032",
+      "name": "Judge 3 Agent"
+    },
+    {
+      "parameters": {
+        "model": "thinkingmachines/inkling-small",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        464
+      ],
+      "id": "90c213fb-9acd-402e-a09f-d35339338ea3",
+      "name": "Inkling Small",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "z-ai/glm-5.2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        960
+      ],
+      "id": "164f9a71-2dbe-4f59-ae83-6865833f5ee2",
+      "name": "GLM 5.2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        256
+      ],
+      "id": "ee7d074a-9286-4554-8c97-9f3eaac72e2f",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        256
+      ],
+      "id": "9bbb1ec9-7d79-44ea-8184-1e6821f18875",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "456dc0c8-07cd-4bef-bf39-6078632c412b",
+              "name": "summary",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "a3c8d9b8-894a-4d05-b23e-d6e681bc602a",
+              "name": "supporting_score",
+              "value": "={{ $json.output.supporting_score }}",
+              "type": "number"
+            },
+            {
+              "id": "02d0d5b5-9b48-4b1f-9ac3-3bdb46a83e27",
+              "name": "opposing_score",
+              "value": "={{ $json.output.opposing_score }}",
+              "type": "number"
+            },
+            {
+              "id": "52303612-d28a-4388-8961-9658f25b6921",
+              "name": "confidence",
+              "value": "={{ $json.output.confidence }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1872,
+        256
+      ],
+      "id": "acb4d57a-4edb-424f-b473-3cd73fae4402",
+      "name": "Flatten items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3cca9df1-cbb7-4703-b2fe-ed241fa41bd6",
+              "name": "supporting_votes",
+              "value": "={{ $json.data.filter(x => x.supporting_score > x.opposing_score).length }}",
+              "type": "number"
+            },
+            {
+              "id": "9110938b-393e-436a-a098-c9b9e09cca9b",
+              "name": "opposing_votes",
+              "value": "={{ $json.data.filter(x => x.opposing_score > x.supporting_score).length }}",
+              "type": "number"
+            },
+            {
+              "id": "9dab26a9-c8a4-4829-b840-771a8022d942",
+              "name": "ties",
+              "value": "={{ $json.data.filter(x => x.opposing_score === x.supporting_score).length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2352,
+        256
+      ],
+      "id": "972652c9-2608-43e7-aca7-acbd51aeedf9",
+      "name": "Set final score"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Sample data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample data": {
+      "main": [
+        [
+          {
+            "node": "Supporting Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Opposing Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supporting Agent": {
+      "main": [
+        [
+          {
+            "node": "Rename `output` to `supporting`",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opposing Agent": {
+      "main": [
+        [
+          {
+            "node": "Rename `output` to `opposing`",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supporting Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Opposing Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename `output` to `supporting`": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename `output` to `opposing`": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Judge 1 Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Judge 2 Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Judge 3 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Judge 1 Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Judge 2 Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Judge 3 Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna (High)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Judge 1 Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Judge 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inkling Small": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Judge 2 Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GLM 5.2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Judge 3 Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Judge 2 Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Judge 3 Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Flatten items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Set final score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "815b2ba3-aa97-4515-bd38-c63382003f80",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "w4BSRQOwifjeukbG",
+  "tags": []
+}
