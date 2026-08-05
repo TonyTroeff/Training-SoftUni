@@ -24,7 +24,7 @@ All materials are provided as Jupyter notebooks designed to run in [Google Colab
 
 ## Production Agent Engineering
 
-The resources for this course can be found under "AI Agents and Workflows for Developers".
+The resources for this course can be found under "Production Agent Engineering".
 Each lecture has its own folder, which may contain multiple subfolders (e.g., Labs, Exercises, or Demos).
 All materials are provided as n8n workflows.
 
