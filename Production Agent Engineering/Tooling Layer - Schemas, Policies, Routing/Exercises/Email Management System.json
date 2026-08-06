@@ -1,0 +1,1567 @@
+{
+  "name": "Email Management System",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "maxResults": 1,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        736
+      ],
+      "id": "2ecafd5b-420f-4927-aeb7-27d40e4a3a4e",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "=From: {{ $json.from.text }}\nSubject: {{ $json.subject }}\n\nEmail body:\n{{ $json.text }}\n",
+        "categories": {
+          "categories": [
+            {
+              "category": "Customer Support",
+              "description": "An email from an EXISTING customer about something they already use or have ordered: issues, order status, complaints, feedback, questions about policies. NOT for new business: if the sender wants to buy, asks for a quote, price, or a conversation - this is a `Sales Opportunity`."
+            },
+            {
+              "category": "Finance",
+              "description": "Invoices, statements, payment reminders, receipts, expense reports."
+            },
+            {
+              "category": "Sales Opportunity",
+              "description": "An email from a NEW potential customer: quote request, pricing, proposal, scheduling a conversation. Applies EVEN IF it is phrased as a question. A sender who is not an existing customer and shows interest in making a purchase → ALWAYS goes here, not under Customer Questions."
+            },
+            {
+              "category": "Internal Communication",
+              "description": "Emails from employees within the company."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        736
+      ],
+      "id": "73c9cdba-ed6e-4893-9a3b-fed3a956ea0c",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger').item.json.subject }}\nFrom: {{ $('Gmail Trigger').item.json.from.text }}\n\nBody:\n{{ $('Gmail Trigger').item.json.text }}\n",
+        "options": {
+          "systemMessage": "You are a customer support agent. You respond to emails from **EXISTING** customers using **ONLY** the information available in the **Query FAQs and Policies** tool.\n\n## Allowed\n\n* Read the email provided by the system.\n* Query FAQs and Policies **BEFORE** every response.\n* Draft email replies.\n\n## Not Allowed\n\n* Do **NOT** send emails directly - you may only create drafts, which will be reviewed by a human.\n* Do **NOT** promise anything that is not in the database, including prices, timelines, discounts, or policies.\n* Do **NOT** make up policies. If the database does not contain the answer, follow the \"When Unsure\" instructions.\n* Do **NOT** respond to topics outside customer support (such as new business inquiries, finance, or spam).\n\n## When Unsure\n\n* If the database does not provide a clear answer, do **NOT** invent one. Draft a brief, polite reply stating that the question has been forwarded to the team and that they will get back to the customer.\n\n## Output\n\n* Return **ONLY** the email body - no subject line and no Markdown.\n* Tone: friendly and professional.\n* Signature: **Customer Support Team**.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        -224
+      ],
+      "id": "c0154cab-fd06-48fb-b75c-d7ddd9108607",
+      "name": "Customer Support Agent"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $('Gmail Trigger').item.json.text }}",
+        "options": {
+          "categories": "Positive, Neutral, Negative"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        -16
+      ],
+      "id": "0a0dc8f2-e598-4d6e-90e0-1ac4b200aae3",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3.7-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1272,
+        248
+      ],
+      "id": "d88ab40d-e376-4d98-bb81-47917c1aff2c",
+      "name": "Qwen3.7 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        856,
+        216
+      ],
+      "id": "e1903461-5fd0-410e-8d0e-3f8a49210b28",
+      "name": "Text Embedding 3 Large",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        648,
+        8
+      ],
+      "id": "714f71fb-7f0c-483e-bf39-6c1f048644b0",
+      "name": "Gemma 4 31B",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "~deepseek/deepseek-v4-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        728,
+        648
+      ],
+      "id": "142acda6-52c6-4e32-bf26-f92ec6d5d7a1",
+      "name": "DeepSeek V4 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.output }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        -16
+      ],
+      "id": "4ab110b4-93f2-46de-8f25-599b9dd661d5",
+      "name": "Draft reply",
+      "webhookId": "c2bbb752-4d5d-4876-a059-922e7581094b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message.id }}",
+        "labelIds": [
+          "Label_2104532352493058685"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        -16
+      ],
+      "id": "8415de61-504f-4349-8477-976a29bc2d43",
+      "name": "Add label to drafted reply",
+      "webhookId": "1950c2bc-a2d1-4501-89b9-1180b882abb7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "=Имате имейл с негативен сантимент от {{ $('Gmail Trigger').item.json.from.text }} със следния текст:\n\n```\n{{ $('Gmail Trigger').item.json.text }}\n```",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        64
+      ],
+      "id": "80376447-b609-4091-9ad5-6e03091a7da6",
+      "name": "Notify negative email",
+      "webhookId": "bcf5c3a3-28c5-4c3e-be17-9f04708c72d6",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos",
+          "mode": "list",
+          "cachedResultName": "Email Management System Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Incoming emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Gmail Trigger').item.json.from.text }}",
+            "Body": "={{ $('Gmail Trigger').item.json.text }}",
+            "Timestamp": "={{ $now.toUTC().format('yyyy-MM-dd HH:mm') }}",
+            "Sentiment": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2288,
+        -16
+      ],
+      "id": "369e9f8d-3576-463b-b0ee-bda1f7c18954",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger').first().json.subject }}\nFrom: {{ $('Gmail Trigger').first().json.from.text }}\n\nBody:\n{{ $('Gmail Trigger').first().json.text }}\n",
+        "options": {
+          "systemMessage": "You are a financial agent. You classify incoming financial emails - nothing more.\n\n## Allowed\n\n* Apply the **Finances** label to the email (using the **Set \"Finances\" label** tool).\n* Classify based on the sender:\n  * A supplier requesting money from **US** → `\"payment\"`\n  * A customer who has paid **US** → `\"receipt\"`\n\n## Not Allowed\n\n* Do **NOT** reply to emails and do **NOT** write drafts.\n* Do **NOT** extract amounts, invoice numbers, or data.\n* Do **NOT** guess: an email that is not clearly a payment or incoming receipt is not your responsibility.\n\n## Output — Contract\n\n* Return **ONLY** one of these three words: `receipt`, `payment` or `unknown`.\n* No additional text, no markdown, no explanations."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        416
+      ],
+      "id": "c5f6225b-d8ee-4418-8bf0-60a7c20de68c",
+      "name": "Finance Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool as soon as you start processing the incoming email to set the \"Finances\" label.",
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3540142194657718861"
+        ]
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        856,
+        648
+      ],
+      "id": "0b36c064-f531-4746-b161-3eaf58eecca4",
+      "name": "Set \"Finances\" label",
+      "webhookId": "24c11cdb-cc34-427c-9dd3-4ae2c6963b68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "receipt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "de52724c-1a98-4c22-ada4-cd0727a287f5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Customer Receipts"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5fb54811-6cb3-4768-9829-4bc3ba438845",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "=payment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vendor Invoice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dc9debc4-d1c7-487f-8e0a-3646d3edeefa",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "unknown",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Unknown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        512
+      ],
+      "id": "e109ee0e-6105-4694-9334-c97ee075865e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const next = [];\n\nfor (const item of $input.all()) {\n  for (const key of Object.keys(item.binary)) {\n    next.push({ json: item.json, binary: { data: item.binary[key] } });\n  }\n}\n\nreturn next;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        448
+      ],
+      "id": "e532a06c-a236-4216-90e5-6ad0f13ec505",
+      "name": "Split out attachments"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $('Gmail Trigger').first().json.id }}",
+        "simple": false,
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "invoice_",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        448
+      ],
+      "id": "f26561ff-6201-46af-9e2b-8917a812a2f3",
+      "name": "Extract attachments",
+      "webhookId": "bf640425-e90c-4f90-917a-d82f624702e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        544
+      ],
+      "id": "0d8db5e1-8a85-4072-8c35-7451c984a52c",
+      "name": "Extract text from invoice",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "25Y1JAnUqNoWnac4",
+          "name": "Mistral account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.extractedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Vendor",
+              "description": "The name of the company that issued the invoice"
+            },
+            {
+              "name": "Amount",
+              "type": "number",
+              "description": "The payable amount"
+            },
+            {
+              "name": "Currency",
+              "description": "The currency"
+            },
+            {
+              "name": "VAT",
+              "type": "number",
+              "description": "The VAT charged on the invoice"
+            },
+            {
+              "name": "Invoice Number",
+              "description": "The invoice number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        2224,
+        448
+      ],
+      "id": "3e1446e5-f84e-43a3-86df-15f175186bc9",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "chatId": "984221945",
+        "text": "=Получено e плащане от {{ $('Gmail Trigger').first().json.from.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        256
+      ],
+      "id": "50476f3b-8a20-4919-904e-4372213a4a55",
+      "name": "Notify receipt",
+      "webhookId": "81167926-f9a7-443d-aad9-3a983b1a14da",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "=Трябва да се направи плащане за сумата от {{ $('Information Extractor').item.json.output.Amount }} {{ $json.Currency }} по номер на фактура `{{ $json['Invoice Number'] }}`.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2800,
+        448
+      ],
+      "id": "2e5f2ed5-6ad2-4185-9cc8-959215353980",
+      "name": "Notify invoice",
+      "webhookId": "579e2155-3a8f-4a7e-8c95-a8c747c7b0fb",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos",
+          "mode": "list",
+          "cachedResultName": "Email Management System Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 285512443,
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit#gid=285512443"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Vendor": "={{ $json.output.Vendor }}",
+            "Amount": "={{ $json.output.Amount }}",
+            "Currency": "={{ $json.output.Currency }}",
+            "VAT": "={{ $json.output.VAT }}",
+            "Invoice Number": "={{ $json.output['Invoice Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Vendor",
+              "displayName": "Vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Currency",
+              "displayName": "Currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "VAT",
+              "displayName": "VAT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2576,
+        448
+      ],
+      "id": "bac86bf6-79d5-4e48-b833-94582c944b54",
+      "name": "Register invoice",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $input.item.binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Jr6sRGZZhU0Ci8xopQgwImHwzvjfF3IS",
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Jr6sRGZZhU0Ci8xopQgwImHwzvjfF3IS"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        352
+      ],
+      "id": "314c6d69-e622-4400-9079-e0d79475ed36",
+      "name": "Archive invoice",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "h8fBgduGvdJu6b0f",
+          "name": "Google Drive Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger').first().json.subject }}\nFrom: {{ $('Gmail Trigger').first().json.from.text }}\n\nBody:\n{{ $('Gmail Trigger').first().json.text }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an agent for sales inquiries (leads) from **NEW potential customers**.\n\n## Allowed\n\n* Apply the **Sales Opportunities** label to the email.\n* Search the **Services Knowledge** **BEFORE** every draft.\n* Write draft replies and notify the person via Telegram.\n\n## Not Allowed\n\n* Do **NOT** send anything directly to the customer - every draft must wait for approval.\n* Do **NOT** promise prices, timelines, discounts, or services that are not in the database.\n* Do **NOT** negotiate or provide final offers - this is handled by a human.\n\n## When Unsure - Escalate\n\n* If the database does not cover the question or you are not confident: `escalate=true`.\n* “I don’t know” is a valid response. Escalation is a successful outcome when there is uncertainty."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        832
+      ],
+      "id": "9eb5d97b-d288-46e5-b69c-fcc99dab204e",
+      "name": "Leads Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool as soon as you start processing the incoming email to set the \"Sales Opportunities\" label.",
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3823467894359633507"
+        ]
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        584,
+        1064
+      ],
+      "id": "3900262e-adef-4cab-99b8-f8d47d57f13e",
+      "name": "Set \"Sales Opportunities\" label",
+      "webhookId": "9d693b29-51dd-483f-926b-f9dfacee3ea5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to retrieve our **OFFICIAL** policies and FAQ answers for existing customers, including returns, warranties, delivery times, support, and order status.\n\nIt does **NOT** include pricing, offers, or commercial terms for new customers.\n\nAlways call it **BEFORE** every response - if the answer is not available there, do **not** make it up.",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_faq",
+          "mode": "list",
+          "cachedResultName": "email_management_system_faq"
+        },
+        "topK": 3,
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        776,
+        8
+      ],
+      "id": "34c1023f-8f9a-4528-8020-2c7f4ee8b068",
+      "name": "Query FAQs and Policies",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to retrieve information about the company's offerings, including services, packages, approximate pricing, and the process for working with new clients.\n\nIt does **NOT** include policies for existing customers (such as returns or support).\n\nAlways call this tool **BEFORE** drafting any response to a prospective client.",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_services",
+          "mode": "list",
+          "cachedResultName": "email_management_system_services"
+        },
+        "topK": 3,
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        712,
+        1064
+      ],
+      "id": "96d0aafc-c3c2-459a-89c6-ace1163a2b30",
+      "name": "Query Services Knowledge",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4b14447e-5f20-4a15-b72e-7d20d54443f6",
+              "leftValue": "={{ $json.output.escalate }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1264,
+        944
+      ],
+      "id": "3ba097d8-3180-4fa6-af78-fe909e4dea2d",
+      "name": "Should escalate?"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re:  {{ $('Gmail Trigger').first().json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.output.reply }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').first().json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        1040
+      ],
+      "id": "06052135-92bf-4345-9622-cd4570d864d7",
+      "name": "Create a draft",
+      "webhookId": "dd4f996d-db6c-40ba-8373-f56b1c37fd6c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "=Drafted a reply for a new lead.\n\n```HTML\n{{ $('Leads Agent').item.json.output.reply }}\n```\n\nTarget: {{ $('Gmail Trigger').first().json.from.text }}\n\nReasoning: {{ $('Leads Agent').item.json.output.reason }}\n\nKnowledge: {{ $('Leads Agent').item.json.output.knowledge }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        1040
+      ],
+      "id": "d0847950-6f6c-4627-9c35-78d36512c231",
+      "name": "Notify lead reply draft",
+      "webhookId": "2962d56b-d21d-4327-81bb-417444085459",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "=📥 New lead: {{ $('Gmail Trigger').first().json.from.text }} \n\nI am not sure how to respond...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        848
+      ],
+      "id": "eab194dc-6b5d-47a0-864f-919bf50f4fb6",
+      "name": "Escalate new lead",
+      "webhookId": "637b0d2e-f97c-4695-aac9-9059a1d8706f",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger').first().json.subject }}\nFrom: {{ $('Gmail Trigger').first().json.from.text }}\n\nBody:\n{{ $('Gmail Trigger').first().json.text }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an executive assistant for internal emails - from employees using our domain.\n\n## Allowed\n\n* Apply the **Internal Communication** label to the email.\n* Create a brief summary: **WHO** is writing and **WHAT** they are requesting.\n\n## Not Allowed\n\n* Do **NOT** reply to colleagues and do **NOT** write drafts.\n* Do **NOT** forward the full content - the only thing shared externally is the summary.\n* Do **NOT** take action on requests in the email (payments, meetings, tasks)—only report them."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        1344
+      ],
+      "id": "70223511-3f00-47e3-b15f-3e4ebeeeebc3",
+      "name": "Internal Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.6-luna",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        664,
+        1560
+      ],
+      "id": "649cbb64-29d3-4a0e-a0d6-19722740c93c",
+      "name": "GPT 5.6 Luna",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool as soon as you start processing the incoming email to set the \"Internal Communication\" label.",
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_5930083392054357661"
+        ]
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        792,
+        1560
+      ],
+      "id": "df3c6d57-7ba4-47f7-b593-9ca52580b97f",
+      "name": "Set \"Internal Communication\" label",
+      "webhookId": "24c11cdb-cc34-427c-9dd3-4ae2c6963b68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"reply\": {\n      \"type\": \"string\",\n      \"description\": \"The HTML-formatted body content of the email reply to be sent to the prospect. Use <p>, <br>, and <a> tags. If escalate is true, this is not required.\"\n    },\n    \"reason\": {\n      \"type\": \"string\",\n      \"description\": \"Short explanation for why this email response was generated.\"\n    },\n    \"escalate\": {\n      \"type\": \"boolean\",\n      \"description\": \"True if unsure or can't confidently answer using available knowledge. False if confident.\"\n    },\n    \"knowledge\": {\n      \"type\": \"string\",\n      \"description\": \"A summary of the facts retrieved from the Knowledge Database that were used.\"\n    }\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1000,
+        1064
+      ],
+      "id": "799f1758-854c-4baf-9a88-55d1a1f93c55",
+      "name": "Lead Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"summary\": \"A short summary of the email, 2-3 sentences\",\n\t\"sender\": \"The sender of the email\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        920,
+        1560
+      ],
+      "id": "a1063627-8b0d-4fb7-89db-7f7c41184fb5",
+      "name": "Internal Email Summary Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "={{ $json.output.sender }} ти писа.\n\n<blockquote>\n{{ $json.output.summary }}\n</blockquote>",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        1344
+      ],
+      "id": "7031f8c8-4c3a-49bd-b2bd-8470dcbee41a",
+      "name": "Notify internal email",
+      "webhookId": "5a1af9cd-2bc4-476d-b5c6-8b9e3f8b4d0b",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "Полученият имейл от {{ $('Gmail Trigger').first().json.from.text }} не беше обработен успешно. Не успях да го класифицирам като `receipt` или `invoice`.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        656
+      ],
+      "id": "96501a67-56b8-479f-952c-40aa8f7452b4",
+      "name": "Notify unknown",
+      "webhookId": "015a1a7f-ff49-4d1b-b0a3-44830c72ddab",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "984221945",
+        "richFormat": "markdown",
+        "richMessageText": "The text content of an attachment could not be extracted.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2288,
+        640
+      ],
+      "id": "11464f38-0f9b-4376-a245-3ebdc19a6639",
+      "name": "Notify unsuccessful OCR",
+      "webhookId": "869cf21e-f616-4d7c-ad3f-0af24237220f",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finance Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Leads Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Internal Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Support Agent": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen3.7 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Embedding 3 Large": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Query FAQs and Policies",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Query Services Knowledge",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma 4 31B": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Leads Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek V4 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Finance Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify negative email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft reply": {
+      "main": [
+        [
+          {
+            "node": "Add label to drafted reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify negative email": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to drafted reply": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set \"Finances\" label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Finance Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finance Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Notify receipt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract attachments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify unknown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out attachments": {
+      "main": [
+        [
+          {
+            "node": "Archive invoice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract text from invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract attachments": {
+      "main": [
+        [
+          {
+            "node": "Split out attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract text from invoice": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify unsuccessful OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Register invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Register invoice": {
+      "main": [
+        [
+          {
+            "node": "Notify invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Archive invoice": {
+      "main": [
+        []
+      ]
+    },
+    "Set \"Sales Opportunities\" label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query FAQs and Policies": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Services Knowledge": {
+      "ai_tool": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads Agent": {
+      "main": [
+        [
+          {
+            "node": "Should escalate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should escalate?": {
+      "main": [
+        [
+          {
+            "node": "Escalate new lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Notify lead reply draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Internal Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set \"Internal Communication\" label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Internal Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Internal Email Summary Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Internal Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Internal Agent": {
+      "main": [
+        [
+          {
+            "node": "Notify internal email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify unknown": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5e884379-19a4-42da-a4f1-297b4b353432",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "zGGYUxpdmRaG2MAz",
+  "tags": []
+}
