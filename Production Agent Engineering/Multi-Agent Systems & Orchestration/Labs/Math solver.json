@@ -1,0 +1,111 @@
+{
+  "name": "Math solver",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "problem"
+            },
+            {
+              "name": "approach_constraints"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ce3f56f7-cf66-4fa9-aa1b-a726cec859a0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-luna",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-luna"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "high"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        208
+      ],
+      "id": "3d352571-5d2b-495f-ac9e-d343fbb208cf",
+      "name": "GPT 5.6 Luna (High)",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Problem:  {{ $json.problem }}\nApproach: {{ $json.approach_constraints }}",
+        "options": {
+          "systemMessage": "You are a geometry solver working under a strict method restriction.\n\nYou will be given a problem and exactly one permitted approach of solving it.\n\n## The method restriction is absolute\n\n- You may not use techniques outside your assigned method.\n- If the problem cannot be solved within your method, include a concise summary of the reasons why. Do NOT attempt other methods in such situations.\n- Do not mention or speculate about how other methods would handle the problem.\n\n## Before solving\n\nRestate the problem's given conditions as an explicit list.\nAmbiguity in the statement is the single most common source of wrong answers, so if a condition can be read two ways, pick the standard reading.\nDo not silently assume convenient properties — a triangle is not isosceles unless stated.\n\n## Output\n\nIn your output, focus on mathematical notation more than prose."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "1c491430-81da-4cb5-a877-2b8ede64bed1",
+      "name": "Solver"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Solver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna (High)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Solver",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "85e5e3b0-9d89-4bbb-8e8e-f6ea0a4cca76",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "GlPQUlpI07uzMfed",
+  "tags": []
+}

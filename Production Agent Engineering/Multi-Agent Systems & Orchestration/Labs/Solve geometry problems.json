@@ -1,0 +1,197 @@
+{
+  "name": "Solve geometry problems",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "022aa989-bf53-4e47-9bc9-ea34cf4b60fe",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.problem }}",
+        "options": {
+          "systemMessage": "You coordinate independent geometry solvers. You do not solve problems yourself.\n\n## Tools\n\n- solve(problem, approach_constaintrs) - dispatches one solver agent.\n\n## Rules\n\n- Call solve() at least two times in parallel with different approach constraints.\n- You must always demand one solution, based on Euclidean geometry, and another solution, based on linear algebra.\n- If the task predisposes another approach, you can explore it as well throughout separate `solve` call.\n- Never include one solver's output in another solver's call. The solvers must remain mutually blind. Their independence is the only reason their agreement carries information.\n- You never produce a geometric argument of your own - rely on the solvers.\n- You never re-dispatch a solver to \"try again\" after seeing another solver's answer. That contaminates the run.\n\n## Approaches\n\n### Euclidean geometry\n\nPermitted:\n- Congruence and similarity of triangles\n- Circle theorems: inscribed angle, power of a point, cyclic quadrilaterals, tangent-chord\n- Angle chasing\n- The classical named theorems: Ceva, Menelaus, Stewart, Ptolemy, the angle bisector theorem, the median/centroid ratios\n- Trigonometry: law of sines, law of cosines, trigonometric identities, and trigonometric forms of Ceva and Menelaus\n- Areas as a ratio tool\n\nForbidden:\n- Introducing a coordinate system of any kind\n- Assigning coordinates, vectors, or complex numbers to points\n- Numerical substitution of specific lengths or angles to test a hypothesis\n\n### Linear algebra\n\nPermitted:\n- Placing the figure in R^2 with an explicit coordinate system of your choosing\n- Points as position vectors; lines in parametric or normal form\n- Dot products for lengths, angles, and perpendicularity\n- The 2D cross product / determinant for areas, collinearity, and orientation\n- Solving linear systems for intersections\n- Matrices for rotations, reflections, and projections\n\nForbidden:\n- Invoking named synthetic theorems (Ceva, Menelaus, inscribed angle, the angle  bisector theorem, etc.) as justification. If you need such a fact, derive it from your coordinates.\n- Substituting specific numbers for the free parameters of the configuration. Your coordinates must stay symbolic, so that the result holds for the general configuration and not for one instance.\n\n## Output format\n\nState the verdict first, then the answer, then a one-paragraph summary of each route in the solvers' own terms, then the confidence basis.\nFinish with at least one concrete example."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "50360b0d-1c68-433a-ad7c-65e710b0a550",
+      "name": "Orchestrator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-luna",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-luna"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "high"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        208
+      ],
+      "id": "b191b40d-01a5-4893-96f5-92480603c179",
+      "name": "GPT 5.6 Luna (High)",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efb6c198-dc03-4569-b153-795e1096aef6",
+              "name": "problem",
+              "value": "В правоъгълника ABCD диагоналите се пресичат в точка О. Ъглополовящите на ъгъл DBC и ъгъл ADB пресичат CD и АВ съответно в точките P и Q. През точка А е построена права, успоредна на BD, която пресича правата СВ в точка R. Докажете, че триъгълник DQO е еднакъв с триъгълник BPO и че AC = AR.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "87c610f3-a82e-47a7-b90f-43675a9fcb1d",
+      "name": "Sample data"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to solve a geometry problem, using one particular approach.",
+        "workflowId": {
+          "__rl": true,
+          "value": "GlPQUlpI07uzMfed",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GlPQUlpI07uzMfed",
+          "cachedResultName": "Math solver"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "problem": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('problem', ``, 'string') }}",
+            "approach_constraints": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('approach_constraints', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "problem",
+              "displayName": "problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "approach_constraints",
+              "displayName": "approach_constraints",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        224
+      ],
+      "id": "228fc59b-fc7a-40bc-bcb0-f805eddf677c",
+      "name": "Solve"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Sample data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Luna (High)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample data": {
+      "main": [
+        [
+          {
+            "node": "Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solve": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "18ec101a-cb1f-48ce-a193-49c39235e008",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "Jj47wFjyQ7tgR69d",
+  "tags": []
+}
