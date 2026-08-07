@@ -1089,7 +1089,7 @@
         "operation": "sendRichMessage",
         "chatId": "984221945",
         "richFormat": "markdown",
-        "richMessageText": "Полученият имейл от {{ $('Gmail Trigger').first().json.from.text }} не беше обработен успешно. Не успях да го класифицирам като `receipt` или `invoice`.",
+        "richMessageText": "=Полученият имейл от {{ $('Gmail Trigger').first().json.from.text }} не беше обработен успешно. Не успях да го класифицирам като `receipt` или `invoice`.",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",

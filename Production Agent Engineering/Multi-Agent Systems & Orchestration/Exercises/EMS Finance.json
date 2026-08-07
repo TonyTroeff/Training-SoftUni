@@ -1,0 +1,690 @@
+{
+  "name": "EMS: Finance",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "The text content of an attachment could not be extracted.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        784
+      ],
+      "id": "b72567bb-cbc6-4926-9b10-1aeab29b1c5c",
+      "name": "Notify unsuccessful OCR",
+      "webhookId": "869cf21e-f616-4d7c-ad3f-0af24237220f",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=Полученият имейл от {{ $('Start').item.json.email.sender }} не беше обработен успешно. Не успях да го класифицирам като `receipt` или `invoice`.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        736
+      ],
+      "id": "3d597f26-110d-46ba-be41-b4d12811c02d",
+      "name": "Notify unknown",
+      "webhookId": "015a1a7f-ff49-4d1b-b0a3-44830c72ddab",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "~deepseek/deepseek-v4-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        672
+      ],
+      "id": "577adfc1-971f-4fea-aacb-d3ccaa7ae945",
+      "name": "DeepSeek V4 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool as soon as you start processing the incoming email to set the \"Finances\" label.",
+        "operation": "addLabels",
+        "messageId": "={{ $('Start').item.json.email.message_id }}",
+        "labelIds": [
+          "Label_3540142194657718861"
+        ]
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        672
+      ],
+      "id": "4c409659-6e6f-43cd-ba0c-cbab0a3f9866",
+      "name": "Set \"Finances\" label",
+      "webhookId": "24c11cdb-cc34-427c-9dd3-4ae2c6963b68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        640
+      ],
+      "id": "dac7e8e0-2cba-44a5-bd64-af0e97fa34a5",
+      "name": "Extract text from invoice",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "25Y1JAnUqNoWnac4",
+          "name": "Mistral account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3.7-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        480,
+        592
+      ],
+      "id": "4a602750-f376-43da-ae38-75f0034d543e",
+      "name": "Qwen3.7 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const next = [];\n\nfor (const item of $input.all()) {\n  for (const key of Object.keys(item.binary)) {\n    next.push({ json: item.json, binary: { data: item.binary[key] } });\n  }\n}\n\nreturn next;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        544
+      ],
+      "id": "8d417d5e-bc11-4164-8a9e-17da23d10fa8",
+      "name": "Split out attachments"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $('Start').item.json.email.message_id }}",
+        "simple": false,
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "invoice_",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        544
+      ],
+      "id": "3ae6e143-200c-48ae-8935-a41164d49e1f",
+      "name": "Extract attachments",
+      "webhookId": "bf640425-e90c-4f90-917a-d82f624702e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "receipt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "de52724c-1a98-4c22-ada4-cd0727a287f5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Customer Receipts"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5fb54811-6cb3-4768-9829-4bc3ba438845",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "=payment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vendor Invoice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dc9debc4-d1c7-487f-8e0a-3646d3edeefa",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "unknown",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Unknown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        528
+      ],
+      "id": "dc580238-51d2-4729-89f2-2ed9bc9a0370",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=Трябва да се направи плащане за сумата от {{ $('Information Extractor').item.json.output.Amount }} {{ $('Information Extractor').item.json.output.Currency }} по номер на фактура `{{ $('Information Extractor').item.json.output['Invoice Number'] }}`.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        480
+      ],
+      "id": "8d5b19fe-01d4-400a-bb40-0a3668642365",
+      "name": "Notify invoice",
+      "webhookId": "579e2155-3a8f-4a7e-8c95-a8c747c7b0fb",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos",
+          "mode": "list",
+          "cachedResultName": "Email Management System Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 285512443,
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit#gid=285512443"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Vendor": "={{ $json.output.Vendor }}",
+            "Amount": "={{ $json.output.Amount }}",
+            "Currency": "={{ $json.output.Currency }}",
+            "VAT": "={{ $json.output.VAT }}",
+            "Invoice Number": "={{ $json.output['Invoice Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Vendor",
+              "displayName": "Vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Currency",
+              "displayName": "Currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "VAT",
+              "displayName": "VAT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        480
+      ],
+      "id": "1ac39d3a-db52-44ff-8255-e93a58a6c666",
+      "name": "Register invoice",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $input.item.binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Jr6sRGZZhU0Ci8xopQgwImHwzvjfF3IS",
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Jr6sRGZZhU0Ci8xopQgwImHwzvjfF3IS"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        448
+      ],
+      "id": "3a300073-8e85-46af-b488-8f04839ae1c2",
+      "name": "Archive invoice",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "h8fBgduGvdJu6b0f",
+          "name": "Google Drive Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Start').item.json.email.subject }}\nFrom: {{ $('Start').item.json.email.sender }}\n\nBody:\n{{ $('Start').item.json.email.body }}\n",
+        "options": {
+          "systemMessage": "You are a financial agent. You classify incoming financial emails - nothing more.\n\n## Allowed\n\n* Apply the **Finances** label to the email (using the **Set \"Finances\" label** tool).\n* Classify based on the sender:\n  * A supplier requesting money from **US** → `\"payment\"`\n  * A customer who has paid **US** → `\"receipt\"`\n\n## Not Allowed\n\n* Do **NOT** reply to emails and do **NOT** write drafts.\n* Do **NOT** extract amounts, invoice numbers, or data.\n* Do **NOT** guess: an email that is not clearly a payment or incoming receipt is not your responsibility.\n\n## Output — Contract\n\n* Return **ONLY** one of these three words: `receipt`, `payment` or `unknown`.\n* No additional text, no markdown, no explanations."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -784,
+        432
+      ],
+      "id": "32c04da2-f90f-4959-9b48-56fd006438e1",
+      "name": "Finance Agent"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.extractedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Vendor",
+              "description": "The name of the company that issued the invoice"
+            },
+            {
+              "name": "Amount",
+              "type": "number",
+              "description": "The payable amount"
+            },
+            {
+              "name": "Currency",
+              "description": "The currency"
+            },
+            {
+              "name": "VAT",
+              "type": "number",
+              "description": "The VAT charged on the invoice"
+            },
+            {
+              "name": "Invoice Number",
+              "description": "The invoice number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        384
+      ],
+      "id": "2c73a663-cf65-4647-b67f-105b2e380a55",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "text": "=Получено e плащане от {{ $('Start').item.json.email.sender }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        352
+      ],
+      "id": "14308d62-49f6-44ee-9344-ee54fc0ca69c",
+      "name": "Notify receipt",
+      "webhookId": "81167926-f9a7-443d-aad9-3a983b1a14da",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "email",
+              "type": "object"
+            },
+            {
+              "name": "telegram_chat_id"
+            }
+          ]
+        }
+      },
+      "id": "010ea461-b110-448c-8243-1d9d03309b3b",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -992,
+        432
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Qwen3.7 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek V4 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Finance Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set \"Finances\" label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Finance Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finance Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Notify receipt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract attachments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify unknown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out attachments": {
+      "main": [
+        [
+          {
+            "node": "Archive invoice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract text from invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract attachments": {
+      "main": [
+        [
+          {
+            "node": "Split out attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract text from invoice": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify unsuccessful OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Register invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Register invoice": {
+      "main": [
+        [
+          {
+            "node": "Notify invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Finance Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c78d6e95-d060-4a66-99d8-fbfe1afcce84",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "vrKNY9qRWPxcygYU",
+  "tags": []
+}

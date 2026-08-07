@@ -1,0 +1,496 @@
+{
+  "name": "Email Management System",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "maxResults": 1,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1808,
+        528
+      ],
+      "id": "dc2f7a3a-2855-45a6-a563-c88a972e9b3a",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "=From: {{ $('Gmail Trigger').item.json.from.text }}\nSubject: {{ $('Gmail Trigger').item.json.subject }}\n\nEmail body:\n{{ $('Gmail Trigger').item.json.text }}\n\nExisting customer: {{ $json.isEmpty() ? \"No\" : \"Yes\" }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Customer Support",
+              "description": "An email from an EXISTING customer about something they already use or have ordered: issues, order status, complaints, feedback, questions about policies. NOT for new business: if the sender wants to buy, asks for a quote, price, or a conversation - this is a `Sales Opportunity`."
+            },
+            {
+              "category": "Finance",
+              "description": "Invoices, statements, payment reminders, receipts, expense reports."
+            },
+            {
+              "category": "Sales Opportunity",
+              "description": "An email from a NEW potential customer: quote request, pricing, proposal, scheduling a conversation. Applies EVEN IF it is phrased as a question. A sender who is not an existing customer and shows interest in making a purchase → ALWAYS goes here, not under Customer Questions."
+            },
+            {
+              "category": "Internal Communication",
+              "description": "Emails from employees within the company."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -1136,
+        528
+      ],
+      "id": "9e8b5fd4-24fb-43a7-99b5-6612fc0444d7",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": "~deepseek/deepseek-v4-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        832
+      ],
+      "id": "577adfc1-971f-4fea-aacb-d3ccaa7ae945",
+      "name": "DeepSeek V4 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xsIvW0mA7uXYObXHdWIqSWbQjCrpvo3-WBmI232v-SA",
+          "mode": "list",
+          "cachedResultName": "Customers Archive",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xsIvW0mA7uXYObXHdWIqSWbQjCrpvo3-WBmI232v-SA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Customers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xsIvW0mA7uXYObXHdWIqSWbQjCrpvo3-WBmI232v-SA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Gmail Trigger').item.json.from.value[0].address }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1360,
+        528
+      ],
+      "id": "a84eea95-9b23-43b9-a621-a86218181a86",
+      "name": "Lookup customer dossier",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "E360IxwxoWZ07OlQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/E360IxwxoWZ07OlQ",
+          "cachedResultName": "EMS: Internal Communication"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Parameters').item.json.email }}",
+            "telegram_chat_id": "={{ $('Parameters').item.json.telegram_chat_id }}"
+          },
+          "matchingColumns": [
+            "from_text_firstItem",
+            "subject_firstItem",
+            "text_firstItem",
+            "id_firstItem"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "telegram_chat_id",
+              "displayName": "telegram_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        816
+      ],
+      "name": "Call EMS: Internal Communication",
+      "id": "0439baa1-ab9f-42e1-b91a-f32889540d7a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f2b648db-b37b-4d30-a826-8cb84c237487",
+              "name": "telegram_chat_id",
+              "value": "984221945",
+              "type": "string"
+            },
+            {
+              "id": "5aa38098-992f-4fc9-b1db-b1cad3bd679d",
+              "name": "email",
+              "value": "={ \"thread_id\": \"{{ $json.threadId }}\", \"message_id\": \"{{ $json.id }}\", \"sender\": \"{{ $json.from.text.replaceAll('\"', '\\\\\"') }}\", \"subject\": \"{{ $json.subject }}\", \"body\": \"{{ $json.text.trim().replaceAll('\\n', '\\\\n') }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1584,
+        528
+      ],
+      "id": "b02ce666-13d6-4c0e-81da-90111e543e6a",
+      "name": "Parameters"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TyTQ5WBhu0DOpXqu",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TyTQ5WBhu0DOpXqu",
+          "cachedResultName": "EMS: Sales Opportunity"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Parameters').item.json.email }}",
+            "telegram_chat_id": "={{ $('Parameters').item.json.telegram_chat_id }}"
+          },
+          "matchingColumns": [
+            "from_text_firstItem",
+            "subject_firstItem",
+            "text_firstItem",
+            "id_firstItem",
+            "threadId_firstItem"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "telegram_chat_id",
+              "displayName": "telegram_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        624
+      ],
+      "name": "Call EMS: Sales Opportunity",
+      "id": "f0df9832-adf2-4349-b336-be6905b72724"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "yYyjYK4umiQFXCeC",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yYyjYK4umiQFXCeC",
+          "cachedResultName": "EMS: Customer Support"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_chat_id": "={{ $('Parameters').item.json.telegram_chat_id }}",
+            "email": "={{ $('Parameters').item.json.email }}",
+            "customer": "={{ $('Lookup customer dossier').item.json }}"
+          },
+          "matchingColumns": [
+            "from_text",
+            "subject",
+            "text",
+            "threadId",
+            "",
+            "Company",
+            "Notes",
+            "Name",
+            "Plan"
+          ],
+          "schema": [
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "telegram_chat_id",
+              "displayName": "telegram_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        240
+      ],
+      "name": "Call EMS: Customer Support",
+      "id": "a1b513de-1975-4701-bdf5-7f4ab501da9c"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "vrKNY9qRWPxcygYU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/vrKNY9qRWPxcygYU",
+          "cachedResultName": "EMS: Finance"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Parameters').item.json.email }}",
+            "telegram_chat_id": "={{ $('Parameters').item.json.telegram_chat_id }}"
+          },
+          "matchingColumns": [
+            "from_text_firstItem",
+            "subject_firstItem",
+            "text_firstItem",
+            "id_firstItem"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "telegram_chat_id",
+              "displayName": "telegram_chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        432
+      ],
+      "name": "Call EMS: Finance",
+      "id": "ee294e53-4f36-4510-90f4-623705c83303"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Call EMS: Customer Support",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call EMS: Finance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call EMS: Sales Opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call EMS: Internal Communication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek V4 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup customer dossier": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Lookup customer dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "da512bf5-ac70-4695-aa80-fd88b77bc165",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "gxDaMFEfhes7FyhV",
+  "tags": []
+}

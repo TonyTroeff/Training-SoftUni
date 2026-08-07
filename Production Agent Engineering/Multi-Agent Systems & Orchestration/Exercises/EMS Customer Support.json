@@ -1,0 +1,660 @@
+{
+  "name": "EMS: Customer Support",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "qwen/qwen3.7-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        544,
+        448
+      ],
+      "id": "4a602750-f376-43da-ae38-75f0034d543e",
+      "name": "Qwen3.7 Flash",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        432
+      ],
+      "id": "2ff2b2d7-6b2b-4258-9263-9217caeba23a",
+      "name": "Text Embedding 3 Large",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=Имате имейл с негативен сантимент от {{ $('Start').item.json.email.sender }} със следния текст:\n\n```\n{{ $('Start').item.json.email.body }}\n```",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        416
+      ],
+      "id": "6539090c-0a75-49b4-8e2f-2b9ce1567457",
+      "name": "Notify negative email",
+      "webhookId": "bcf5c3a3-28c5-4c3e-be17-9f04708c72d6",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3bb14ad5-1e11-4e29-b54d-6a2e5df6cb81",
+              "name": "customer_context",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        304
+      ],
+      "id": "da7e0b40-e3fa-4de3-a18a-4adfe6f5bfe8",
+      "name": "Set empty customer context (not found)"
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        288
+      ],
+      "id": "9d3ec1eb-e792-4422-b54e-ae7218d7dfb4",
+      "name": "Gemma 4 31B",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to retrieve our **OFFICIAL** policies and FAQ answers for existing customers, including returns, warranties, delivery times, support, and order status.\n\nIt does **NOT** include pricing, offers, or commercial terms for new customers.\n\nAlways call it **BEFORE** every response - if the answer is not available there, do **not** make it up.",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_faq",
+          "mode": "list",
+          "cachedResultName": "email_management_system_faq"
+        },
+        "topK": 3,
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        240
+      ],
+      "id": "a426217b-7e37-402b-98be-5a58f035e02b",
+      "name": "Query FAQs and Policies",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Start').item.json.email.thread_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -80,
+        240
+      ],
+      "id": "a3413628-b332-4126-9b7b-4cde534d4e62",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"reply\": {\n      \"type\": \"string\",\n      \"description\": \"The body of the response to the customer. No markdown, no quotes inside—the customer reads a normal email.\"\n    },\n    \"source\": {\n      \"type\": \"string\",\n      \"description\": \"The exact sections from the knowledge base that the response is based on. If you did not use the knowledge base, write: NO SOURCE.\"\n    },\n    \"answered_from_knowledge\": {\n      \"type\": \"boolean\",\n      \"description\": \"`true` ONLY if the answer is based entirely on an extracted section from the database. `false` if you answered using general knowledge or if you are uncertain.\"\n    }\n  },\n  \"required\": [\n    \"reply\",\n    \"source\",\n    \"answered_from_knowledge\"\n  ],\n  \"additionalProperties\": false\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        240
+      ],
+      "id": "e61e588a-7634-4af1-9b86-a8dd6b3ed76d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $('Start').item.json.email.body }}",
+        "options": {
+          "categories": "Positive, Neutral, Negative"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        208
+      ],
+      "id": "663a0da8-8330-458d-8c8b-b00d393b888a",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Start').item.json.email.subject }}",
+        "message": "={{ $('Customer Support Agent').item.json.output.reply }}",
+        "options": {
+          "threadId": "={{ $('Start').item.json.email.thread_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        208
+      ],
+      "id": "ee8d94e8-1d88-4fcb-815a-f15d599a70f9",
+      "name": "Draft reply",
+      "webhookId": "c2bbb752-4d5d-4876-a059-922e7581094b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message.id }}",
+        "labelIds": [
+          "Label_2104532352493058685"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        208
+      ],
+      "id": "0a6596b1-f645-4597-89da-648e057d30b2",
+      "name": "Add label to drafted reply",
+      "webhookId": "1950c2bc-a2d1-4501-89b9-1180b882abb7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos",
+          "mode": "list",
+          "cachedResultName": "Email Management System Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Incoming emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Start').item.json.email.sender }}",
+            "Body": "={{ $('Start').item.json.email.body }}",
+            "Timestamp": "={{ $now.toUTC().format('yyyy-MM-dd HH:mm') }}",
+            "Sentiment": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Automatic Reply": "={{ $('Customer Support Agent').item.json.output.reply }}",
+            "Source(s)": "={{ $('Customer Support Agent').item.json.output.source }}",
+            "Answered from knowledgebase": "={{ $('Customer Support Agent').item.json.output.answered_from_knowledge }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Automatic Reply",
+              "displayName": "Automatic Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source(s)",
+              "displayName": "Source(s)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Answered from knowledgebase",
+              "displayName": "Answered from knowledgebase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        208
+      ],
+      "id": "c51568e5-75ff-4e71-9769-adb42b97aa2c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cc4847bd-dfe8-456c-9542-2a72aabbfe75",
+              "leftValue": "={{ $('Start').item.json.customer }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -720,
+        208
+      ],
+      "id": "956104e9-92d6-43b2-bd9d-322c61d80fbf",
+      "name": "If customer is found"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deb061ce-031d-4d70-bc86-1789ff9be283",
+              "name": "customer_context",
+              "value": "=--- Information about the customer (from our internal register) ---\nName: {{ $('Start').item.json.customer.Name }}\nCompany: {{ $('Start').item.json.customer.Company }}\nPlan: {{ $('Start').item.json.customer.Plan }}\nNotes:\n{{ $('Start').item.json.customer.Notes }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        112
+      ],
+      "id": "9b372bbf-751c-4ddc-8ce7-13e5cb8786f7",
+      "name": "Set customer context (found)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Start').item.json.email.subject }}\nFrom: {{ $('Start').item.json.email.sender }}\n\nBody:\n{{ $('Start').item.json.email.body }}\n\n{{ $json.customer_context }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a customer support agent. You respond to emails from **EXISTING** customers using **ONLY** the information available in the **Query FAQs and Policies** tool.\n\n## Allowed\n\n* Read the email provided by the system.\n* Query FAQs and Policies **BEFORE** every response.\n* Draft email replies.\n\n## Not Allowed\n\n* Do **NOT** send emails directly - you may only create drafts, which will be reviewed by a human.\n* Do **NOT** promise anything that is not in the database, including prices, timelines, discounts, or policies.\n* Do **NOT** make up policies. If the database does not contain the answer, follow the \"When Unsure\" instructions.\n* Do **NOT** respond to topics outside customer support (such as new business inquiries, finance, or spam).\n\n## When Unsure\n\n* If the database does not provide a clear answer, do **NOT** invent one. Draft a brief, polite reply stating that the question has been forwarded to the team and that they will get back to the customer.\n\n## Constraints\n\n* If provided, data from our internal \"Customers\" register is private. You can use it to personalize the reply, but do not quote it\n* Do not mention that you know about the customer's dossier.\n* Never write \"according to our internal notes\".\n\n## Output\n\n* Return **ONLY** the email body - no subject line and no Markdown.\n* Tone: friendly and professional.\n* Signature: **Customer Support Team**.\n* Every fact in the response must come from a section of the \"FAQs and Policies\". In the `source` field of the output, quote the section verbatim (up to 2 sentences).\n* If the \"FAQs and Policies\" are not used at all, set `source` to \"NO SOURCE\" and `answered_from_knowledgebase` to `false`."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "32239323-e188-4a48-ae73-f5a307dd5c2e",
+      "name": "Customer Support Agent"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "customer",
+              "type": "object"
+            },
+            {
+              "name": "email",
+              "type": "object"
+            },
+            {
+              "name": "telegram_chat_id"
+            }
+          ]
+        }
+      },
+      "id": "0d0aba9d-ab15-4541-b121-dc51c84ac910",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -928,
+        208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Customer Support Agent": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen3.7 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Embedding 3 Large": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Query FAQs and Policies",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma 4 31B": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify negative email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft reply": {
+      "main": [
+        [
+          {
+            "node": "Add label to drafted reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify negative email": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to drafted reply": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query FAQs and Policies": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If customer is found": {
+      "main": [
+        [
+          {
+            "node": "Set customer context (found)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set empty customer context (not found)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set customer context (found)": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set empty customer context (not found)": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "If customer is found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "19ce474f-bf37-4a05-852f-369364ebcfdf",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "yYyjYK4umiQFXCeC",
+  "tags": []
+}

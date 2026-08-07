@@ -1,0 +1,655 @@
+{
+  "name": "EMS: Sales Opportunity",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Start').first().json.email.subject }}",
+        "emailType": "html",
+        "message": "={{ $('Leads Agent').first().json.output.reply }}",
+        "options": {
+          "threadId": "={{ $('Start').first().json.email.thread_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1376,
+        640
+      ],
+      "id": "7590837d-7761-47fa-a162-9d5c7dfba588",
+      "name": "Create a draft",
+      "webhookId": "dd4f996d-db6c-40ba-8373-f56b1c37fd6c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool as soon as you start processing the incoming email to set the \"Sales Opportunities\" label.",
+        "operation": "addLabels",
+        "messageId": "={{ $('Start').item.json.email.message_id }}",
+        "labelIds": [
+          "Label_3823467894359633507"
+        ]
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        624
+      ],
+      "id": "1436f578-10a2-44c9-9d3c-8f6d1ef7bcb6",
+      "name": "Set \"Sales Opportunities\" label",
+      "webhookId": "9d693b29-51dd-483f-926b-f9dfacee3ea5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to retrieve information about the company's offerings, including services, packages, approximate pricing, and the process for working with new clients.\n\nIt does **NOT** include policies for existing customers (such as returns or support).\n\nAlways call this tool **BEFORE** drafting any response to a prospective client.",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_services",
+          "mode": "list",
+          "cachedResultName": "email_management_system_services"
+        },
+        "topK": 10,
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        624
+      ],
+      "id": "61f40022-bba2-4aa5-8f67-fc844fb8cebb",
+      "name": "Query Services Knowledge",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"reply\": {\n      \"type\": \"string\",\n      \"description\": \"The HTML-formatted body content of the email reply to be sent to the prospect. Use <p>, <br>, and <a> tags. If escalate is true, this is not required.\"\n    },\n    \"reason\": {\n      \"type\": \"string\",\n      \"description\": \"Short explanation for why this email response was generated.\"\n    },\n    \"escalate\": {\n      \"type\": \"boolean\",\n      \"description\": \"True if unsure or can't confidently answer using available knowledge. False if confident.\"\n    },\n    \"knowledge\": {\n      \"type\": \"string\",\n      \"description\": \"A summary of the facts retrieved from the Knowledge Database that were used.\"\n    }\n  },\n  \"required\": [\n    \"reply\",\n    \"reason\",\n    \"escalate\",\n    \"knowledge\"\n  ],\n  \"additionalProperties\": false\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        624
+      ],
+      "id": "48d84060-b1ce-4cf5-9558-99951249f5da",
+      "name": "Lead Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Start').first().json.telegram_chat_id }}",
+        "message": "=📤 Чернова към {{ $('Start').first().json.email.sender }}\n\nТема: {{ $('Start').first().json.email.subject }}\nФакти от базата:\n{{ $('Leads Agent').first().json.output.knowledge }}\n\nОбосновка: {{ $('Leads Agent').first().json.output.reason }}\n\n```\n{{ $('Leads Agent').first().json.output.reply }}\n```\n\nОдобряваш ли изпращането?\n",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 24
+            }
+          },
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        448
+      ],
+      "id": "038494eb-a60b-4e75-a3ec-bc561e5da8c1",
+      "name": "Send message and wait for response",
+      "webhookId": "12401a88-2c07-4576-adff-74fea27929fd",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4b14447e-5f20-4a15-b72e-7d20d54443f6",
+              "leftValue": "={{ $json.output.escalate }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        384
+      ],
+      "id": "ac9fa329-e1d3-4f19-81b6-7ad0c365b239",
+      "name": "Should escalate?"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Start').item.json.email.subject }}\nFrom: {{ $('Start').item.json.email.sender }}\n\nBody:\n{{ $('Start').item.json.email.body }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an agent for sales inquiries (leads) from **NEW potential customers**.\n\n## Allowed\n\n* Apply the **Sales Opportunities** label to the email.\n* Search the **Services Knowledge** **BEFORE** every draft.\n* Write draft replies and notify the person via Telegram.\n* Use a friendly and engaging tone.\n* Sign your emails as **Sales Team**\n\n## Not Allowed\n\n* Do **NOT** send anything directly to the customer - every draft must wait for approval.\n* Do **NOT** promise prices, timelines, discounts, or services that are not in the database.\n* Do **NOT** negotiate or provide final offers - this is handled by a human.\n\n## When Unsure - Escalate\n\n* If the database does not cover the question or you are not confident: `escalate=true`.\n* “I don’t know” is a valid response. Escalation is a successful outcome when there is uncertainty."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -464,
+        384
+      ],
+      "id": "7e1098ed-5acb-441b-9afb-d13ccb04adc7",
+      "name": "Leads Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=📥 New lead: {{ $('Start').item.json.email.sender }} \n\nI am not sure how to respond...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        240
+      ],
+      "id": "4a4a77f1-10f2-4de6-88d6-37c3095f9325",
+      "name": "Escalate new lead",
+      "webhookId": "637b0d2e-f97c-4695-aac9-9059a1d8706f",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Start').first().json.email.message_id }}",
+        "message": "={{ $('Leads Agent').first().json.output.reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1376,
+        400
+      ],
+      "id": "2f5ac4f8-b987-4f32-8f1a-e0f1f7b5512f",
+      "name": "Reply to new lead",
+      "webhookId": "dd4f996d-db6c-40ba-8373-f56b1c37fd6c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        832
+      ],
+      "id": "2ff2b2d7-6b2b-4258-9263-9217caeba23a",
+      "name": "Text Embedding 3 Large",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        624
+      ],
+      "id": "9d3ec1eb-e792-4422-b54e-ae7218d7dfb4",
+      "name": "Gemma 4 31B",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "email",
+              "type": "object"
+            },
+            {
+              "name": "telegram_chat_id"
+            }
+          ]
+        }
+      },
+      "id": "7b6a3a38-74c9-4a54-8b8b-77f68f69754b",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -848,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Automated reply:\n{{ $('Leads Agent').first().json.output.reply }}\n\nReasoning:\n{{ $('Leads Agent').first().json.output.reason }}\n\nUsed knowledge:\n{{ $('Leads Agent').first().json.output.knowledge }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an editor. You review a draft intended for a potential client **BEFORE** it is sent to a person for approval. You do not write or revise - only evaluate.\n\n## Checklist\n\n* Is every fact in the draft supported by the facts provided in the knowledge base?\n* Does it promise a price, timeline, or discount that is not in the knowledge base?\n* Does it answer the client's actual question?\n* Is the tone professional, without making excessive promises?\n\n## Output\n\n* `approved = false` if **ANY** of the above conditions is violated.\n* `notes` = specify exactly what was violated, including a quote from the draft. One sentence.\n\nBe very strict about following the rules.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        544
+      ],
+      "id": "c79f3b48-a93d-43dd-a134-7a29fa1ffc85",
+      "name": "Reviewer"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.6-terra",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        368,
+        768
+      ],
+      "id": "15429875-25f7-41d7-bd2c-906723262bbe",
+      "name": "GPT 5.6 Terra",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"approved\": {\n      \"type\": \"boolean\",\n      \"description\": \"true only if all conditions are satisfied. Else - false.\"\n    },\n    \"notes\": {\n      \"type\": \"string\",\n      \"description\": \"Explain in short notes what is not ok. Leave empty if approved.\"\n    }\n  },\n  \"required\": [\"approved\", \"notes\"],\n  \"additionalProperties\": false\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        768
+      ],
+      "id": "53853099-3f3b-49f2-850e-5be9b1f0836c",
+      "name": "Review Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "48d3e1c2-136c-4b5e-aae1-f80bd02a15a5",
+              "leftValue": "={{ $json.output.approved }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        544
+      ],
+      "id": "fb1636e5-42a9-4259-bd8c-56f408328363",
+      "name": "If reviewer approves"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6e1db428-f272-409b-abec-08c8c4f824d6",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        448
+      ],
+      "id": "39b2bcd3-bc36-4c87-8bed-ac1d3fb78be5",
+      "name": "If human approves"
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').first().json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=📥 New lead: {{ $('Start').first().json.email.sender }} \n\nAI reviewer does not approve the proposed automatic reply.\n\nNotes:\n{{ $('Reviewer').item.json.output.notes }}\n\nProposed Reply:\n```\n{{ $('Leads Agent').first().json.output.reply }}\n```",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        688
+      ],
+      "id": "9cc07eea-a3de-415c-98d9-303a6a309de0",
+      "name": "Notify failed AI review",
+      "webhookId": "6c0625cf-639e-43ba-a99d-c64430950ad7",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Text Embedding 3 Large": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Query Services Knowledge",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma 4 31B": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set \"Sales Opportunities\" label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Services Knowledge": {
+      "ai_tool": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Reviewer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads Agent": {
+      "main": [
+        [
+          {
+            "node": "Should escalate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should escalate?": {
+      "main": [
+        [
+          {
+            "node": "Escalate new lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reviewer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If human approves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Leads Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reviewer": {
+      "main": [
+        [
+          {
+            "node": "If reviewer approves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 5.6 Terra": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Reviewer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Reviewer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If reviewer approves": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify failed AI review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If human approves": {
+      "main": [
+        [
+          {
+            "node": "Reply to new lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        []
+      ]
+    },
+    "Notify failed AI review": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1421e4fc-0810-4767-a276-d6136083b1d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "TyTQ5WBhu0DOpXqu",
+  "tags": []
+}
