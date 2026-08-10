@@ -1,0 +1,46 @@
+services:
+  caddy:
+    image: caddy:2.11.4
+    container_name: softuni_ai_caddy
+    ports:
+      - 5680:80
+      - 5443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  n8n:
+    image: n8nio/n8n:2.33.3
+    container_name: softuni_ai_n8n
+    depends_on:
+      - caddy
+    ports:
+      - 5678:5678
+    environment:
+      - N8N_HOST=n8n.troeff
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_EDITOR_BASE_URL=https://n8n.troeff:5443/
+      - N8N_WEBHOOK_URL=https://n8n.troeff:5443/
+      - N8N_PROXY_HOPS=1
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  chromadb:
+    image: chromadb/chroma:1.5.9
+    container_name: softuni_ai_chromadb
+    ports:
+      - 8000:8000
+    volumes:
+      - chromadb_data:/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  n8n_data:
+  chromadb_data:
+
+networks:
+  default:
+    name: softuni.ai
