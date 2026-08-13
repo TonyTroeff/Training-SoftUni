@@ -1,4 +1,4 @@
-n8n.troeff {
+n8n.troeff.com {
 	tls internal
 	reverse_proxy n8n:5678
 }

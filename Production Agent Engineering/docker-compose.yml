@@ -3,13 +3,13 @@ services:
     image: caddy:2.11.4
     container_name: softuni_ai_caddy
     ports:
-      - 5680:80
-      - 5443:443
+      - 8443:443
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
 
+  # NOTE: Tony Troeff, 11/08/2026 - To host n8n on a non-localhost address on Windows, add an entry to the "hosts" file.
   n8n:
     image: n8nio/n8n:2.33.3
     container_name: softuni_ai_n8n
@@ -18,11 +18,11 @@ services:
     ports:
       - 5678:5678
     environment:
-      - N8N_HOST=n8n.troeff
+      - N8N_HOST=n8n.troeff.com
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
-      - N8N_EDITOR_BASE_URL=https://n8n.troeff:5443/
-      - N8N_WEBHOOK_URL=https://n8n.troeff:5443/
+      - N8N_EDITOR_BASE_URL=https://n8n.troeff.com:8443/
+      - N8N_WEBHOOK_URL=https://n8n.troeff.com:8443/
       - N8N_PROXY_HOPS=1
     volumes:
       - n8n_data:/home/node/.n8n
@@ -40,6 +40,7 @@ volumes:
   caddy_config:
   n8n_data:
   chromadb_data:
+
 
 networks:
   default:
