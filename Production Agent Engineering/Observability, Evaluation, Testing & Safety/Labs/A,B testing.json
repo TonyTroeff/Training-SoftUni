@@ -1,0 +1,164 @@
+{
+  "name": "A/B testing",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -96
+      ],
+      "id": "38f4529d-284d-4761-b42f-2565f76cda0e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { number: Math.random() * 100 }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -96
+      ],
+      "id": "cdaf8b68-7f7e-4455-b1d8-97e2e47f1a3c",
+      "name": "Generate random number"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "82236d13-3335-4414-a656-b6078ba905de",
+              "leftValue": "={{ $json.number }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        -96
+      ],
+      "id": "a3d44a82-8c27-4dbe-8d72-5909e00374df",
+      "name": "If A/B"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0332f3e7-4127-455e-9c55-da7951eb6e58",
+              "name": "path",
+              "value": "A",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        320,
+        -192
+      ],
+      "id": "a7dff499-c48d-4540-b40e-aefa8ade20e4",
+      "name": "Set path A"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0332f3e7-4127-455e-9c55-da7951eb6e58",
+              "name": "path",
+              "value": "B",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        320,
+        0
+      ],
+      "id": "86b2c4bd-f614-4c03-9cc1-462d62a0119f",
+      "name": "Set path B"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Generate random number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate random number": {
+      "main": [
+        [
+          {
+            "node": "If A/B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If A/B": {
+      "main": [
+        [
+          {
+            "node": "Set path A",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set path B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4f2d0a0a-c6d9-4444-a910-4dd9e2e98a78",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "DYkKAKK1njyCQFDE",
+  "tags": []
+}
