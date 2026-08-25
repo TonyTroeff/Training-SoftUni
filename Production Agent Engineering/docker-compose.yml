@@ -8,6 +8,23 @@ services:
       - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
 
+  # NOTE: Tony Troeff, 25/08/2026 - The free ngrok tier grants one reserved domain per account, so `--url` keeps the public address stable across restarts.
+  # Without it ngrok hands out a random hostname on every start and `N8N_WEBHOOK_URL` would have to be rewritten each time.
+  ngrok:
+    image: ngrok/ngrok:3
+    container_name: softuni_ai_ngrok
+    depends_on:
+      - n8n
+    ports:
+      - 4040:4040 # Local inspector (also exposes /api/tunnels)
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command:
+      - "http"
+      - "n8n:5678"
+      - "--url=${NGROK_DOMAIN}"
+      - "--log=stdout"
+
   # NOTE: Tony Troeff, 11/08/2026 - To host n8n on a non-localhost address on Windows, add an entry to the "hosts" file.
   n8n:
     image: n8nio/n8n:2.35.3
@@ -22,7 +39,10 @@ services:
       - N8N_HOST=n8n.troeff.com
       - N8N_PROTOCOL=https
       - N8N_EDITOR_BASE_URL=https://n8n.troeff.com:8443/
-      - N8N_WEBHOOK_URL=https://n8n.troeff.com:8443/
+
+      # NOTE: Tony Troeff, 25/08/2026 - To use the "Telegram Trigger", n8n must be publicly accessible, so production webhooks are published through the ngrok tunnel instead, while the editor keeps using the local Caddy address.
+      - N8N_WEBHOOK_URL=https://${NGROK_DOMAIN}/
+
       - N8N_PROXY_HOPS=1
 
       # NOTE: Tony Troeff, 13/08/2026 - `N8N_METRICS=true` alone only exposes process/runtime metrics plus a workflow-execution histogram labelled with `status` and `mode` only.
