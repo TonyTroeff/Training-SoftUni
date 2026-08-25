@@ -1,0 +1,120 @@
+{
+  "name": "Log to Loki",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "severity"
+            },
+            {
+              "name": "root_execution_id"
+            },
+            {
+              "name": "execution_id"
+            },
+            {
+              "name": "data",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        -112
+      ],
+      "id": "d153d7e8-bc2a-46a9-baac-230c02742b18",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// A single push can carry many lines, so every incoming item is batched into one\n// request rather than one HTTP call per message. Loki addresses entries by label set,\n// so items sharing the same labels collapse into the same stream.\nconst streams = new Map();\nconst now = Date.now();\n\n$input.all().forEach((item, index) => {\n  const input = item.json;\n  const data = input.data ?? {};\n\n  // Labels are indexed and each combination creates a stream, so they must stay\n  // low-cardinality. Never put an id in here - that is what structured metadata is for.\n  const stream = {\n    service_name: 'n8n',\n    severity: String(input.severity),\n  };\n\n  // Structured metadata is stored per line and is queryable, but never creates a stream.\n  // This is where the ids belong. `execution_id` is what Grafana joins to Tempo on, and\n  // `root_execution_id` keeps every line of one email chain tied to the orchestrator run.\n  const metadata = {};\n  const metadataCandidate = {\n    execution_id: input.execution_id,\n    root_execution_id: input.root_execution_id || input.execution_id,\n    ...data,\n  };\n  for (const [key, value] of Object.entries(metadataCandidate)) {\n    if (value == null || value === '' || typeof value === 'object') continue;\n    metadata[key] = String(value);\n  }\n\n  const line = input.message;\n\n  // Loki timestamps are nanoseconds.\n  // The whole batch shares a millisecond, so the item index fills the microseconds - a stream silently drops lines that repeat a timestamp.\n  const timestamp = `${now}${String(index).padStart(6, '0')}`;\n\n  const key = JSON.stringify(stream);\n  if (!streams.has(key)) streams.set(key, { stream, values: [] });\n  streams.get(key).values.push([timestamp, line, metadata]);\n});\n\n// Nothing to log means nothing to send - returning no items keeps the HTTP node idle.\nif (streams.size === 0) return [];\n\nreturn [{ json: { streams: [...streams.values()] } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -112
+      ],
+      "id": "a01c5be4-92a5-45ed-a7d4-4ba34237818b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://loki:3100/loki/api/v1/push",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -112,
+        -112
+      ],
+      "id": "419c9b16-e9e1-49ee-9f15-e03d1b7755c1",
+      "name": "Push to Loki"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "Hello. world!",
+          "severity": "debug",
+          "root_execution_id": "1013",
+          "execution_id": "1013",
+          "data": {
+            "value": "test"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Push to Loki",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b10f08f1-f642-448e-8640-2db18476d04b",
+  "meta": {
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "gW8XhIAFv6KrUiaC",
+  "tags": []
+}

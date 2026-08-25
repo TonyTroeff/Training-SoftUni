@@ -1,0 +1,998 @@
+{
+  "name": "EMS: Customer Support",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -776,
+        -296
+      ],
+      "id": "56c645f0-457d-46fd-834a-a694518412a6",
+      "name": "Text Embedding 3 Large",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendRichMessage",
+        "chatId": "={{ $('Start').item.json.telegram_chat_id }}",
+        "richFormat": "markdown",
+        "richMessageText": "=Имате имейл с негативен сантимент от {{ $('Start').item.json.email.sender }} със следния текст:\n\n```\n{{ $('Start').item.json.email.body }}\n```",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -464
+      ],
+      "id": "c7634772-9333-4adc-9201-16d8ccea99b5",
+      "name": "Notify negative email",
+      "webhookId": "bcf5c3a3-28c5-4c3e-be17-9f04708c72d6",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3bb14ad5-1e11-4e29-b54d-6a2e5df6cb81",
+              "name": "customer_context",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1344,
+        -640
+      ],
+      "id": "7b78d9a0-72e1-4ae2-87cf-91455eb40086",
+      "name": "Set empty customer context (not found)"
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1112,
+        -504
+      ],
+      "id": "7004f461-47a5-4d24-a257-cf4f302c6448",
+      "name": "Gemma 4 31B",
+      "credentials": {
+        "openRouterApi": {
+          "id": "h99RQn42SZKwGkug",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to retrieve our **OFFICIAL** policies and FAQ answers for existing customers, including returns, warranties, delivery times, support, and order status.\n\nIt does **NOT** include pricing, offers, or commercial terms for new customers.\n\nAlways call it **BEFORE** every response - if the answer is not available there, do **not** make it up.",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "email_management_system_faq",
+          "mode": "list",
+          "cachedResultName": "email_management_system_faq"
+        },
+        "topK": 3,
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        -856,
+        -504
+      ],
+      "id": "6c39b22c-ea4c-4bc2-8110-4fe9b01dfe39",
+      "name": "Query FAQs and Policies",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Start').item.json.email.thread_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -984,
+        -504
+      ],
+      "id": "777fe295-924f-4c76-a120-851031f19359",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"reply\": {\n      \"type\": \"string\",\n      \"description\": \"The body of the response to the customer. No markdown, no quotes inside—the customer reads a normal email.\"\n    },\n    \"source\": {\n      \"type\": \"string\",\n      \"description\": \"The exact sections from the knowledge base that the response is based on. If you did not use the knowledge base, write: NO SOURCE.\"\n    },\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\": [\"Positive\", \"Neutral\", \"Negative\"],\n      \"description\": \"The sentiment of the customer email\"\n    },\n    \"answered_from_knowledge\": {\n      \"type\": \"boolean\",\n      \"description\": \"`true` ONLY if the answer is based entirely on an extracted section from the database. `false` if you answered using general knowledge or if you are uncertain.\"\n    }\n  },\n  \"required\": [\n    \"reply\",\n    \"source\",\n    \"answered_from_knowledge\"\n  ],\n  \"additionalProperties\": false\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -568,
+        -504
+      ],
+      "id": "9ff4c99f-5cdb-48cf-8ba2-927bd7c074e2",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Start').item.json.email.subject }}",
+        "message": "={{ $('Customer Support Agent').item.json.output.reply }}",
+        "options": {
+          "threadId": "={{ $('Start').item.json.email.thread_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -528
+      ],
+      "id": "076155ec-aaa1-4b85-bbb0-41575a38f471",
+      "name": "Draft reply",
+      "webhookId": "c2bbb752-4d5d-4876-a059-922e7581094b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message.id }}",
+        "labelIds": [
+          "Label_2104532352493058685"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -528
+      ],
+      "id": "158571b8-4f93-4d37-83f3-1c3711814d91",
+      "name": "Add label to drafted reply",
+      "webhookId": "1950c2bc-a2d1-4501-89b9-1180b882abb7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZWv7Q8TZ18pGCDaf",
+          "name": "Gmail Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos",
+          "mode": "list",
+          "cachedResultName": "Email Management System Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Incoming emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cfSEjIo53Qxt04oZRGTHPRtfLwOoUKLdMvmHKdrsZos/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Start').item.json.email.sender }}",
+            "Body": "={{ $('Start').item.json.email.body }}",
+            "Timestamp": "={{ $now.toUTC().format('yyyy-MM-dd HH:mm') }}",
+            "Sentiment": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Automatic Reply": "={{ $('Customer Support Agent').item.json.output.reply }}",
+            "Source(s)": "={{ $('Customer Support Agent').item.json.output.source }}",
+            "Answered from knowledgebase": "={{ $('Customer Support Agent').item.json.output.answered_from_knowledge }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Automatic Reply",
+              "displayName": "Automatic Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source(s)",
+              "displayName": "Source(s)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Answered from knowledgebase",
+              "displayName": "Answered from knowledgebase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        -528
+      ],
+      "id": "767a1cbf-3dd9-4b32-bd37-fa030f1cfde9",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cc4847bd-dfe8-456c-9542-2a72aabbfe75",
+              "leftValue": "={{ $('Start').item.json.customer }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1568,
+        -736
+      ],
+      "id": "6f9c49de-7f03-4257-8721-b4c8c8eef28a",
+      "name": "If customer is found"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deb061ce-031d-4d70-bc86-1789ff9be283",
+              "name": "customer_context",
+              "value": "=--- Information about the customer (from our internal register) ---\nName: {{ $('Start').item.json.customer.Name }}\nCompany: {{ $('Start').item.json.customer.Company }}\nPlan: {{ $('Start').item.json.customer.Plan }}\nNotes:\n{{ $('Start').item.json.customer.Notes }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1344,
+        -832
+      ],
+      "id": "edd94048-1632-49bb-9872-54383ba2d093",
+      "name": "Set customer context (found)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Start').item.json.email.subject }}\nFrom: {{ $('Start').item.json.email.sender }}\n\nBody:\n{{ $('Start').item.json.email.body }}\n\n{{ $json.customer_context }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a customer support agent. You respond to emails from **EXISTING** customers using **ONLY** the information available in the **Query FAQs and Policies** tool.\n\n## Allowed\n\n* Read the email provided by the system.\n* Query FAQs and Policies **BEFORE** every response.\n* Draft email replies.\n\n## Not Allowed\n\n* Do **NOT** send emails directly - you may only create drafts, which will be reviewed by a human.\n* Do **NOT** promise anything that is not in the database, including prices, timelines, discounts, or policies.\n* Do **NOT** make up policies. If the database does not contain the answer, follow the \"When Unsure\" instructions.\n* Do **NOT** respond to topics outside customer support (such as new business inquiries, finance, or spam).\n\n## When Unsure\n\n* If the database does not provide a clear answer, do **NOT** invent one. Draft a brief, polite reply stating that the question has been forwarded to the team and that they will get back to the customer.\n\n## Constraints\n\n* If provided, data from our internal \"Customers\" register is private. You can use it to personalize the reply, but do not quote it\n* Do not mention that you know about the customer's dossier.\n* Never write \"according to our internal notes\".\n\n## Output\n\n* Return **ONLY** the email body - no subject line and no Markdown.\n* Tone: friendly and professional.\n* Signature: **Customer Support Team**.\n* Every fact in the response must come from a section of the \"FAQs and Policies\". In the `source` field of the output, quote the section verbatim (up to 2 sentences).\n* If the \"FAQs and Policies\" are not used at all, set `source` to \"NO SOURCE\" and `answered_from_knowledgebase` to `false`.\n* Analyze the sentiment of the customer email and return \"Positive\", \"Neutral\", or \"Negative\" in the `sentiment` field."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -960,
+        -736
+      ],
+      "id": "0a968254-f962-46a4-ae22-61225f44032d",
+      "name": "Customer Support Agent"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "customer",
+              "type": "object"
+            },
+            {
+              "name": "email",
+              "type": "object"
+            },
+            {
+              "name": "telegram_chat_id"
+            },
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "id": "fd0af1ab-386a-4fc2-923f-05e0202b8643",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -1792,
+        -832
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9d53419a-bbdf-4c00-99c9-ae4b42229640",
+              "name": "reply",
+              "value": "={{ $json.output.reply }}",
+              "type": "string"
+            },
+            {
+              "id": "87938b21-8abe-4754-a945-ff058430f65a",
+              "name": "source",
+              "value": "={{ $json.output.source }}",
+              "type": "string"
+            },
+            {
+              "id": "9c0a8744-a4ae-43f6-bdf4-09a1bd1ee6c7",
+              "name": "sentiment",
+              "value": "={{ $json.output.sentiment }}",
+              "type": "string"
+            },
+            {
+              "id": "6cef87e7-c466-4c04-a58c-4a59dfc726eb",
+              "name": "answered_from_knowledge",
+              "value": "={{ $json.output.answered_from_knowledge }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -144,
+        -736
+      ],
+      "id": "aaabcb2e-d04c-49e4-9605-16cd7c23bde2",
+      "name": "Prepare \"dry run\" output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0ab4cade-60d0-4f74-b082-7e32cac31ba8",
+              "leftValue": "={{ $('Start').item.json.dry_run }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        -640
+      ],
+      "id": "e5f142ce-0f8a-45d1-93bf-970caed6f001",
+      "name": "If executing in \"dry run\" mode"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Customer Support Agent').item.json.output.sentiment }}",
+                    "rightValue": "Positive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "356ee774-0c05-4d22-8ae6-196c522fd1ad"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Positive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7adf0c52-3aed-405e-8bd9-e7df4421d582",
+                    "leftValue": "={{ $('Customer Support Agent').item.json.output.sentiment }}",
+                    "rightValue": "Neutral",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Neutral"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b494cf8c-70af-4447-af72-dccd015883e8",
+                    "leftValue": "={{ $('Customer Support Agent').item.json.output.sentiment }}",
+                    "rightValue": "Negative",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Negative"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -544
+      ],
+      "id": "b800458e-d7a4-4510-b3c2-9f4e9d740578",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gW8XhIAFv6KrUiaC",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/gW8XhIAFv6KrUiaC",
+          "cachedResultName": "Log to Loki"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "Customer Support processing started.",
+            "severity": "debug",
+            "execution_id": "={{ $execution.id }}",
+            "data": "={{ {\n  ...$json.email\n} }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "root_execution_id",
+              "displayName": "root_execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1568,
+        -928
+      ],
+      "id": "e3c789ba-cae5-404e-9021-c8fb4cbfc5a7",
+      "name": "Log processing started"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gW8XhIAFv6KrUiaC",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/gW8XhIAFv6KrUiaC",
+          "cachedResultName": "Log to Loki"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "severity": "debug",
+            "execution_id": "={{ $execution.id }}",
+            "message": "Customer Support Agent processed the email.",
+            "data": "={{ {\n  reply: $json.output.reply,\n  answered_from_knowledge: $json.output.answered_from_knowledge,\n  sources: \"TODO\"\n} }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "root_execution_id",
+              "displayName": "root_execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        -832
+      ],
+      "id": "6d693eca-9f3c-4bdb-91b5-a5abe27415d5",
+      "name": "Log Agent finished processing"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "email": {
+            "thread_id": "eval_CS-03_[object Object]",
+            "subject": "Дефектен телефон - как да подам рекламация",
+            "body": "Здравейте,\nЕкранът на телефона, който купих през март, започна да мига без причина.\nКак да подам гаранционна претенция и колко време отнема ремонтът?\nПоздрави,\nДимитър Ангелов",
+            "sender": "d.angelov@abv.bg"
+          },
+          "telegram_chat_id": null,
+          "dry_run": true
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Customer Support Agent": {
+      "main": [
+        [
+          {
+            "node": "If executing in \"dry run\" mode",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Agent finished processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Embedding 3 Large": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Query FAQs and Policies",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma 4 31B": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft reply": {
+      "main": [
+        [
+          {
+            "node": "Add label to drafted reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify negative email": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to drafted reply": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query FAQs and Policies": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If customer is found": {
+      "main": [
+        [
+          {
+            "node": "Set customer context (found)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set empty customer context (not found)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set customer context (found)": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set empty customer context (not found)": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "If customer is found",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log processing started",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If executing in \"dry run\" mode": {
+      "main": [
+        [
+          {
+            "node": "Prepare \"dry run\" output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Draft reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify negative email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0cb70755-d274-496b-bdcd-0237e607f4a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "yYyjYK4umiQFXCeC",
+  "tags": []
+}
