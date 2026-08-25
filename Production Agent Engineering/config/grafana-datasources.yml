@@ -16,8 +16,6 @@ datasources:
     url: http://tempo:3200
     editable: true
     jsonData:
-      serviceMap:
-        datasourceUid: prometheus
       nodeGraph:
         enabled: true
       tracesToMetrics:
@@ -28,3 +26,30 @@ datasources:
         queries:
           - name: "Node execution rate for this workflow"
             query: 'sum by (node_type) (rate(n8n_node_started_total{$$__tags}[$$__rate_interval]))'
+
+      # Every span carries `n8n.execution.id`, and every log line carries the execution that wrote it plus the execution that started the chain.
+      tracesToLogsV2:
+        datasourceUid: loki
+        spanStartTimeShift: '-5m'
+        spanEndTimeShift: '5m'
+        filterByTraceID: false
+        filterBySpanID: false
+        customQuery: true
+        query: '{service_name="n8n"} | execution_id="$${__span.tags["n8n.execution.id"]}" or root_execution_id="$${__span.tags["n8n.execution.id"]}"'
+
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      # Logs -> Trace. `execution_id` arrives as structured metadata rather than inside the message, so match the field by name instead of regexing the line.
+      # The link carries no queryType, which Tempo defaults to `traceql`; the value is not a trace id, so it runs as a TraceQL search.
+      derivedFields:
+        - name: ExecutionID
+          matcherType: label
+          matcherRegex: execution_id
+          datasourceUid: tempo
+          url: '{span.n8n.execution.id="$${__value.raw}"}'
+          urlDisplayLabel: 'View trace'

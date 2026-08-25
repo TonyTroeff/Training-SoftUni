@@ -63,8 +63,6 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
-      - "--web.enable-remote-write-receiver"
-      - "--enable-feature=native-histograms"
 
   tempo:
     image: grafana/tempo:2.9.0
@@ -78,12 +76,24 @@ services:
     command:
       - "-config.file=/etc/tempo.yml"
 
+  loki:
+    image: grafana/loki:3.7.6
+    container_name: softuni_ai_loki
+    ports:
+      - 3100:3100
+    volumes:
+      - ./config/loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    command:
+      - "-config.file=/etc/loki/loki.yml"
+
   grafana:
     image: grafana/grafana:13.0
     container_name: softuni_ai_grafana
     depends_on:
       - prometheus
       - tempo
+      - loki
     ports:
       - 3000:3000
     volumes:
@@ -102,6 +112,7 @@ volumes:
   prometheus_data:
   grafana_data:
   tempo_data:
+  loki_data:
 
 networks:
   default:

@@ -19,31 +19,29 @@ ingester:
 
 compactor:
   compaction:
-    block_retention: 24h
+    # The dashboards count events by querying the spans themselves, so this retention IS the dashboard's history.
+    # Anything older than this window is gone, not just un-graphed.
+    block_retention: 168h
+
+# TraceQL metrics (`count_over_time`, `quantile_over_time`, ...) let Grafana derive counts and latencies from the stored spans on every query, instead of reading counters that reset on restart.
+query_frontend:
+  metrics:
+    # Refuse nothing the time picker can reasonably ask for - keep this >= `block_retention`.
+    max_duration: 168h
+    query_backend_after: 30m
+    interval: 5m
 
 metrics_generator:
-  registry:
-    external_labels:
-      source: tempo
-    stale_duration: 24h
   storage:
     path: /var/tempo/generator/wal
-    remote_write:
-      - url: http://prometheus:9090/api/v1/write
-        send_exemplars: true
   traces_storage:
     path: /var/tempo/generator/traces
   processor:
-    span_metrics:
-      dimensions:
-        - n8n.workflow.name
-        - n8n.node.name
-        - n8n.node.type
-        - n8n.execution.status
-        - n8n.execution.mode
-    service_graphs:
-      dimensions:
-        - n8n.workflow.name
+    local_blocks:
+      # n8n emits workflow/node spans as INTERNAL, not SERVER.
+      # Left at the default `true` the processor keeps nothing at all and every TraceQL metrics query answers zero.
+      filter_server_spans: false
+      flush_to_storage: true
 
 storage:
   trace:
@@ -58,7 +56,7 @@ overrides:
   defaults:
     metrics_generator:
       processors:
-        - service-graphs
-        - span-metrics
         - local-blocks
-      generate_native_histograms: both
+      # A span is exported when it ENDS, so a workflow that ran for a few minutes arrives with a start timestamp well in the past.
+      # At the default of 0s the generator drops exactly those spans - the long executions worth watching - before they ever reach a block.
+      ingestion_time_range_slack: 1h
