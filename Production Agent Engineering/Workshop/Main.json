@@ -1,0 +1,614 @@
+{
+  "name": "Workshop: Main",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -880,
+        64
+      ],
+      "id": "8642e476-610d-4a78-803e-3e38651fa422",
+      "name": "Telegram Trigger",
+      "webhookId": "587dd2fb-3622-47b4-b9e3-1f5d2f28df07",
+      "credentials": {
+        "telegramApi": {
+          "id": "B1R8819WmDcZePYZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mUmn1ckQ7hlp8lKf",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mUmn1ckQ7hlp8lKf",
+          "cachedResultName": "Workshop: Classifier"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        64
+      ],
+      "id": "38aa93aa-4dbe-48f3-b719-fb534e9e1bcc",
+      "name": "Call 'Workshop: Classifier'"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "support",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "267ebb70-36fe-4ed2-98b9-5bf34a604f94"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6adc86e1-6f0c-481e-9539-2d3bf53c9ad0",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "documents",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Documents"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f152d755-f7bb-4552-b7df-03d27c276a93",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "offers",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Offers"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3fdc7e92-6727-40dc-8dbf-7908713ff9d0",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "internal",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Internal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        32
+      ],
+      "id": "13fbb12a-2e4b-45c9-a0a6-5c6e8bd6ac22",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gCQoPJyqthCh93bX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/gCQoPJyqthCh93bX",
+          "cachedResultName": "Workshop: Support"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('Execution Parameters').item.json.message }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        -224
+      ],
+      "id": "4d36856a-8ba0-49b0-96f8-2608f6caf4ca",
+      "name": "Call 'Workshop: Support'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "tDvjWCe2uukcljLV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tDvjWCe2uukcljLV",
+          "cachedResultName": "Workshop: Documents"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('Execution Parameters').item.json.message }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        -32
+      ],
+      "id": "e4b1d249-3b82-4091-8569-e1ab60a9f5f2",
+      "name": "Call 'Workshop: Documents'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YJ3lfi7G3K3fAN96",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/YJ3lfi7G3K3fAN96",
+          "cachedResultName": "Workshop: Offers"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('Execution Parameters').item.json.message }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        160
+      ],
+      "id": "14d669af-17b2-4d1d-9f00-0b55cefcad6c",
+      "name": "Call 'Workshop: Offers'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mcBG8c2HQ5YXwsmT",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mcBG8c2HQ5YXwsmT",
+          "cachedResultName": "Workshop: Internal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('Execution Parameters').item.json.message }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        352
+      ],
+      "id": "9bb7850d-023c-4c14-9bb2-96d2e1258b27",
+      "name": "Call 'Workshop: Internal'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "691ffef7-9ee4-4063-a8b9-8a0470d02cb0",
+              "leftValue": "={{ $json.message.document }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -656,
+        160
+      ],
+      "id": "4d0bb532-fc62-41ae-a73f-d9154babe61b",
+      "name": "If there are attached files"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f2ec00c1-c22e-45b9-bfb8-ad31af5b7df8",
+              "name": "attachments",
+              "value": "={{ [] }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        256
+      ],
+      "id": "b131d2ca-acf0-4ffa-bc13-38c2bff93653",
+      "name": "Prepare Empty Attachments"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffa86062-da05-47cd-bb01-9a4a71783536",
+              "name": "=attachments",
+              "value": "={{ [ { id: $json.message.document.file_id, name: $json.message.document.file_name, mime_type: $json.message.document.mime_type, size: $json.message.document.file_size } ] }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        64
+      ],
+      "id": "bcbaea4d-3871-498f-9ca7-6ba4e66ef45c",
+      "name": "Extract Attachments"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "84a3fe66-633a-4928-b047-d6f9c2b01019",
+              "name": "message",
+              "value": "={{ { text: $json.message.text || $json.message.caption, sender: $json.message.from.username, chat_id: $json.message.chat.id } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        -128
+      ],
+      "id": "93836f56-c1a2-4db7-90a4-212fadadd9e8",
+      "name": "Extract Message"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -208,
+        64
+      ],
+      "id": "2443e25c-099b-4fea-a219-c25f983abd2d",
+      "name": "Execution Parameters"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If there are attached files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Workshop: Classifier'": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Call 'Workshop: Support'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Workshop: Documents'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Workshop: Offers'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Workshop: Internal'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If there are attached files": {
+      "main": [
+        [
+          {
+            "node": "Extract Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Empty Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Attachments": {
+      "main": [
+        [
+          {
+            "node": "Execution Parameters",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prepare Empty Attachments": {
+      "main": [
+        [
+          {
+            "node": "Execution Parameters",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract Message": {
+      "main": [
+        [
+          {
+            "node": "Execution Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Parameters": {
+      "main": [
+        [
+          {
+            "node": "Call 'Workshop: Classifier'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "25f3e1c3-3641-4c96-a9b7-c7341a71f82d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "jAkRkGc2U3W5Nj5f",
+  "tags": []
+}

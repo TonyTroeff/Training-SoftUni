@@ -1,0 +1,217 @@
+{
+  "name": "Workshop: Fill in knowledgebase",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "3d0781f4-771e-45a1-9fc8-70d941cc67f1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c65021f-5907-445c-9a7d-3b4fb24067f6",
+              "name": "procedures",
+              "value": "PRO-01 Warranty: 24 months for private individuals and 12 months for business customers, counted from the date of purchase shown on the receipt or the invoice.\n\nPRO-02 The warranty covers manufacturing defects. It does NOT cover mechanical damage, liquid spills, traces of an attempted self-repair, or damage caused by a non-original charger.\n\nPRO-03 Diagnostics: up to 3 working days from the moment the device is handed in. The result is communicated to the customer before any repair work begins.\n\nPRO-04 In-warranty repair: up to 30 calendar days from the moment the device is handed in. If a spare part is unavailable, the customer is notified and given a new deadline.\n\nPRO-05 Out-of-warranty repair starts only AFTER the customer has approved a written quote. Without that approval the device is not disassembled.\n\nPRO-06 Ticket status is checked by ticket number (format SD-XXXXX), on working days between 9:00 and 18:00.\n\nPRO-07 Handing in a device: in person at the service centre or by courier. Courier delivery to the service centre is paid by the customer; the return after a paid repair is at our expense.\n\nPRO-08 Repaired devices are stored for 60 days after the customer has been notified. After that period a storage fee of 2 BGN per day applies.\n\nPRO-09 Spare parts: we use original parts. If an original part is unavailable we offer a compatible one only with the customer's explicit consent, which is recorded in the ticket.\n\nPRO-10 Data on the device: we accept no liability for data loss. We recommend making a backup before handing the device in. We do not perform data recovery from damaged media.\n\nPRO-00 The procedures knowledge base contains NO information about: prices and discounts, leasing and instalment plans, trade-in of old devices, repair of automotive electronics, or lead times for parts on order. If the question is about anything on this list, this base does not cover it.",
+              "type": "string"
+            },
+            {
+              "id": "15415a42-a6af-468d-8854-edfa023d65e0",
+              "name": "services",
+              "value": "SRV-01 Diagnostics: 20 BGN. The amount is deducted from the price of the repair if the customer approves the quote.\n\nSRV-02 Smartphone display replacement: from 120 to 380 BGN depending on the model. The exact price is given after diagnostics.\n\nSRV-03 Smartphone battery replacement: from 70 to 160 BGN depending on the model.\n\nSRV-04 Cleaning after a liquid spill: 90 BGN. The service is carried out with no guarantee of the outcome.\n\nSRV-05 Laptop keyboard replacement: from 110 to 240 BGN depending on the model.\n\nSRV-06 SSD or RAM replacement or upgrade: 40 BGN labour plus the price of the part.\n\nSRV-07 Operating system reinstall including a backup of the data: 60 BGN.\n\nSRV-08 Laptop servicing — cleaning and thermal paste replacement: 70 BGN.\n\nSRV-09 Express service within 24 hours: a 50% surcharge on the labour price, provided the part is in stock.\n\nSRV-10 Corporate contracts: 10% discount when we service more than 5 devices.\n\nSRV-00 We do NOT offer and do NOT take on: repair of televisions and white goods, automotive electronics, drones, data recovery from damaged drives, and unlocking devices or accounts. If the enquiry is about anything on this list, the service does not exist in our catalogue.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -208,
+        16
+      ],
+      "id": "8057fdb5-76c5-442f-a024-9f6b2f960ee9",
+      "name": "Knowledgebase"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "chromaCollection": {
+          "__rl": true,
+          "value": "workshop",
+          "mode": "list",
+          "cachedResultName": "workshop"
+        },
+        "options": {
+          "clearCollection": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreChromaDB",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        16
+      ],
+      "id": "83446512-b01f-4285-af1a-981920c2255d",
+      "name": "Chroma Vector Store",
+      "credentials": {
+        "chromaSelfHostedApi": {
+          "id": "ubcCNPAQtngzlt3U",
+          "name": "ChromaDB Self-Hosted account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        248,
+        248
+      ],
+      "id": "38aebf19-81df-4084-ad06-65d0c419a9cf",
+      "name": "Text Embedding 3 Large",
+      "credentials": {
+        "openAiApi": {
+          "id": "6gFryQIk4WEzoR29",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        376,
+        248
+      ],
+      "id": "bd6e8f55-aafd-4d7a-a934-97f9e3256c36",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        456,
+        456
+      ],
+      "id": "c6f19b21-dc47-4ec8-9812-a7d18bd81f93",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const result = {};\n\nfor (const [key, value] of Object.entries($input.item.json)) {\n  if (typeof value !== 'string') continue;\n  \n  const fragments = value.split(\"\\n\\n\");\n  for (let i = 0; i < fragments.length; i++)\n    result[`${key}_${i + 1}`] = fragments[i];\n}\n\nreturn { json: { ...result } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        16
+      ],
+      "id": "a7b808f9-1357-495a-8345-dd0388b56617",
+      "name": "Split"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Knowledgebase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledgebase": {
+      "main": [
+        [
+          {
+            "node": "Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Embedding 3 Large": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split": {
+      "main": [
+        [
+          {
+            "node": "Chroma Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1a0f8e87-eac9-47c5-b892-a9193f800c1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "fhlhllbmtEIaCGbD",
+  "tags": []
+}

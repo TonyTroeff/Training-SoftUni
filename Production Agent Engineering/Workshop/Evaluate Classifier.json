@@ -1,0 +1,255 @@
+{
+  "name": "Workshop: Evaluate Classifier",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        0
+      ],
+      "id": "a66099ac-6ab9-4a64-9dff-6ec4e1079d2a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ktsVUvSplJjDIBFyB7JOb6BiGRA-CIscau9ryrlIRPE",
+          "mode": "list",
+          "cachedResultName": "Workshop: Datasets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ktsVUvSplJjDIBFyB7JOb6BiGRA-CIscau9ryrlIRPE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Classification",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ktsVUvSplJjDIBFyB7JOb6BiGRA-CIscau9ryrlIRPE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "f039fb79-adf3-472a-9e6f-551b987277c6",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rio2fBCuMdCF9yML",
+          "name": "Google Sheets Account (tony13troev@gmail.com)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        80,
+        0
+      ],
+      "id": "bc3740e1-7f63-4e50-a370-6d4988ac4b98",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mUmn1ckQ7hlp8lKf",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mUmn1ckQ7hlp8lKf",
+          "cachedResultName": "Workshop: Classifier"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ { message: $('Get row(s) in sheet').item.json.Message, sender: \"test_user\", \"chat_id\": \"test_chat_id\" } }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        48
+      ],
+      "id": "4ab0ae51-98c1-439c-9e23-467e4dd3f821",
+      "name": "Call 'Workshop: Classifier'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67b33358-fbb0-4822-be1f-0ada0816ddd2",
+              "name": "category_match",
+              "value": "={{ $json.category === $('Get row(s) in sheet').item.json['Expected category'] }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        304,
+        -144
+      ],
+      "id": "5e7ea8ec-0476-4b97-aa74-1b634b9dbfb9",
+      "name": "Check category"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "43ef8e0a-38b0-4ed0-8594-7218212b8aa7",
+              "name": "category_match_percentage",
+              "value": "={{ $json.results.filter(x => x.category_match).length / $json.results.length }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        752,
+        -144
+      ],
+      "id": "35734a9a-e97d-46a7-a39e-c9024f6c2ca0",
+      "name": "Report statistics"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        528,
+        -144
+      ],
+      "id": "bd2ff9be-55b5-46de-9b0b-b5bf07bd9490",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Check category",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Workshop: Classifier'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Workshop: Classifier'": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check category": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Report statistics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "57750667-f53c-4e0d-bca7-5ed238545623",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71db63c8b5e76429d6ca1dfca4e9b5568cac5412456dd7147b51f10608f919d"
+  },
+  "nodeGroups": [],
+  "id": "ThIg0SDv7zmCP9ju",
+  "tags": []
+}
