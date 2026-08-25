@@ -1,0 +1,3001 @@
+{
+  "uid": "ems-email-management-system",
+  "title": "EMS — Email Management System",
+  "description": "Observability for the Email Management System. Every count on this dashboard is derived from TRACES through TraceQL metrics rather than from counters, so the numbers are scoped to the time picker and survive a restart of n8n, Tempo or Prometheus — they are recomputed from the spans held in Tempo on every query. History therefore reaches back exactly as far as Tempo's block retention (7 days, see config/tempo.yml). The only Prometheus-backed panels left are the ones that genuinely describe the live process: Active Workflows and the Instance Health row.",
+  "tags": [
+    "n8n",
+    "ems",
+    "ai-agents"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "editable": true,
+  "refresh": "10s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "ems",
+        "label": "All EMS workflows (regex)",
+        "description": "Matches every workflow in the EMS pipeline — the parent plus all sub-workflows. `[^(]*` deliberately excludes the parenthesised copies (`EMS: … (Eval)`, `EMS: … (test)`): those are development harnesses and their runs would otherwise be counted as pipeline traffic and drag the success rate down. Widen it to `EMS|EMS: .*` to include them.",
+        "type": "textbox",
+        "query": "EMS|EMS: [^(]*",
+        "current": {
+          "text": "EMS|EMS: [^(]*",
+          "value": "EMS|EMS: [^(]*"
+        },
+        "options": [
+          {
+            "text": "EMS|EMS: [^(]*",
+            "value": "EMS|EMS: [^(]*",
+            "selected": true
+          }
+        ]
+      },
+      {
+        "name": "parent",
+        "label": "Parent workflow (regex)",
+        "description": "The Gmail-triggered entry point that classifies each email and dispatches it to a specialist sub-workflow.",
+        "type": "textbox",
+        "query": "EMS",
+        "current": {
+          "text": "EMS",
+          "value": "EMS"
+        },
+        "options": [
+          {
+            "text": "EMS",
+            "value": "EMS",
+            "selected": true
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 100,
+      "type": "row",
+      "title": "Pipeline Overview",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Executions",
+      "description": "Workflow executions that started inside the selected time range, counted from `workflow.execute` spans. Covers the orchestrator and every EMS sub-workflow. The Gmail Trigger fires on a poll schedule and the parent exits early when there is no new mail, and one processed email produces several executions — orchestrator plus the dispatched specialist. So this counts executions, not emails, and will be well above the number of emails actually handled.",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Success Rate",
+      "description": "Share of executions in the selected range that did not end in error. Failures are read from the span's own status rather than from `n8n.execution.status`, because n8n also reports `crashed`, which the narrower filter silently drops.",
+      "gridPos": {
+        "x": 5,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "yellow",
+                "value": 0.9
+              },
+              {
+                "color": "green",
+                "value": 0.99
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "background"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\" && status=error} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "($C - $D) / $C"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Failed Runs",
+      "description": "Executions that ended in error anywhere in the EMS pipeline, within the selected range. A failing sub-workflow also fails its parent, so one bad email can be counted twice.",
+      "gridPos": {
+        "x": 10,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\" && status=error} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Avg End-to-End Time",
+      "description": "Mean duration of a parent execution in the selected range — Gmail Trigger through classification, dossier lookup and the dispatched sub-workflow. Computed as total span time divided by execution count so that every run weighs the same; TraceQL's own `avg_over_time` averages the per-bucket averages instead, which over-weights quiet buckets (3.04s against a true 2.99s on the same data). Both halves are grouped by workflow name on purpose: ungrouped TraceQL metrics come back labelled `__name__=\"sum_over_time\"` and `__name__=\"count_over_time\"`, and Grafana cannot pair two operands whose labels differ — it still computes the right number but flags \"items dropped from union\". A shared group label makes the two sides match exactly. Note that a lead pausing for Telegram approval splits its execution in two, so those runs contribute segment durations rather than true wall-clock end-to-end time.",
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 180
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($parent)$\"} | sum_over_time(duration) by (span.n8n.workflow.name)",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($parent)$\"} | count_over_time() by (span.n8n.workflow.name)",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "$C / $D"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Active Workflows",
+      "description": "Total workflows currently activated on this n8n instance (not limited to EMS).",
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "n8n_active_workflow_count",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Active"
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "type": "row",
+      "title": "Classifier — where each email was routed",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 10,
+      "type": "piechart",
+      "title": "Emails by Category",
+      "description": "Counted from the `Call EMS: …` dispatch nodes in the parent workflow, so this is the Text Classifier's actual decision per email, scoped to the selected time range.",
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(Call EMS: .*)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "bargauge",
+      "title": "Category Totals",
+      "description": "The same classifier decisions as absolute counts for the selected range.",
+      "gridPos": {
+        "x": 8,
+        "y": 6,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(Call EMS: .*)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Classification Over Time",
+      "description": "Emails per category counted per time bucket rather than cumulatively, so the line falls back to zero when no mail arrives instead of holding its previous height. Bucket width follows the selected range and the panel width, so the absolute height changes as you zoom; the shape and the split between categories are what to read. Dots on the line are exemplars — click one to jump straight to that trace.",
+      "gridPos": {
+        "x": 16,
+        "y": 6,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true,
+            "showPoints": "always",
+            "pointSize": 6
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "sum",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(Call EMS: .*)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "range"
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "type": "row",
+      "title": "AI Review — how often the Reviewer approves",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "Leads Reviewed",
+      "description": "Verdicts delivered by the Reviewer in the selected range, counted at the `If reviewer approves` branch node. Measured here rather than at the `Reviewer` agent itself so that Reviewed = Approved + Rejected exactly.",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If reviewer approves\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Approved",
+      "description": "Reviewer approved the drafted reply, derived as Reviewed − Rejected over the selected range. NOTE: do not measure this with `Send message and wait for response`. That node suspends the execution waiting for a Telegram reply and then runs a second time on resume, so it emits two spans per approval and double-counts.",
+      "gridPos": {
+        "x": 4,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If reviewer approves\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Notify failed AI review\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "$C - $D"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "Rejected",
+      "description": "Reviewer rejected the drafted reply — measured by the `Notify failed AI review` node on the rejected branch, within the selected range.",
+      "gridPos": {
+        "x": 8,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Notify failed AI review\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Approval Rate",
+      "description": "Approved / (Approved + Rejected) for the selected range. A persistently low rate means the Leads Agent and the Reviewer disagree about what a good reply looks like.",
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "yellow",
+                "value": 0.75
+              },
+              {
+                "color": "green",
+                "value": 0.9
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "background"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If reviewer approves\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Notify failed AI review\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "($C - $D) / $C"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "type": "piechart",
+      "title": "Review Verdicts",
+      "description": "Approved vs rejected in the selected range, as decided by the Reviewer agent. Approved is computed as `If reviewer approves` minus `Notify failed AI review`.",
+      "gridPos": {
+        "x": 16,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Approved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rejected"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If reviewer approves\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Notify failed AI review\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          }
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "$C - $D"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "^D\\b.*$",
+            "renamePattern": "Rejected"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "^E\\b.*$",
+            "renamePattern": "Approved"
+          }
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "type": "timeseries",
+      "title": "Review Volume Over Time",
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 16,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true,
+            "showPoints": "always",
+            "pointSize": 6
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reviewed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rejected"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(If reviewer approves|Notify failed AI review)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "If reviewer approves": "Reviewed",
+              "Notify failed AI review": "Rejected"
+            }
+          }
+        }
+      ],
+      "description": "Verdicts per time bucket: every verdict the Reviewer delivered, and the subset it rejected — the gap between the two lines is the approvals. Plotted as the two raw node counts rather than as a derived Approved line, because a range query also returns Tempo's exemplar frame and Grafana's expression engine cannot subtract across that. Bucket width follows the selected range and the panel width, so read the shape rather than the absolute height."
+    },
+    {
+      "id": 103,
+      "type": "row",
+      "title": "Escalation & Autonomy — how often a human has to step in",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 30,
+      "type": "stat",
+      "title": "Leads Handled",
+      "description": "Runs of the `Leads Agent` in the selected range — every lead that entered EMS: Sales Opportunity.",
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Leads Agent\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "stat",
+      "title": "Auto-Replied",
+      "description": "The system sent the reply itself — the `Reply to new lead` node. This is the fully-handled outcome, counted over the selected range.",
+      "gridPos": {
+        "x": 4,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Reply to new lead\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "Escalated",
+      "description": "The Leads Agent decided the lead needed a human immediately — the `Escalate new lead` node, taken before any AI review happens.",
+      "gridPos": {
+        "x": 8,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Escalate new lead\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "stat",
+      "title": "Awaiting Human",
+      "description": "Leads suspended on the Telegram approval prompt with no reply yet: approved-by-Reviewer minus the `If human approves` runs that only happen once someone answers. A backlog is a standing quantity rather than something that happens inside a window, so this panel deliberately ignores the dashboard time picker and always looks at the last 24 hours — hence the clock icon in its header. A number that stays above zero means leads are stuck waiting on a person.",
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If reviewer approves\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Notify failed AI review\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"If human approves\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "C",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "G",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "(($D - $E - $F) + abs($D - $E - $F)) / 2"
+        }
+      ],
+      "timeFrom": "24h"
+    },
+    {
+      "id": 34,
+      "type": "stat",
+      "title": "Left as Draft",
+      "description": "Ended up in `Create a draft` — the human declined the reply, or the AI review failed. Someone has to finish these by hand. Counted over the selected range.",
+      "gridPos": {
+        "x": 16,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Create a draft\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "type": "stat",
+      "title": "Auto-Reply Rate",
+      "description": "Auto-replied / leads handled, over the selected range. NOT a measure of autonomy: on this workflow every approved lead still pauses for a Telegram yes/no, so a human signs off on all of them. What it measures is how often a lead ended with the system sending the reply, rather than being escalated up front or left as a draft for someone to finish.",
+      "gridPos": {
+        "x": 20,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.4
+              },
+              {
+                "color": "yellow",
+                "value": 0.6
+              },
+              {
+                "color": "green",
+                "value": 0.8
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "background"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Reply to new lead\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=\"Leads Agent\"} | count_over_time()",
+          "metricsQueryType": "instant",
+          "hide": true
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "reduce",
+          "expression": "B",
+          "reducer": "last",
+          "settings": {
+            "mode": "replaceNN",
+            "replaceWithValue": 0
+          },
+          "hide": true
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "type": "math",
+          "expression": "$C / $D"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "type": "piechart",
+      "title": "Lead Outcome",
+      "description": "Where each lead ended up in the selected range: replied automatically, escalated to a human up front, or parked as a draft for manual work.",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Auto-replied"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Escalated"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Left as draft"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(Reply to new lead|Escalate new lead|Create a draft)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Reply to new lead": "Auto-replied",
+              "Escalate new lead": "Escalated",
+              "Create a draft": "Left as draft"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "type": "bargauge",
+      "title": "Human-Attention Alerts (whole pipeline)",
+      "description": "Every point where EMS pings a person instead of finishing on its own — across Sales Opportunity, Customer Support and Finance — within the selected range.",
+      "gridPos": {
+        "x": 8,
+        "y": 29,
+        "w": 16,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "color": {
+            "mode": "continuous-YlRd"
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\" && span.n8n.node.name=~\"^(Escalate new lead|Notify failed AI review|Notify negative email|Notify unknown|Notify unsuccessful OCR|Create a draft)$\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "type": "row",
+      "title": "Per-Workflow Performance",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 40,
+      "type": "table",
+      "title": "EMS Workflow Summary",
+      "description": "One row per EMS workflow for the selected time range: how often it ran, how those runs ended, and how long they took on average. Built from two TraceQL metrics queries — the ok/error split and the total span time — pivoted into columns. Executions is summed across whatever outcome columns exist rather than Succeeded + Failed, because a column only appears when some workflow actually ended that way: on a clean day the Failed column is absent altogether rather than showing zeros. `Unset` counts runs whose span carried no explicit status, which is why Executions can exceed Succeeded + Failed. The n8n deep link is gone from this panel: the pivot can only carry one label through as the row, so `n8n.workflow.id` does not survive it — use the Traces row below to jump into a specific execution.",
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 15,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Workflow"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "regex",
+                    "options": {
+                      "pattern": "^\"(.*)\"$",
+                      "result": {
+                        "text": "$1",
+                        "index": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unset"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success Rate"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0.9
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.99
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg Duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Executions",
+            "desc": true
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\"} | count_over_time() by (span.n8n.workflow.name, status)",
+          "metricsQueryType": "instant"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\"} | sum_over_time(duration) by (span.n8n.workflow.name)",
+          "metricsQueryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "span.n8n.workflow.name",
+            "columnField": "status",
+            "valueField": "value",
+            "emptyValue": "zero"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "span.n8n.workflow.name\\status": "Workflow",
+              "\"ok\"": "Succeeded",
+              "\"error\"": "Failed",
+              "\"unset\"": "Unset",
+              "Value": "_duration"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "alias": "Executions",
+            "replaceFields": false,
+            "reduce": {
+              "reducer": "sum",
+              "include": [
+                "Succeeded",
+                "Failed",
+                "Unset"
+              ]
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "binary",
+            "alias": "Success Rate",
+            "replaceFields": false,
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Succeeded"
+                }
+              },
+              "operator": "/",
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Executions"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "binary",
+            "alias": "Avg Duration",
+            "replaceFields": false,
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "_duration"
+                }
+              },
+              "operator": "/",
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Executions"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "_duration": true
+            },
+            "indexByName": {
+              "Workflow": 0,
+              "Executions": 1,
+              "Succeeded": 2,
+              "Failed": 3,
+              "Unset": 4,
+              "Success Rate": 5,
+              "Avg Duration": 6
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Executions",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "type": "table",
+      "title": "Slowest Nodes",
+      "description": "p95 duration of individual node executions in the selected range, computed by Tempo directly over the `node.execute` spans. n8n does not put the workflow name on node spans, so this covers every workflow on the instance, not just EMS. Nodes that did not run inside the range simply do not appear.",
+      "gridPos": {
+        "x": 15,
+        "y": 39,
+        "w": 9,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p95 Duration"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Node"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "regex",
+                    "options": {
+                      "pattern": "^\"(.*)\"$",
+                      "result": {
+                        "text": "$1",
+                        "index": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "p95 Duration",
+            "desc": true
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"node.execute\"} | quantile_over_time(duration, .95) by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "time": true,
+              "Time": true,
+              "p": true
+            },
+            "renameByName": {
+              "span.n8n.node.name": "Node",
+              "value": "p95 Duration",
+              "Value": "p95 Duration"
+            },
+            "indexByName": {
+              "span.n8n.node.name": 0,
+              "value": 1,
+              "p": 2,
+              "time": 3
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "p95 Duration",
+                "desc": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {
+            "limitField": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "type": "row",
+      "title": "Traces",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 50,
+      "type": "table",
+      "title": "Recent EMS Traces",
+      "description": "Every EMS execution as a distributed trace. Click a row to open the waterfall — one span per node, so you can see exactly which node in the chain spent the time.",
+      "gridPos": {
+        "x": 0,
+        "y": 49,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"}",
+          "tableType": "traces",
+          "limit": 30
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "type": "table",
+      "title": "Failed EMS Traces",
+      "description": "Only executions that ended in error. The waterfall marks the failing node in red and carries the error type as a span attribute. Filtered on the span's own status rather than on `n8n.execution.status=\"error\"`, because n8n also reports `crashed`, which the narrower filter silently dropped.",
+      "gridPos": {
+        "x": 12,
+        "y": 49,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\" && status=error}",
+          "tableType": "traces",
+          "limit": 30
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "type": "timeseries",
+      "title": "Workflow Latency p95 (from spans)",
+      "description": "p95 execution time per workflow, computed by Tempo straight from the `workflow.execute` spans over the selected range. Dots are exemplars — click one to open the trace behind that data point.",
+      "gridPos": {
+        "x": 0,
+        "y": 58,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "spanNulls": false
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && name=\"workflow.execute\" && span.n8n.workflow.name=~\"^($ems)$\"} | quantile_over_time(duration, .95) by (span.n8n.workflow.name)",
+          "metricsQueryType": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*workflow\\.name=\"([^\"]+)\".*",
+            "renamePattern": "$1"
+          }
+        }
+      ]
+    },
+    {
+      "id": 107,
+      "type": "row",
+      "title": "AI Usage — what the pipeline spends on models",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 66,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 70,
+      "type": "stat",
+      "title": "LLM Calls",
+      "description": "Chat-model invocations made by EMS in the selected range — one span per call to a `lmChat*` sub-node, counted across the orchestrator and every sub-workflow. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span. n8n's OpenTelemetry exporter carries no token or cost attributes: `workflow.execute` spans hold `n8n.workflow.*` / `n8n.execution.*`, `node.execute` spans hold `n8n.node.*`, and the one escape hatch — `n8n.node.custom.*` attributes fed from node metadata — is gated behind an enterprise licence. Prometheus does expose `n8n_instance_ai_tokens_total` and `n8n_instance_ai_cost_usd_total`, but those meter n8n's own built-in instance AI rather than the LangChain nodes inside a workflow, so they stay at 0 for EMS. What is left is the call itself: every model invocation is one span, and a provider bill is driven first by how many calls the pipeline makes. Read this row as spend pressure, not spend.",
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=~\".*lmChat.*\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "type": "stat",
+      "title": "Embedding Calls",
+      "description": "Calls to `embeddings*` sub-nodes in the selected range — the vector-store lookups behind the FAQ and services dossiers. Embeddings are billed per call too, at a far lower rate than chat completions, which is why they are counted separately instead of folded into LLM Calls. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span.",
+      "gridPos": {
+        "x": 6,
+        "y": 67,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=~\".*embeddings.*\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "type": "stat",
+      "title": "Agent Runs",
+      "description": "Executions of `@n8n/n8n-nodes-langchain.agent` nodes — the Customer Support, Finance, Internal, Leads and Reviewer agents. Compare it with LLM Calls: one agent run costs several chat completions once the tool loop turns, so the ratio between the two tiles is the pipeline's chattiness, and the first number to look at when a prompt change makes the bill move. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span.",
+      "gridPos": {
+        "x": 12,
+        "y": 67,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=\"@n8n/n8n-nodes-langchain.agent\"} | count_over_time()",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "type": "stat",
+      "title": "LLM Call p95",
+      "description": "p95 wall-clock duration of a single chat-model call in the selected range. Latency is the closest free proxy for output size — a provider streams at roughly a fixed rate, so calls that get slower are usually calls that got longer, and longer answers cost more. Watch it next to LLM Calls: a jump in either moves the bill. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span.",
+      "gridPos": {
+        "x": 18,
+        "y": 67,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 30
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=~\".*lmChat.*\"} | quantile_over_time(duration, .95)",
+          "metricsQueryType": "instant"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "type": "bargauge",
+      "title": "Calls by Model",
+      "description": "Model invocations per sub-node for the selected range, chat models and embedding models together. The bar label is the node name, which in EMS is the model itself (`Gemma 4 31B`, `Qwen3.7 Flash`, `GPT 5.6 Luna`, …), so this is the per-model split of the spend pressure — the panel to open when the invoice moves and you need to know which model moved it. A model wired into several workflows lands in a single bar, because node spans carry no workflow name of their own. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span.",
+      "gridPos": {
+        "x": 0,
+        "y": 71,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=~\".*(lmChat|embeddings).*\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*node\\.name=\"([^\"]+)\".*",
+            "renamePattern": "$1"
+          }
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "type": "timeseries",
+      "title": "Model Calls Over Time",
+      "description": "The same invocations bucketed across the range instead of totalled, one line per model. Counts are per bucket, so a line falls to zero in quiet periods and the absolute height changes as you zoom — read the shape and the split, not the peak. This is where a runaway agent shows up: a tool loop that stops converging lifts one model's line with no matching rise in executions over in Pipeline Overview. Model and embedding nodes are sub-nodes and their spans carry no workflow name, so the structural operator `>>` supplies the scope — it matches model spans that are descendants of an EMS `workflow.execute` span.",
+      "gridPos": {
+        "x": 8,
+        "y": 71,
+        "w": 16,
+        "h": 9
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "tempo"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true,
+            "showPoints": "always",
+            "pointSize": 6
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "sum",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{resource.service.name=\"n8n\" && span.n8n.workflow.name=~\"^($ems)$\"} >> {name=\"node.execute\" && span.n8n.node.type=~\".*(lmChat|embeddings).*\"} | count_over_time() by (span.n8n.node.name)",
+          "metricsQueryType": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*node\\.name=\"([^\"]+)\".*",
+            "renamePattern": "$1"
+          }
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "type": "row",
+      "title": "Instance Health",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 80,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "id": 60,
+          "type": "timeseries",
+          "title": "CPU Usage",
+          "gridPos": {
+            "x": 0,
+            "y": 81,
+            "w": 8,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "rate(n8n_process_cpu_seconds_total[$__rate_interval])",
+              "legendFormat": "CPU"
+            }
+          ]
+        },
+        {
+          "id": 61,
+          "type": "timeseries",
+          "title": "Memory",
+          "gridPos": {
+            "x": 8,
+            "y": 81,
+            "w": 8,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "min": 0,
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "n8n_process_resident_memory_bytes",
+              "legendFormat": "Resident"
+            },
+            {
+              "refId": "B",
+              "expr": "n8n_nodejs_heap_size_used_bytes",
+              "legendFormat": "Heap used"
+            }
+          ]
+        },
+        {
+          "id": 62,
+          "type": "timeseries",
+          "title": "Event Loop Lag p99",
+          "description": "High event-loop lag while agents are running means n8n is CPU-bound and executions will queue up.",
+          "gridPos": {
+            "x": 16,
+            "y": 81,
+            "w": 8,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "min": 0,
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "n8n_nodejs_eventloop_lag_p99_seconds",
+              "legendFormat": "p99"
+            },
+            {
+              "refId": "B",
+              "expr": "n8n_nodejs_eventloop_lag_mean_seconds",
+              "legendFormat": "mean"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
