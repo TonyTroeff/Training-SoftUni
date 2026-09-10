@@ -1,0 +1,11 @@
+langchain>=1.0,<2.0
+langchain-core>=1.0,<2.0
+langchain-classic>=1.0
+langchain-openai>=1.0
+langgraph>=1.0,<2.0
+langgraph-checkpoint-sqlite>=3.0
+langsmith>=0.3.0
+pydantic>=2.9
+python-dotenv>=1.0
+rich>=13.0
+tzdata; sys_platform == "win32"
